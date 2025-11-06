@@ -1,0 +1,42 @@
+// src/app/models/achievement.model.ts
+export interface User {
+  id: string;
+  role: 'admin' | 'user' | string;
+  name?: string;
+}
+
+export interface Letter {
+  title: string;
+  description: string;
+  decision: string; // ObjectId
+  date: string | Date;
+  status?: 'pending' | 'approved' | 'rejected' | 'in_progress';
+  user?: string; // ObjectId
+}
+
+export interface addLetter {
+  _id: string;
+  title: string;
+  description: string;
+  decision: {
+    _id: string;
+    title: string;
+    sector: string;
+    supervisor: string;
+    isPresidentDecision: boolean;
+    createdAt: string;
+  };
+  date: string;
+  status: string;
+  user?: {
+    _id: string;
+    username: string;
+    fullname: string;
+    role: string;
+    sector: string;
+    status: string;
+  } | null;
+  createdAt: string;
+}
+
+

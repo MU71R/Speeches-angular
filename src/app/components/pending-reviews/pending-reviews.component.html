@@ -1,0 +1,87 @@
+<div class="card shadow-sm border-0 rounded-4 p-3 bg-white" dir="rtl">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h5 class="fw-bold mb-1">الخطابات المعلقة</h5>
+      <p class="text-muted small mb-0">خطابات تحتاج إلى مراجعتك وموافقتك</p>
+    </div>
+    <button class="btn btn-dark px-4" (click)="viewAll()">
+      عرض الكل
+    </button>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table align-middle mb-0 text-center">
+      <thead class="bg-light">
+        <tr>
+          <th>العنوان</th>
+          <th>نوع القرار</th>
+          <th>تاريخ الإنشاء</th>
+          <th>الحالة</th>
+          <th>الإجراءات</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of pendingList">
+          <td>{{ item.title }}</td>
+          <td>{{ item.decision?.title }}</td>
+          <td>{{ item.date | date: 'd MMMM y' : '' : 'ar-EG' }}</td>
+          <td>
+            <span
+              class="badge rounded-pill px-3 py-2"
+              [ngClass]="{
+                'bg-primary-subtle text-primary': item.status === 'in_progress',
+                'bg-warning-subtle text-warning': item.status === 'pending',
+                'bg-success-subtle text-success': item.status === 'approved'
+              }"
+            >
+              {{
+                item.status === 'in_progress'
+                  ? 'تحت المراجعة'
+                  : item.status === 'pending'
+                  ? 'معلق'
+                  : 'تمت الموافقة'
+              }}
+            </span>
+          </td>
+          <td>
+            <button
+              class="btn btn-sm btn-outline-dark d-flex align-items-center justify-content-center gap-1"
+              (click)="open(item._id)"
+            >
+              <i class="bi bi-eye"></i> مراجعة
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="pendingList.length === 0">
+          <td colspan="5" class="text-muted py-3">لا توجد خطابات معلقة حالياً</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ✅ الموديول لازم يكون هنا (خارج الجدول والبطون) -->
+<div
+  class="modal fade show d-block bg-dark bg-opacity-50"
+  tabindex="-1"
+  *ngIf="selectedLetter"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4 shadow-lg">
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title fw-bold">مراجعة الخطاب</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="closeModal()"></button>
+      </div>
+      <div class="modal-body" dir="rtl">
+        <h6 class="fw-bold mb-3">{{ selectedLetter?.title }}</h6>
+
+        <!-- ✅ عرض الوصف بنفس التنسيق -->
+        <div class="p-3 bg-light rounded-3 border" [innerHTML]="safeDescription"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeModal()">إغلاق</button>
+        <button class="btn btn-success">اعتماد الخطاب</button>
+      </div>
+    </div>
+  </div>
+</div>

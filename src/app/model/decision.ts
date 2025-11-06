@@ -1,0 +1,15 @@
+export interface Decision {
+  _id?: string;              // ← أضف هذا السطر
+  title: string;
+  description?: string;
+  sector?: any;
+  supervisor?: any;
+  isPresidentDecision?: boolean;
+}
+export interface Declaration {
+  type: string;
+  title: string;
+  message: string;
+  supervisorId?: string;
+  createdAt?: string;
+}

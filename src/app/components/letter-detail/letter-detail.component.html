@@ -1,0 +1,145 @@
+<div class="container my-4" *ngIf="!loading; else loadTpl">
+  <div class="card shadow-lg">
+    <div class="card-header bg-primary text-white">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h4 class="fw-bold mb-1">{{ form.value.title || 'تفاصيل الخطاب' }}</h4>
+          <p class="mb-0 small opacity-75">معلومات تفصيلية عن الخطاب</p>
+        </div>
+        <div class="d-flex gap-2">
+          <button *ngIf="!isEditing" class="btn btn-light btn-sm" (click)="enableEdit()">
+            <i class="bi bi-pencil-square me-1"></i> تعديل
+          </button>
+          <div *ngIf="isEditing" class="d-flex gap-2">
+            <button class="btn btn-success btn-sm" (click)="saveChanges()">
+              <i class="bi bi-check-lg me-1"></i> حفظ
+            </button>
+            <button class="btn btn-secondary btn-sm" (click)="cancelEdit()">
+              <i class="bi bi-x-lg me-1"></i> إلغاء
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div class="row">
+        <!-- معلومات الخطاب -->
+        <div class="col-md-6 border-end">
+          <h6 class="fw-semibold text-primary mb-3">معلومات الخطاب</h6>
+
+          <div class="row mb-3">
+            <div class="col-sm-4">
+              <small class="text-muted">نوع القرار</small>
+              <div class="fw-semibold">{{ original?.decision?.title || '---' }}</div>
+            </div>
+            <div class="col-sm-4">
+              <small class="text-muted">الجهة المعدة</small>
+              <div class="fw-semibold">{{ original?.user?.fullname || '---' }}</div>
+            </div>
+            <div class="col-sm-4">
+              <small class="text-muted">الحالة</small>
+              <div class="fw-semibold">
+                <span [class]="getStatusBadgeClass(original?.status || '')">
+                  {{ getStatusText(original?.status || '') }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-sm-6">
+              <small class="text-muted">تاريخ الإنشاء</small>
+              <div class="fw-semibold">{{ original?.createdAt | date: 'd MMMM y, h:mm a' }}</div>
+            </div>
+            <div class="col-sm-6">
+              <small class="text-muted">آخر تحديث</small>
+              <div class="fw-semibold">{{ original?.updatedAt ? (original?.updatedAt | date: 'd MMMM y, h:mm a') : '—'
+                }}</div>
+            </div>
+          </div>
+
+          <!-- محتوى الخطاب -->
+          <div class="mb-3">
+            <small class="text-muted">محتوى الخطاب</small>
+            <div *ngIf="!isEditing" class="border rounded p-3 bg-light mt-2" [innerHTML]="previewHtml"></div>
+            <div *ngIf="isEditing" [formGroup]="form">
+              <textarea class="form-control mt-2" rows="8" formControlName="description"
+                placeholder="اكتب محتوى الخطاب هنا..." (input)="onDescriptionChange()"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- إجراءات المراجعة -->
+        <div class="col-md-6">
+          <h6 class="fw-semibold text-primary mb-3">إجراءات المراجعة</h6>
+
+          <!-- مسار المعالجة -->
+          <div class="mb-4">
+            <small class="text-muted d-block mb-2">مسار المعالجة</small>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="text-center">
+                <div [class]="getStepClass(1)" class="step-circle">1</div>
+                <small class="d-block mt-1">الإدارة العامة</small>
+              </div>
+              <div class="flex-grow-1 border-top"></div>
+              <div class="text-center">
+                <div [class]="getStepClass(2)" class="step-circle">2</div>
+                <small class="d-block mt-1">رئيس الجامعة</small>
+              </div>
+              <div class="flex-grow-1 border-top"></div>
+              <div class="text-center">
+                <div [class]="getStepClass(3)" class="step-circle">3</div>
+                <small class="d-block mt-1">الأرشيف</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- إجراءات القبول/الرفض -->
+          <div *ngIf="showReviewActions()" class="border rounded p-3 bg-light">
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">ملاحظات المراجعة</label>
+              <textarea class="form-control" rows="3" [(ngModel)]="reviewNotes"
+                placeholder="أضف أي ملاحظات أو تعليقات حول الخطاب..."></textarea>
+            </div>
+
+            <div class="d-flex justify-content-between gap-2">
+              <button class="btn btn-danger flex-fill" (click)="rejectLetter()" [disabled]="processing">
+                <i class="bi bi-x-circle me-1"></i> رفض الخطاب
+              </button>
+              <button class="btn btn-success flex-fill" (click)="approveLetter()" [disabled]="processing">
+                <i class="bi bi-check-circle me-1"></i> الموافقة على الخطاب
+              </button>
+            </div>
+          </div>
+
+          <!-- سجل الإجراءات -->
+          <div class="mt-4">
+            <small class="text-muted d-block mb-2">سجل الإجراءات</small>
+            <div class="border rounded p-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="small">تاريخ المعالجة:</span>
+                <span class="fw-semibold">
+                  {{ original?.date ? (original?.date | date:'d MMMM y, h:mm a') : 'لم تتم المعالجة بعد' }}
+                </span>
+              </div>
+              <div *ngIf="reviewNotes" class="mt-2">
+                <span class="small text-muted">آخر ملاحظة:</span>
+                <p class="mb-0 small">{{ reviewNotes }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- حالة التحميل -->
+<ng-template #loadTpl>
+  <div class="d-flex justify-content-center align-items-center" style="height:200px">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+</ng-template>

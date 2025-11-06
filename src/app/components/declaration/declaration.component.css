@@ -1,0 +1,199 @@
+/* declaration.component.css */
+.page-wrapper {
+  max-width: 1000px;
+  margin: 0 auto;
+  direction: rtl;
+}
+
+.card {
+  border: none;
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.12);
+}
+
+.card-header {
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.form-control, .form-select {
+  border: 2px solid #e9ecef;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.1);
+}
+
+.form-control.is-invalid, .form-select.is-invalid {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.1);
+}
+
+.form-control.is-valid, .form-select.is-valid {
+  border-color: #198754;
+  box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.1);
+}
+
+.editor-toolbar {
+  border: 2px solid #e9ecef;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.editor-toolbar .btn {
+  border: 1px solid #dee2e6;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.editor-toolbar .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.editor-area {
+  font-family: 'Sakkal Majalla', 'Traditional Arabic', 'Arial', sans-serif;
+  min-height: 250px;
+  border: 2px solid #e9ecef;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  background: #fff;
+  direction: rtl;
+  text-align: right;
+  line-height: 1.8;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  resize: vertical;
+}
+
+.editor-area:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.1);
+  outline: none;
+}
+
+.editor-area.is-invalid {
+  border-color: #dc3545;
+}
+
+.editor-area.is-valid {
+  border-color: #198754;
+}
+
+.editor-area:empty:before {
+  content: "ابدأ بكتابة محتوى الخطاب هنا...";
+  color: #6c757d;
+  font-style: italic;
+}
+
+.btn {
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-lg {
+  padding: 0.75rem 2rem;
+  font-size: 1.1rem;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+  border: none;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+}
+
+.btn-outline-secondary:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .page-content {
+    padding: 1rem !important;
+  }
+
+  .card-body {
+    padding: 1.5rem !important;
+  }
+
+  .editor-toolbar .btn {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+  }
+
+  .editor-area {
+    min-height: 200px;
+    padding: 1rem;
+    font-size: 1rem;
+  }
+
+  .btn-lg {
+    padding: 0.6rem 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .header-section h2 {
+    font-size: 1.5rem;
+  }
+
+  .editor-toolbar {
+    padding: 0.75rem !important;
+  }
+
+  .editor-toolbar .d-flex {
+    justify-content: center;
+  }
+
+  .form-control, .form-select {
+    font-size: 0.9rem;
+  }
+}
+
+/* Loading state */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Custom scrollbar for editor */
+.editor-area::-webkit-scrollbar {
+  width: 8px;
+}
+
+.editor-area::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.editor-area::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.editor-area::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Print styles */
+@media print {
+  .editor-toolbar, .btn {
+    display: none !important;
+  }
+
+  .editor-area {
+    border: none !important;
+    box-shadow: none !important;
+  }
+}

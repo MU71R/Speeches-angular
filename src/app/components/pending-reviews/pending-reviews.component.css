@@ -1,0 +1,33 @@
+.modal {
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-body {
+  font-family: "Cairo", sans-serif;
+  line-height: 1.9;
+  text-align: justify;
+  color: #333;
+}
+
+.modal-body .bg-light {
+  white-space: normal;
+}
+
+.btn-close:focus {
+  box-shadow: none;
+}

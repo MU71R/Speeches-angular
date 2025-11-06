@@ -1,0 +1,214 @@
+/* ===== الصفحة ===== */
+.container-fluid {
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+/* Make the title and button in the same line */
+.d-flex.justify-content-between {
+  flex-wrap: wrap;
+}
+
+.d-flex.justify-content-between h2 {
+  font-size: 24px;
+  margin-bottom: 0;
+}
+
+.d-flex.justify-content-between .btn {
+  min-width: 160px;
+}
+
+/* Improve the table */
+.table-responsive {
+  margin-top: 20px;
+}
+
+/* ===== Background for the modal ===== */
+.modal-backdrop-custom {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 1040;
+}
+
+/* ===== مودال ===== */
+.modal-dialog {
+  max-width: 500px;
+  margin: 50px auto;
+}
+
+
+
+.modal-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  transition: all 0.3s ease-in-out;
+}
+
+/* ===== هيدر المودال ===== */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: none;
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1e3a8a;
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+/* ===== بودي المودال ===== */
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* ===== الحقول ===== */
+.modal-body input.form-control,
+.modal-body select.form-select {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  transition: all 0.2s ease;
+}
+
+.modal-body input.form-control:focus,
+.modal-body select.form-select:focus {
+  border-color: #1e3a8a;
+  box-shadow: 0 0 6px rgba(30, 58, 138, 0.3);
+  outline: none;
+}
+
+/* ===== checkbox ===== */
+.form-check-input {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+/* ===== فوتر المودال ===== */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal-footer .btn {
+  min-width: 90px;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+.modal-footer .btn-primary {
+  background-color: #1e3a8a;
+  color: #fff;
+}
+
+.modal-footer .btn-primary:hover {
+  background-color: #162b6f;
+}
+
+.modal-footer .btn-secondary {
+  background-color: #6b7280;
+  color: #fff;
+}
+
+.modal-footer .btn-secondary:hover {
+  background-color: #4b5563;
+}
+
+/* ===== تأثير الفتح والإغلاق ===== */
+.modal-content.open {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.modal-content.closed {
+  transform: translateY(-30px);
+  opacity: 0;
+}
+
+/* ===== تحسين للجوال ===== */
+@media (max-width: 576px) {
+  .modal-dialog {
+    max-width: 95%;
+    margin: 20px auto;
+  }
+}
+
+/* ===== loading ===== */
+/* Overlay كامل */
+.loading-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Spinner */
+.loading-spinner {
+  width: 80px;
+  height: 80px;
+  position: relative;
+}
+
+.loading-spinner-inner,
+.loading-spinner-inner-inner {
+  box-sizing: border-box;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 8px solid transparent;
+  border-top-color: #1e3a8a;
+  animation: spin 1s linear infinite;
+}
+
+.loading-spinner-inner-inner {
+  border: 8px solid transparent;
+  border-top-color: #0284c7;
+  width: 60%;
+  height: 60%;
+  top: 20%;
+  left: 20%;
+  animation-duration: 0.7s;
+}
+
+/* Spin Animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Blur content when loading */
+.blur-content {
+  filter: blur(2px);
+  pointer-events: none;
+  user-select: none;
+}

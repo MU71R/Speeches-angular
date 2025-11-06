@@ -1,0 +1,75 @@
+<div class="login-page d-flex justify-content-center align-items-center vh-100">
+  <div class="overlay"></div>
+
+  <div class="card login-card shadow-lg p-4 text-center">
+    <div class="mb-4">
+      <div class="icon-circle mx-auto mb-3">
+        <i class="fa fa-file-text fs-1"></i>
+      </div>
+      <h4 class="fw-bold mb-1 text-primary">نظام إدارة خطابات الجامعية</h4>
+      <p class="text-muted mb-4">منصة إدارة خطابات الجامعية</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="login()" novalidate>
+      <div class="mb-3 text-end">
+        <label class="form-label fw-semibold">اسم المستخدم</label>
+        <input type="text" formControlName="username" class="form-control text-end" placeholder="أدخل اسم المستخدم"
+          [ngClass]="{
+            'is-invalid': f['username'].touched && f['username'].invalid
+          }" />
+        <div class="invalid-feedback text-end" *ngIf="f['username'].touched && f['username'].errors">
+          <span *ngIf="f['username'].errors['required']">اسم المستخدم مطلوب</span>
+          <span *ngIf="f['username'].errors['minlength']">اسم المستخدم يجب أن يكون 3 أحرف على الأقل</span>
+          <span *ngIf="f['username'].errors['maxlength']">اسم المستخدم يجب ألا يتجاوز 20 حرفًا</span>
+        </div>
+      </div>
+
+      <div class="mb-3 text-end position-relative">
+        <label class="form-label fw-semibold">كلمة المرور</label>
+        <input
+          [type]="showPassword ? 'text' : 'password'"
+          formControlName="password"
+          class="form-control text-end"
+          placeholder="أدخل كلمة المرور"
+          [ngClass]="{
+            'is-invalid': f['password'].touched && f['password'].invalid
+          }"
+        />
+        <i
+          class="fa password-toggle"
+          [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"
+          (click)="togglePassword()"
+          style="position: absolute; left: 10px; top: 41px; cursor: pointer;"
+        ></i>
+
+        <div class="invalid-feedback text-end" *ngIf="f['password'].touched && f['password'].errors">
+          <span *ngIf="f['password'].errors['required']">كلمة المرور مطلوبة</span>
+          <span *ngIf="f['password'].errors['minlength']">كلمة المرور يجب أن تكون 4 أحرف على الأقل</span>
+          <span *ngIf="f['password'].errors['maxlength']">كلمة المرور يجب ألا تتجاوز 20 حرفًا</span>
+        </div>
+      </div>
+
+
+      <button type="submit" class="btn btn-primary w-100 mt-2 py-2 fw-semibold" [disabled]="isLoading">
+        <span *ngIf="!isLoading">
+          <i class="fa fa-sign-in me-1"></i> تسجيل الدخول
+        </span>
+        <span *ngIf="isLoading">
+          <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          جاري تسجيل الدخول...
+        </span>
+      </button>
+
+      <div *ngIf="errorMessage" class="alert alert-danger mt-3 py-2">
+        {{ errorMessage }}
+      </div>
+    </form>
+
+    <hr class="my-4" />
+
+    <div class="text-muted small">
+      © 2025 جامعة قنا<br />
+      <i class="fa fa-bank"></i> الجهة المطوّرة: كلية الحاسبات والمعلومات
+    </div>
+  </div>
+</div>
