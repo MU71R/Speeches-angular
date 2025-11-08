@@ -5,7 +5,7 @@
     <div class="d-flex justify-content-between align-items-start mb-4">
       <div>
         <h2 class="fw-bold mb-1">إنشاء خطاب جديد</h2>
-        <p class="text-muted small">قم بكتابة نص الخطاب واستخدم أدوات التنسيق عند الحاجة</p>
+        <p class="text-muted small">قم بكتابة نص الخطاب</p>
       </div>
     </div>
 
@@ -16,60 +16,84 @@
         <!-- نوع الخطاب -->
         <div class="mb-3">
           <label for="type" class="form-label">نوع الخطاب *</label>
-          <select id="type" formControlName="type" class="form-select">
+          <select id="type" formControlName="type" class="form-select" [class.is-invalid]="showFieldError('type')">
             <option value="">اختر نوع الخطاب...</option>
             <option *ngFor="let t of messageTypes" [value]="t._id">{{ t.title }}</option>
           </select>
+
+          <!-- Validation Messages for Type -->
+          <div *ngIf="showFieldError('type')" class="invalid-feedback">
+            <div *ngIf="f['type'].errors?.['required']">نوع الخطاب مطلوب</div>
+          </div>
         </div>
 
         <!-- العنوان -->
         <div class="mb-3">
           <label for="title" class="form-label">عنوان الخطاب *</label>
-          <input
-            id="title"
-            type="text"
-            formControlName="title"
-            placeholder="مثال: طلب ترقية موظف"
-            class="form-control"
-          />
+          <input id="title" type="text" formControlName="title" placeholder="مثال: طلب ترقية موظف" class="form-control"
+            [class.is-invalid]="showFieldError('title')" (keydown)="preventLeadingSpace($event)"
+            (blur)="markFieldAsTouched('title')" />
+
+          <!-- Validation Messages for Title -->
+          <div *ngIf="showFieldError('title')" class="invalid-feedback">
+            <div *ngIf="f['title'].errors?.['required']">عنوان الخطاب مطلوب</div>
+            <div *ngIf="f['title'].errors?.['minlength']">العنوان يجب أن يكون على الأقل
+              {{f['title'].errors?.['minlength'].requiredLength}} حروف</div>
+            <div *ngIf="f['title'].errors?.['maxlength']">العنوان يجب أن لا يتجاوز
+              {{f['title'].errors?.['maxlength'].requiredLength}} حرف</div>
+            <div *ngIf="f['title'].errors?.['startsWithSpace']">لا يمكن أن يبدأ العنوان بمسافات</div>
+          </div>
+
+          <!-- Character Counter -->
+          <div class="form-text text-end" [class.text-danger]="f['title'].value?.length > 100">
+            {{f['title'].value?.length || 0}}/100
+          </div>
         </div>
 
         <!-- المحرر النصي -->
         <div class="mb-4">
           <label class="form-label">نص الخطاب *</label>
 
-          <div class="editor-toolbar mb-2">
-            <button type="button" (click)="format('bold')"><b>B</b></button>
-            <button type="button" (click)="format('italic')"><i>I</i></button>
-            <button type="button" (click)="format('underline')"><u>U</u></button>
-            <button type="button" (click)="format('insertUnorderedList')">•</button>
-            <button type="button" (click)="format('insertOrderedList')">1.</button>
-            <button type="button" (click)="format('createLink')">🔗</button>
-            <button type="button" (click)="clear()">🧹</button>
+          <textarea class="form-control" formControlName="content" rows="10" placeholder="اكتب نص الخطاب هنا..."
+            [class.is-invalid]="showFieldError('content')" (input)="onContentInput()"
+            (blur)="markFieldAsTouched('content')"></textarea>
+
+          <!-- Validation Messages for Content -->
+          <div *ngIf="showFieldError('content')" class="invalid-feedback">
+            <div *ngIf="f['content'].errors?.['required']">نص الخطاب مطلوب</div>
+            <div *ngIf="f['content'].errors?.['minlength']">نص الخطاب يجب أن يكون على الأقل
+              {{f['content'].errors?.['minlength'].requiredLength}} حرف</div>
+            <div *ngIf="f['content'].errors?.['maxlength']">نص الخطاب يجب أن لا يتجاوز
+              {{f['content'].errors?.['maxlength'].requiredLength}} حرف</div>
           </div>
 
-          <div
-            class="editor-area form-control"
-            contenteditable="true"
-            (input)="onEditorInput($event)"
-            (keydown)="onKeyDown($event)"
-            #editor
-          ></div>
-
-          <small class="text-muted d-block mt-1">
-            💡 استخدم أدوات التنسيق لتوضيح النقاط المهمة.
-          </small>
+          <!-- Character Counter for Content (without spaces) -->
+          <div class="form-text text-end" [class.text-danger]="getContentLengthWithoutSpaces() > 2000">
+            {{getContentLengthWithoutSpaces()}}/2000
+          </div>
         </div>
 
         <!-- الرسائل -->
         <div *ngIf="successMsg" class="alert alert-success">{{ successMsg }}</div>
         <div *ngIf="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
 
+        <!-- Form Level Validation Summary - يظهر فقط عند محاولة الإرسال -->
+        <div *ngIf="showFormSummary()" class="alert alert-warning">
+          <i class="bi bi-exclamation-triangle me-2"></i>
+          يرجى تصحيح الأخطاء في النموذج قبل الإرسال
+        </div>
+
         <!-- الأزرار -->
         <div class="d-flex justify-content-end gap-2 mt-3">
           <button type="button" class="btn btn-outline-secondary" (click)="onCancel()">إلغاء</button>
           <button type="submit" class="btn btn-primary" [disabled]="messageForm.invalid || submitting">
-            <i class="bi bi-send-fill me-1"></i> إرسال الخطاب
+            <span *ngIf="!submitting">
+              <i class="bi bi-send-fill me-1"></i> إرسال الخطاب
+            </span>
+            <span *ngIf="submitting">
+              <span class="spinner-border spinner-border-sm me-2"></span>
+              جاري الحفظ...
+            </span>
           </button>
         </div>
 

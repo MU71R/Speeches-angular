@@ -26,13 +26,12 @@
           <td>{{ item.decision?.title }}</td>
           <td>{{ item.date | date: 'd MMMM y' : '' : 'ar-EG' }}</td>
           <td>
-            <span
-              class="badge rounded-pill px-3 py-2"
-              [ngClass]="{
+            <span class="badge rounded-pill px-3 py-2" [ngClass]="{
                 'bg-primary-subtle text-primary': item.status === 'in_progress',
                 'bg-warning-subtle text-warning': item.status === 'pending',
                 'bg-success-subtle text-success': item.status === 'approved',
                 'bg-danger-subtle text-danger': item.status === 'rejected'
+<<<<<<< HEAD
               }"
             >
               {{
@@ -45,14 +44,25 @@
                   : item.status === 'rejected'
                   ? 'مرفوض'
                   : 'تم الرفض'
+=======
+              }">
+              {{
+              item.status === 'in_progress'
+              ? 'تحت المراجعة'
+              : item.status === 'pending'
+              ? 'معلق'
+              : item.status === 'approved'
+              ? 'تمت الموافقة'
+              : item.status === 'rejected'
+              ? 'مرفوض'
+              : 'تم الرفض'
+>>>>>>> 37011838df95e0bfe784172dbbc6681c479860ca
               }}
             </span>
           </td>
           <td>
-            <button
-              class="btn btn-sm btn-outline-dark d-flex align-items-center justify-content-center gap-1"
-              (click)="open(item._id)"
-            >
+            <button class="btn btn-sm btn-outline-dark d-flex align-items-center justify-content-center gap-1"
+              (click)="open(item._id)">
               <i class="bi bi-eye"></i> مراجعة
             </button>
           </td>
@@ -66,11 +76,7 @@
 </div>
 
 <!-- ✅ الموديول لازم يكون هنا (خارج الجدول والبطون) -->
-<div
-  class="modal fade show d-block bg-dark bg-opacity-50"
-  tabindex="-1"
-  *ngIf="selectedLetter"
->
+<div class="modal fade show d-block bg-dark bg-opacity-50" tabindex="-1" *ngIf="selectedLetter">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content border-0 rounded-4 shadow-lg">
       <div class="modal-header bg-dark text-white">
