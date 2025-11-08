@@ -22,6 +22,7 @@ export interface LetterDetail {
   _id: string;
   title: string;
   description: string;
+  notes: string;
   decision: Decision; // ✅ كائن كامل
   date: string;
   status: 'pending' | 'approved' | 'rejected' | 'in_progress';

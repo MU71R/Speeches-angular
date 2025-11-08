@@ -1,0 +1,176 @@
+<div class="container py-4 rtl">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h3 class="fw-bold mb-1">أرشيف {{ type }}</h3>
+      <p class="text-muted mb-0">
+        قائمة الخطابات والأوامر المعتمدة ضمن هذا التصنيف
+      </p>
+    </div>
+
+    <!-- زر الإضافة يظهر فقط إذا كان النوع مسموح -->
+    <button
+      *ngIf="isSpecialArchive()"
+      class="btn btn-primary"
+      (click)="openUploadModal()"
+    >
+      <i class="fa fa-upload me-1"></i> رفع أرشيف جديد
+    </button>
+  </div>
+
+  <hr />
+
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2 text-muted small">جارٍ تحميل الأرشيف...</p>
+  </div>
+
+  <div
+    *ngIf="!loading && letters.length === 0"
+    class="text-center text-muted py-5"
+  >
+    لا توجد خطابات في هذا الأرشيف حالياً.
+  </div>
+
+  <div class="row g-4" *ngIf="!loading && letters.length > 0">
+    <div class="col-md-4" *ngFor="let letter of letters">
+      <div class="card shadow-sm border-0 h-100 hover-card p-3">
+        <div class="card-body">
+          <h6 class="fw-bold mb-2 text-primary">
+            <i class="fa fa-envelope-paper me-1"></i> {{ letter.title }}
+          </h6>
+
+          <p class="small text-muted mb-1">
+            <i class="fa fa-person-circle me-1"></i>
+            {{ letter.user?.fullname || 'غير محدد' }}
+          </p>
+
+          <p class="small text-muted mb-1">
+            <i class="fa fa-calendar-date me-1"></i>
+            {{ letter.date | date: 'dd/MM/yyyy' }}
+          </p>
+
+
+          <p class="small text-muted mb-3">
+            <i class="fa fa-tag me-1"></i> {{ letter.letterType }}
+          </p>
+
+          <div
+            class="d-flex justify-content-between align-items-center mt-auto"
+          >
+            <button
+              class="btn btn-sm btn-outline-primary"
+              (click)="viewLetter(letter._id)"
+            >
+              <i class="fa fa-eye me-1"></i> عرض التفاصيل
+            </button>
+
+            <a
+              *ngIf="letter.attachment"
+              [href]="getAttachmentUrl(letter.attachment)"
+              target="_blank"
+              class="btn btn-sm btn-outline-success"
+            >
+              <i class="fa fa-download me-1"></i> تحميل المرفق
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- مودال رفع أرشيف جديد -->
+<div
+  *ngIf="showUploadModal"
+  class="modal fade show d-block"
+  tabindex="-1"
+  style="background-color: rgba(0,0,0,0.5);"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg rounded-4">
+      <div class="modal-header bg-light">
+        <h5 class="modal-title fw-bold">
+          <i class="fa fa-archive me-2"></i> رفع أرشيف قديم
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeUploadModal()"
+        ></button>
+      </div>
+
+      <div class="modal-body">
+        <form (ngSubmit)="uploadArchive()" #archiveForm="ngForm">
+          <div class="mb-3">
+            <label class="form-label">العنوان</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="newArchive.title"
+              name="title"
+              placeholder="مثال: قرار رقم 245 لسنة 2023"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">الوصف</label>
+            <textarea
+              class="form-control"
+              [(ngModel)]="newArchive.description"
+              name="description"
+              placeholder="وصف مختصر للقرار..."
+            ></textarea>
+          </div>
+
+          <!-- تقويم التاريخ -->
+          <div class="mb-3">
+            <label class="form-label">تاريخ القرار / الخطاب</label>
+            <input
+              type="date"
+              class="form-control"
+              [(ngModel)]="newArchive.date"
+              name="date"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">مستوى الأرشيف</label>
+        <select
+          class="form-select"
+          [(ngModel)]="newArchive.letterType"
+          name="letterType"
+        >
+          <option value="رئاسة الجمهورية">أرشيف رئاسة الجمهورية</option>
+          <option value="وزارة التعليم العالي">أرشيف وزارة التعليم العالي</option>
+          <option value="رئاسة الوزراء">أرشيف رئاسة الوزراء</option>
+        </select>
+            <small class="text-muted">مرئي لجميع المستخدمين أو مخصص</small>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">الملفات</label>
+            <input
+              type="file"
+              class="form-control"
+              (change)="onFileSelected($event)"
+            />
+          </div>
+
+          <div class="d-grid">
+            <button
+              type="submit"
+              class="btn btn-dark"
+              [disabled]="uploading"
+              (click)="uploadArchive()"
+            >
+              <i class="fa fa-cloud-upload me-1"></i>
+              رفع إلى الأرشيف
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

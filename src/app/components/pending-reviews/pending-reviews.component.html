@@ -31,7 +31,8 @@
               [ngClass]="{
                 'bg-primary-subtle text-primary': item.status === 'in_progress',
                 'bg-warning-subtle text-warning': item.status === 'pending',
-                'bg-success-subtle text-success': item.status === 'approved'
+                'bg-success-subtle text-success': item.status === 'approved',
+                'bg-danger-subtle text-danger': item.status === 'rejected'
               }"
             >
               {{
@@ -39,7 +40,11 @@
                   ? 'تحت المراجعة'
                   : item.status === 'pending'
                   ? 'معلق'
-                  : 'تمت الموافقة'
+                  : item.status === 'approved'
+                  ? 'تمت الموافقة'
+                  : item.status === 'rejected'
+                  ? 'مرفوض'
+                  : 'تم الرفض'
               }}
             </span>
           </td>

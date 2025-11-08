@@ -1,0 +1,84 @@
+/* خلفية الصفحة وتوسيط المحتوى */
+.archive-container {
+  animation: fadeIn 0.8s ease;
+}
+
+.title {
+  font-size: 2rem;
+  color: #2b2b2b;
+}
+
+.subtitle {
+  font-size: 0.95rem;
+}
+
+/* تصميم الكروت */
+.archive-card {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.archive-card:hover {
+  transform: translateY(-7px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* شكل الأيقونة */
+.icon-wrapper {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 2rem;
+  transition: all 0.3s ease;
+}
+
+.archive-card:hover .icon-wrapper {
+  transform: rotate(10deg) scale(1.1);
+}
+
+/* النص */
+.archive-card h5 {
+  margin-top: 10px;
+  font-weight: 600;
+  color: #333;
+}
+
+.archive-card p {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 5px;
+}
+
+/* تأثير الدخول */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* وضع داكن اختياري */
+@media (prefers-color-scheme: dark) {
+  .archive-card {
+    background: #1f1f1f;
+    color: #ddd;
+  }
+  .archive-card p {
+    color: #aaa;
+  }
+}

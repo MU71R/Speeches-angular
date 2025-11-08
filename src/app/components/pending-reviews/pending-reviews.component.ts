@@ -4,6 +4,7 @@ import { addLetter } from 'src/app/model/Letter';
 import { LetterService } from 'src/app/service/letter.service';
 import { Router } from '@angular/router';
 import { LetterDetail } from 'src/app/model/letter-detail';
+import { LoginService } from 'src/app/service/login.service';
 @Component({
   selector: 'app-pending-reviews',
   templateUrl: './pending-reviews.component.html',
@@ -18,12 +19,29 @@ export class PendingReviewsComponent implements OnInit {
     private letterService: LetterService,
     private sanitizer: DomSanitizer,
     private cdr: ChangeDetectorRef,
+    private loginService: LoginService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
+    if(this.loginService.getUserFromLocalStorage()?.role === 'UniversityPresident') {
+    this.getUniversityPresidentLetters();
+  }
+  else {
     this.getPendingLetters();
   }
+}
+
+  getUniversityPresidentLetters() {
+    this.letterService.getUniversityPresidentLetters().subscribe({
+      next: (res: any) => {
+        this.pendingList = res.data ? res.data : res;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('❌ API Error:', err)
+    });
+  }
+
 
   getPendingLetters() {
     this.letterService.getLetterTypes().subscribe({

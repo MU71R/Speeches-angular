@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { LetterService } from '../../service/letter.service';
-import { LetterDetail } from 'src/app/model/letter-detail';
+import { ActivatedRoute } from '@angular/router';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { ArchiveService } from 'src/app/service/archive.service';
+import { LoginService } from 'src/app/service/login.service';
+import { LetterService } from 'src/app/service/letter.service';
 
 @Component({
   selector: 'app-letter-detail',
@@ -12,64 +12,45 @@ import { LetterDetail } from 'src/app/model/letter-detail';
 })
 export class LetterDetailComponent implements OnInit {
   form!: FormGroup;
-  id!: string;
-  loading = false;
+  original: any = null;
+  previewHtml = '';
+  reviewNotes = '';
+  loading = true;
   processing = false;
   isEditing = false;
-  success = '';
-  error = '';
-  previewHtml?: SafeHtml;
-  original?: LetterDetail;
-  reviewNotes = '';
-  currentUserRole: string = 'supervisor'; // يجب استبدالها بالمستخدم الحقيقي
-
+  currentUserRole: string = '';
+  showPresidentOptions = false;
+  selectedOption: string = '';
   constructor(
-    private fb: FormBuilder,
     private route: ActivatedRoute,
-    private router: Router,
-    private svc: LetterService,
-    private sanitizer: DomSanitizer
+    private fb: FormBuilder,
+    private archiveService: ArchiveService,
+    private loginService: LoginService,
+    private letterService: LetterService,
   ) {}
 
   ngOnInit(): void {
-    this.id = this.route.snapshot.paramMap.get('id') || '';
-    this.initForm();
-
-    if (this.id) {
-      this.loadLetter();
-    }
+    this.form = this.fb.group({ title: [''], description: [''] });
+    const user = this.loginService.getUserFromLocalStorage();
+    this.currentUserRole = user?.role === 'UniversityPresident' ? 'UniversityPresident' : 'supervisor';
+    const letterId = this.route.snapshot.paramMap.get('id');
+    if (letterId) this.loadLetter(letterId);
   }
 
-  loadLetter() {
+  loadLetter(id: string) {
     this.loading = true;
-    this.svc.getLetter(this.id).subscribe({
-      next: (l) => {
-        if (l) {
-          this.original = l;
-          this.form.patchValue({
-            title: l.title,
-            description: l.description,
-            status: l.status || 'in_progress',
-            date: l.date ? new Date(l.date).toISOString().substring(0, 10) : '',
-          });
-          this.updatePreview(l.description || '');
-        }
+    this.letterService.getLetter(id).subscribe(
+      (res: any) => {
+        this.original = res.data || res;
+        this.form.patchValue({ title: this.original?.title || '', description: this.original?.description || '' });
+        this.previewHtml = this.original?.description || '';
         this.loading = false;
       },
-      error: () => {
-        this.error = 'فشل جلب الخطاب';
+      (err) => {
+        console.error(err);
         this.loading = false;
-      },
-    });
-  }
-
-  initForm() {
-    this.form = this.fb.group({
-      title: ['', [Validators.required, Validators.maxLength(300)]],
-      description: ['', [Validators.required]],
-      status: ['in_progress', Validators.required],
-      date: [''],
-    });
+      }
+    );
   }
 
   enableEdit() {
@@ -78,193 +59,118 @@ export class LetterDetailComponent implements OnInit {
 
   cancelEdit() {
     this.isEditing = false;
-    if (this.original) {
-      this.form.patchValue({
-        title: this.original.title,
-        description: this.original.description,
-        status: this.original.status || 'in_progress',
-        date: this.original.date
-          ? new Date(this.original.date).toISOString().substring(0, 10)
-          : '',
-      });
-      this.updatePreview(this.original.description || '');
-    }
-  }
-
-  onDescriptionChange() {
-    const v = this.form.value.description || '';
-    this.updatePreview(v);
-  }
-
-  updatePreview(html: string) {
-    const cleanedHtml = html.replace(/data-[^=]+="[^"]*"/g, '');
-    this.previewHtml = this.sanitizer.bypassSecurityTrustHtml(cleanedHtml);
+    this.form.patchValue({ title: this.original?.title, description: this.original?.description });
   }
 
   saveChanges() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-
-    const payload: Partial<LetterDetail> = {
-      title: this.form.value.title,
-      description: this.form.value.description,
-      status: this.form.value.status,
-      date: this.form.value.date
-        ? new Date(this.form.value.date).toISOString()
-        : undefined,
-    };
-
-    this.loading = true;
-    this.svc.updateLetter(this.id, payload).subscribe({
-      next: () => {
-        this.original = { ...this.original!, ...payload } as LetterDetail;
+    this.processing = true;
+    this.letterService.updateLetter(this.original._id, this.form.value).subscribe(
+      () => {
+        this.original = { ...this.original, ...this.form.value };
+        this.previewHtml = this.form.value.description;
         this.isEditing = false;
-        this.success = 'تم حفظ التغييرات';
-        this.loading = false;
+        this.processing = false;
       },
-      error: () => {
-        this.error = 'فشل الحفظ';
-        this.loading = false;
-      },
-    });
+      (err) => {
+        console.error(err);
+        this.processing = false;
+      }
+    );
   }
 
-  // إجراءات المراجعة
+  onDescriptionChange() {
+    this.previewHtml = this.form.value.description;
+  }
+
   approveLetter() {
     this.processing = true;
+    const newStatus = this.currentUserRole === 'supervisor' ? 'pending' : 'approved';
+    const updateObs =
+      this.currentUserRole === 'supervisor'
+        ? this.letterService.updateStatusBySupervisor(this.original._id, newStatus)
+        : this.letterService.updateStatusByUniversityPresident(this.original._id, newStatus, 'realscan');
 
-    if (this.currentUserRole === 'supervisor') {
-      this.svc.updateStatusBySupervisor(this.id, 'approved').subscribe({
-        next: () => {
-          this.handleSuccess('تم الموافقة على الخطاب بنجاح');
-        },
-        error: () => {
-          this.handleError('فشل في الموافقة على الخطاب');
-        },
-      });
-    } else if (this.currentUserRole === 'UniversityPresident') {
-      this.svc
-        .updateStatusByUniversityPresident(this.id, 'approved')
-        .subscribe({
-          next: () => {
-            this.handleSuccess('تم الموافقة على الخطاب بنجاح');
-          },
-          error: () => {
-            this.handleError('فشل في الموافقة على الخطاب');
-          },
-        });
-    }
+    updateObs.subscribe(
+      () => {
+        this.original.status = newStatus;
+        this.processing = false;
+      },
+      (err) => {
+        console.error(err);
+        this.processing = false;
+      }
+    );
   }
 
   rejectLetter() {
     this.processing = true;
+    const updateObs =
+      this.currentUserRole === 'supervisor'
+        ? this.letterService.updateStatusBySupervisor(this.original._id, 'rejected')
+        : this.letterService.updateStatusByUniversityPresident(this.original._id, 'rejected', 'realscan');
 
-    if (this.currentUserRole === 'supervisor') {
-      this.svc.updateStatusBySupervisor(this.id, 'rejected').subscribe({
-        next: () => {
-          this.handleSuccess('تم رفض الخطاب بنجاح');
-        },
-        error: () => {
-          this.handleError('فشل في رفض الخطاب');
-        },
-      });
-    } else if (this.currentUserRole === 'UniversityPresident') {
-      this.svc
-        .updateStatusByUniversityPresident(this.id, 'rejected')
-        .subscribe({
-          next: () => {
-            this.handleSuccess('تم رفض الخطاب بنجاح');
-          },
-          error: () => {
-            this.handleError('فشل في رفض الخطاب');
-          },
-        });
-    }
+    updateObs.subscribe(
+      () => {
+        this.original.status = 'rejected';
+        this.processing = false;
+      },
+      (err) => {
+        console.error(err);
+        this.processing = false;
+      }
+    );
   }
 
-  private handleSuccess(message: string) {
-    this.success = message;
-    this.processing = false;
-    this.loadLetter();
-    setTimeout(() => this.router.navigate(['/letters']), 2000);
+  approveFinal(option: 'realscan' | 'signature') {
+    this.processing = true;
+    const payload = { status: 'approved', approvalType: option };
+
+    this.letterService.updateStatusByUniversityPresident(this.original._id, payload.status, payload.approvalType).subscribe(
+      () => {
+        this.original.status = 'approved';
+        this.processing = false;
+        alert(option === 'realscan' ? 'تم اعتماد الخطاب باستخدام Real Scan ✅' : 'تم اعتماد الخطاب بالتوقيع الإلكتروني ✍️');
+      },
+      (err) => {
+        console.error(err);
+        this.processing = false;
+      }
+    );
   }
 
-  private handleError(message: string) {
-    this.error = message;
-    this.processing = false;
-  }
-
-  // دوال مساعدة للعرض
   getStatusBadgeClass(status: string): string {
-    const classes: { [key: string]: string } = {
-      pending: 'badge bg-warning',
-      approved: 'badge bg-success',
-      rejected: 'badge bg-danger',
-      in_progress: 'badge bg-info',
-    };
-    return classes[status] || 'badge bg-secondary';
+    switch (status) {
+      case 'approved': return 'badge bg-success';
+      case 'pending': return 'badge bg-warning text-dark';
+      case 'rejected': return 'badge bg-danger';
+      case 'in_progress': return 'badge bg-info text-dark';
+      default: return 'badge bg-secondary';
+    }
   }
 
   getStatusText(status: string): string {
-    const statusMap: { [key: string]: string } = {
-      pending: 'قيد الانتظار',
-      approved: 'مقبول',
-      rejected: 'مرفوض',
-      in_progress: 'قيد المعالجة',
-    };
-    return statusMap[status] || status;
+    switch (status) {
+      case 'approved': return 'تمت الموافقة';
+      case 'pending': return 'قيد المراجعة لدى الرئيس';
+      case 'rejected': return 'مرفوض';
+      case 'in_progress': return 'قيد المعالجة';
+      default: return 'غير محدد';
+    }
   }
 
   getStepClass(step: number): string {
-    const status = this.original?.status;
-
-    if (step === 1) return 'bg-primary text-white';
-
-    if (step === 2) {
-      if (
-        status === 'pending' ||
-        status === 'approved' ||
-        status === 'rejected'
-      ) {
-        return 'bg-primary text-white';
-      }
-    }
-
-    if (step === 3) {
-      if (status === 'approved') {
-        return 'bg-success text-white';
-      }
-    }
-
-    return 'bg-light text-muted';
+    const status = this.original?.status || '';
+    if (status === 'in_progress' && step === 1) return 'step-circle active';
+    if (status === 'pending' && step <= 2) return 'step-circle active';
+    if (status === 'approved' && step <= 3) return 'step-circle active';
+    if (status === 'rejected') return 'step-circle rejected';
+    return 'step-circle';
   }
 
   showReviewActions(): boolean {
-    const status = this.original?.status;
-
-    if (this.currentUserRole === 'supervisor' && status === 'in_progress') {
-      return true;
-    }
-
-    if (
-      this.currentUserRole === 'UniversityPresident' &&
-      status === 'pending'
-    ) {
-      return true;
-    }
-
-    return false;
-  }
-
-  // دالة للحصول على النص المناسب للزر حسب الصلاحية
-  getActionButtonText(): string {
-    if (this.currentUserRole === 'supervisor') {
-      return 'إرسال لرئيس الجامعة';
-    } else if (this.currentUserRole === 'UniversityPresident') {
-      return 'إنهاء المعالجة';
-    }
-    return 'معالجة الخطاب';
+    return (
+      (this.currentUserRole === 'supervisor' && this.original?.status === 'in_progress') ||
+      (this.currentUserRole === 'UniversityPresident' && this.original?.status === 'pending')
+    );
   }
 }

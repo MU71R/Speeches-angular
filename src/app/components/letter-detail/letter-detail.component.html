@@ -54,8 +54,7 @@
             </div>
             <div class="col-sm-6">
               <small class="text-muted">آخر تحديث</small>
-              <div class="fw-semibold">{{ original?.updatedAt ? (original?.updatedAt | date: 'd MMMM y, h:mm a') : '—'
-                }}</div>
+              <div class="fw-semibold">{{ original?.updatedAt ? (original?.updatedAt | date: 'd MMMM y, h:mm a') : '—' }}</div>
             </div>
           </div>
 
@@ -95,21 +94,46 @@
             </div>
           </div>
 
-          <!-- إجراءات القبول/الرفض -->
-          <div *ngIf="showReviewActions()" class="border rounded p-3 bg-light">
+          <!-- قسم الإجراءات -->
+          <div *ngIf="showReviewActions()" class="border rounded p-3 bg-light mt-4">
             <div class="mb-3">
-              <label class="form-label small fw-semibold">ملاحظات المراجعة</label>
-              <textarea class="form-control" rows="3" [(ngModel)]="reviewNotes"
-                placeholder="أضف أي ملاحظات أو تعليقات حول الخطاب..."></textarea>
+              <label class="form-label fw-semibold small">ملاحظات</label>
+              <textarea class="form-control" rows="3" [(ngModel)]="reviewNotes" placeholder="أدخل ملاحظاتك هنا..."></textarea>
             </div>
 
-            <div class="d-flex justify-content-between gap-2">
+            <!-- أزرار المراجع -->
+            <div *ngIf="currentUserRole === 'supervisor' && original?.status === 'in_progress'" class="d-flex justify-content-between gap-2">
               <button class="btn btn-danger flex-fill" (click)="rejectLetter()" [disabled]="processing">
                 <i class="bi bi-x-circle me-1"></i> رفض الخطاب
               </button>
               <button class="btn btn-success flex-fill" (click)="approveLetter()" [disabled]="processing">
-                <i class="bi bi-check-circle me-1"></i> الموافقة على الخطاب
+                <i class="bi bi-check-circle me-1"></i> موافقة (إرسال لرئيس الجامعة)
               </button>
+            </div>
+
+            <!-- أزرار رئيس الجامعة -->
+            <div *ngIf="currentUserRole === 'UniversityPresident' && original?.status === 'pending'">
+              <div *ngIf="!showPresidentOptions" class="d-flex flex-column gap-2">
+                <button class="btn btn-danger" (click)="rejectLetter()" [disabled]="processing">
+                  <i class="bi bi-x-circle me-1"></i> رفض الخطاب
+                </button>
+                <button class="btn btn-success" (click)="showPresidentOptions = true" [disabled]="processing">
+                  <i class="bi bi-check-circle me-1"></i> موافقة
+                </button>
+              </div>
+
+              <!-- الخيارات بعد الضغط على "موافقة" -->
+              <div *ngIf="showPresidentOptions" class="d-flex flex-column gap-2">
+                <button class="btn btn-success" (click)="approveFinal('realscan')" [disabled]="processing">
+                  <i class="bi bi-check-circle me-1"></i> موافقة باستخدام Real Scan
+                </button>
+                <button class="btn btn-outline-primary" (click)="approveFinal('signature')" [disabled]="processing">
+                  <i class="bi bi-pen me-1"></i> موافقة بالتوقيع الإلكتروني
+                </button>
+                <button class="btn btn-secondary" (click)="showPresidentOptions = false">
+                  <i class="bi bi-arrow-return-right me-1"></i> رجوع
+                </button>
+              </div>
             </div>
           </div>
 
@@ -119,9 +143,7 @@
             <div class="border rounded p-3">
               <div class="d-flex justify-content-between align-items-center">
                 <span class="small">تاريخ المعالجة:</span>
-                <span class="fw-semibold">
-                  {{ original?.date ? (original?.date | date:'d MMMM y, h:mm a') : 'لم تتم المعالجة بعد' }}
-                </span>
+                <span class="fw-semibold">{{ original?.updatedAt ? (original?.updatedAt | date:'d MMMM y, h:mm a') : 'لم تتم المعالجة بعد' }}</span>
               </div>
               <div *ngIf="reviewNotes" class="mt-2">
                 <span class="small text-muted">آخر ملاحظة:</span>
@@ -135,7 +157,6 @@
   </div>
 </div>
 
-<!-- حالة التحميل -->
 <ng-template #loadTpl>
   <div class="d-flex justify-content-center align-items-center" style="height:200px">
     <div class="spinner-border text-primary" role="status">

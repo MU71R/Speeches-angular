@@ -42,7 +42,7 @@ export class LetterService {
       .pipe(map((res) => res.data));
   }
 
-  // ✅ الدوال الجديدة المضافة
+  // الدوال الجديدة المضافة
 
   // تحديث حالة الخطاب بواسطة المشرف
   updateStatusBySupervisor(
@@ -60,12 +60,13 @@ export class LetterService {
   // تحديث حالة الخطاب بواسطة رئيس الجامعة
   updateStatusByUniversityPresident(
     id: string,
-    status: string
+    status: string,
+    approvalType: string
   ): Observable<LetterDetail> {
     return this.http
-      .put<{ success: boolean; data: LetterDetail }>(
+      .put<{ success: boolean; data: LetterDetail, approvalType: string }>(
         `${this.baseUrl}/update-status-university-president/${id}`,
-        { status }
+        { status, approvalType }
       )
       .pipe(map((r) => r.data));
   }
@@ -129,5 +130,23 @@ export class LetterService {
       in_progress: 'قيد المعالجة',
     };
     return statusMap[status] || status;
+  }
+
+  updateLetterStatus(id: string, status: string, notes: string): Observable<LetterDetail> {
+    return this.http
+      .put<{ success: boolean; data: LetterDetail }>(
+        `${this.baseUrl}/update-letter-status/${id}`,
+        { status, notes }
+      )
+      .pipe(map((r) => r.data));
+  }
+
+  addDigitalSignature(id: string, status: string): Observable<LetterDetail> {
+    return this.http
+      .put<{ success: boolean; data: LetterDetail }>(
+        `${this.baseUrl}/add-digital-signature/${id}`,
+        { status }
+      )
+      .pipe(map((r) => r.data));
   }
 }

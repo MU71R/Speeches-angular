@@ -7,6 +7,8 @@ import { DeclarationComponent } from './components/declaration/declaration.compo
 import { LayoutComponent } from './components/layout/layout.component';
 import { PendingReviewsComponent } from './components/pending-reviews/pending-reviews.component';
 import { LetterDetailComponent } from './components/letter-detail/letter-detail.component';
+import { ArchiveComponent } from './components/archive/archive.component';
+import { ArchiveDetailComponent } from './components/archive-detail/archive-detail.component';
 
 const routes: Routes = [
   // صفحة تسجيل الدخول مستقلة
@@ -22,7 +24,8 @@ const routes: Routes = [
       { path: 'declaration', component: DeclarationComponent },
       { path:  'pending-reviews', component:PendingReviewsComponent},
       { path: 'letter-details/:id', component:LetterDetailComponent },
-
+      { path: 'archive', component:ArchiveComponent },
+      { path: 'archive-detail', component:ArchiveDetailComponent },
       // الصفحة الرئيسية داخل النظام
       { path: '', redirectTo: 'department', pathMatch: 'full' },
     ],

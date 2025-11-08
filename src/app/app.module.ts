@@ -21,6 +21,9 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { LayoutComponent } from './components/layout/layout.component';
 import { PendingReviewsComponent } from './components/pending-reviews/pending-reviews.component';
 import { LetterDetailComponent } from './components/letter-detail/letter-detail.component';
+import { ArchiveComponent } from './components/archive/archive.component';
+import { ArchiveDetailComponent } from './components/archive-detail/archive-detail.component';
+
 
 
 @NgModule({
@@ -34,6 +37,8 @@ import { LetterDetailComponent } from './components/letter-detail/letter-detail.
     LayoutComponent,
     PendingReviewsComponent,
     LetterDetailComponent,
+    ArchiveComponent,
+    ArchiveDetailComponent,
   ],
   imports: [
     BrowserModule,
