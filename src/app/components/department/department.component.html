@@ -8,227 +8,437 @@
 </div>
 
 <!-- محتوى الصفحة -->
-<div class="container-fluid" dir="rtl" [class.blur-content]="loading">
+<div class="container-fluid page-container" dir="rtl" [class.blur-content]="loading">
 
   <!-- Tabs -->
-  <ul class="nav nav-tabs my-3">
+  <ul class="nav nav-tabs responsive-tabs">
     <li class="nav-item">
-      <a class="nav-link" [class.active]="activeTab === 'users'" (click)="activeTab = 'users'">المستخدمون</a>
+      <a class="nav-link" [class.active]="activeTab === 'users'" (click)="activeTab = 'users'">
+        <i class="fas fa-users d-none d-sm-inline me-1"></i>
+        <span>المستخدمون</span>
+      </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" [class.active]="activeTab === 'sectors'" (click)="activeTab = 'sectors'">القطاعات</a>
+      <a class="nav-link" [class.active]="activeTab === 'sectors'" (click)="activeTab = 'sectors'">
+        <i class="fas fa-building d-none d-sm-inline me-1"></i>
+        <span>القطاعات</span>
+      </a>
     </li>
   </ul>
 
   <!-- Users Tab -->
-  <div *ngIf="activeTab === 'users'" class="d-flex flex-column gap-3">
+  <div *ngIf="activeTab === 'users'" class="tab-content-wrapper">
 
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-3 mt-2">
-      <h2 class="fw-bold m-0">إدارة المستخدمين</h2>
-      <button class="btn btn-primary" (click)="openAddDepartment()">
-        <i class="fas fa-plus-circle me-2"></i> إضافة مستخدم جديد
+    <div class="section-header">
+      <h2 class="section-title">
+        <i class="fas fa-users me-2"></i>
+        إدارة المستخدمين
+      </h2>
+      <button class="btn btn-primary add-btn" (click)="openAddDepartment()">
+        <i class="fas fa-plus-circle me-1 me-md-2"></i>
+        <span class="d-none d-md-inline">إضافة مستخدم جديد</span>
+        <span class="d-md-none">إضافة</span>
       </button>
     </div>
 
     <!-- Filters -->
-    <div class="d-flex flex-column flex-md-row align-items-start gap-2 mb-3">
-      <input type="text" class="form-control w-auto" placeholder="البحث عن مستخدم..." [(ngModel)]="searchTerm" (input)="applyFilters()" />
-      <select class="form-select w-auto" [(ngModel)]="selectedSector" (change)="applyFilters()">
-        <option value="">جميع الأقسام</option>
-        <option *ngFor="let s of sectors" [value]="s._id">{{ s.sector }}</option>
-      </select>
-      <button class="btn btn-outline-secondary" (click)="resetFilters()">
-        <i class="fa fa-rotate-left me-1"></i> إعادة تعيين
+    <div class="filters-section">
+      <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" class="form-control search-input" placeholder="البحث عن مستخدم..." [(ngModel)]="searchTerm"
+          (input)="applyFilters()" />
+      </div>
+
+      <div class="custom-select-wrapper filter-select">
+        <select class="form-select custom-select" [(ngModel)]="selectedSector" (change)="applyFilters()">
+          <option value="">جميع الأقسام</option>
+          <option *ngFor="let s of sectors" [value]="s._id">{{ s.sector }}</option>
+        </select>
+        <div class="select-arrow">
+          <i class="fas fa-chevron-down"></i>
+        </div>
+      </div>
+
+      <button class="btn btn-outline-secondary reset-btn" (click)="resetFilters()">
+        <i class="fa fa-rotate-left me-1"></i>
+        <span class="d-none d-sm-inline">إعادة تعيين</span>
       </button>
     </div>
 
     <!-- Users Table -->
-    <div class="table-responsive shadow-sm rounded bg-white">
-      <table class="table table-hover text-center align-middle mb-0">
-        <thead class="table-light">
-          <tr>
-            <th>القسم</th>
-            <th>اسم المستخدم</th>
-            <th>الاسم الكامل</th>
-            <th>الدور</th>
-            <th>الحالة</th>
-            <th>الإجراءات</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let user of filteredList">
-            <td>{{ user.sectorName || '---' }}</td>
-            <td>{{ user.username || '---' }}</td>
-            <td>{{ user.fullname || '---' }}</td>
-            <td>
-              <span class="badge px-3 py-2"
-                [ngClass]="user.role === 'preparer' ? 'bg-primary' :
+    <div class="table-container">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-header">
+            <tr>
+              <th class="text-center">القسم</th>
+              <th class="text-center">اسم المستخدم</th>
+              <th class="text-center">الاسم الكامل</th>
+              <th class="text-center">الدور</th>
+              <th class="text-center">الحالة</th>
+              <th class="text-center">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of filteredList" class="table-row">
+              <td class="text-center" data-label="القسم">{{ user.sectorName || '---' }}</td>
+              <td class="text-center" data-label="اسم المستخدم">{{ user.username || '---' }}</td>
+              <td class="text-center" data-label="الاسم الكامل">{{ user.fullname || '---' }}</td>
+              <td class="text-center" data-label="الدور">
+                <span class="badge role-badge" [ngClass]="user.role === 'preparer' ? 'bg-primary' :
                            user.role === 'supervisor' ? 'bg-secondary' :
                            user.role === 'UniversityPresident' ? 'bg-success' :
                            'bg-danger'">
-                {{ user.role === 'preparer' ? 'مستخدم' :
-                   user.role === 'supervisor' ? 'المراجع' :
-                   user.role === 'UniversityPresident' ? 'رئيس الجامعة' :
-                   'المدير' }}
-              </span>
-            </td>
-            <td>
-              <span class="badge px-3 py-2" [ngClass]="user.status === 'active' ? 'bg-success' : 'bg-danger'">
-                {{ user.status === 'active' ? 'نشط' : 'معطل' }}
-              </span>
-            </td>
-            <td class="d-flex justify-content-center gap-2">
-              <button class="btn btn-sm btn-warning" (click)="openEditUser(user)" title="تعديل المستخدم">
-                <i class="fa fa-pencil"></i>
-              </button>
-              <button class="btn btn-sm btn-success" (click)="toggleStatus(user)" title="تغيير الحالة">
-                <i class="fa fa-user-check"></i>
-              </button>
-              <button class="btn btn-sm btn-danger" (click)="deleteUser(user)" title="حذف">
-                <i class="fa fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div *ngIf="filteredList.length === 0" class="text-center py-3 text-muted">
-        لا يوجد مستخدمون لعرضهم
+                  {{ user.role === 'preparer' ? 'مستخدم' :
+                  user.role === 'supervisor' ? 'المراجع' :
+                  user.role === 'UniversityPresident' ? 'رئيس الجامعة' :
+                  'المدير' }}
+                </span>
+              </td>
+              <td class="text-center" data-label="الحالة">
+                <span class="badge status-badge" [ngClass]="user.status === 'active' ? 'bg-success' : 'bg-danger'">
+                  {{ user.status === 'active' ? 'نشط' : 'معطل' }}
+                </span>
+              </td>
+              <td class="text-center actions-cell" data-label="الإجراءات">
+                <div class="actions-wrapper">
+                  <button class="btn btn-sm btn-warning action-btn" (click)="openEditUser(user)" title="تعديل المستخدم">
+                    <i class="fa fa-pencil"></i>
+                  </button>
+                  <button class="btn btn-sm btn-success action-btn" (click)="toggleStatus(user)" title="تغيير الحالة">
+                    <i class="fa fa-user-check"></i>
+                  </button>
+                  <button class="btn btn-sm btn-danger action-btn" (click)="deleteUser(user)" title="حذف">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div *ngIf="filteredList.length === 0" class="empty-state">
+        <i class="fas fa-users empty-icon"></i>
+        <p class="empty-text">لا يوجد مستخدمون لعرضهم</p>
       </div>
     </div>
   </div>
 
   <!-- Sectors Tab -->
-  <div *ngIf="activeTab === 'sectors'" class="d-flex flex-column gap-3">
-    <div class="d-flex justify-content-between align-items-center mb-3 mt-2">
-      <h2 class="fw-bold m-0">إدارة القطاعات</h2>
-      <button class="btn btn-secondary" (click)="openSectorForm()">
-        <i class="fas fa-plus-circle me-2"></i> إضافة قطاع
+  <div *ngIf="activeTab === 'sectors'" class="tab-content-wrapper">
+    <div class="section-header">
+      <h2 class="section-title">
+        <i class="fas fa-building me-2"></i>
+        إدارة القطاعات
+      </h2>
+      <button class="btn btn-secondary add-btn" (click)="openSectorForm()">
+        <i class="fas fa-plus-circle me-1 me-md-2"></i>
+        <span class="d-none d-md-inline">إضافة قطاع</span>
+        <span class="d-md-none">إضافة</span>
       </button>
     </div>
 
-    <div class="table-responsive shadow-sm rounded bg-white">
-      <table class="table table-hover text-center align-middle mb-0">
-        <thead class="table-light">
-          <tr>
-            <th>اسم القطاع</th>
-            <th>الإجراءات</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let s of sectors">
-            <td>{{ s.sector }}</td>
-            <td class="d-flex justify-content-center gap-2">
-              <button class="btn btn-sm btn-warning" (click)="editSector(s)">
-                <i class="fa fa-pencil"></i>
-              </button>
-              <button class="btn btn-sm btn-danger" (click)="deleteSector(s._id)">
-                <i class="fa fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div *ngIf="sectors.length === 0" class="text-center py-3 text-muted">
-        لا يوجد قطاعات لعرضها
+    <div class="table-container">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-header">
+            <tr>
+              <th class="text-center">اسم القطاع</th>
+              <th class="text-center">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let s of sectors" class="table-row">
+              <td class="text-center" data-label="اسم القطاع">{{ s.sector }}</td>
+              <td class="text-center actions-cell" data-label="الإجراءات">
+                <div class="actions-wrapper">
+                  <button class="btn btn-sm btn-warning action-btn" (click)="editSector(s)">
+                    <i class="fa fa-pencil"></i>
+                  </button>
+                  <button class="btn btn-sm btn-danger action-btn" (click)="deleteSector(s._id)">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div *ngIf="sectors.length === 0" class="empty-state">
+        <i class="fas fa-building empty-icon"></i>
+        <p class="empty-text">لا يوجد قطاعات لعرضها</p>
       </div>
     </div>
   </div>
 
   <!-- ============== Modals ============== -->
 
-  <!-- Add/Edit User -->
-  <div *ngIf="showAddDepartmentModal" class="modal fade show d-block modal-backdrop-custom">
-    <div class="modal-dialog">
-      <div class="modal-content d-flex flex-column gap-3">
-        <div class="modal-header">
-          <h5 class="modal-title">{{ newDepartment._id ? 'تعديل المستخدم' : 'إضافة مستخدم جديد' }}</h5>
-          <button type="button" class="btn-close" (click)="closeAddDepartment()"></button>
-        </div>
-        <div class="modal-body d-flex flex-column gap-3">
-          <label>القطاع:</label>
-          <select class="form-select" [(ngModel)]="newDepartment.sector">
-            <option value="" disabled>اختر القطاع</option>
-            <option *ngFor="let s of sectors" [value]="s._id">{{ s.sector }}</option>
-          </select>
-
-          <label>اسم المستخدم:</label>
-          <input class="form-control" [(ngModel)]="newDepartment.username" placeholder="اسم المستخدم" />
-
-          <label>الاسم الكامل:</label>
-          <input class="form-control" [(ngModel)]="newDepartment.fullname" placeholder="الاسم الكامل" />
-
-          <label>كلمة المرور:</label>
-          <input type="password" class="form-control" [(ngModel)]="newDepartment.password" placeholder="كلمة المرور" />
-
-          <label>الدور:</label>
-          <select class="form-select" [(ngModel)]="newDepartment.role">
-            <option value="preparer">مستخدم</option>
-            <option value="supervisor">المراجع</option>
-            <option value="UniversityPresident">رئيس الجامعة</option>
-            <option value="admin">المدير</option>
-          </select>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" (click)="closeAddDepartment()">إلغاء</button>
-          <button class="btn btn-primary" (click)="saveDepartment()">حفظ</button>
+  <!-- Add User -->
+  <div *ngIf="showAddDepartmentModal" class="modal-backdrop-custom">
+    <div class="modal-center-container">
+      <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content custom-modal">
+          <div class="modal-header modal-header-custom">
+            <h5 class="modal-title">
+              <i class="fas fa-user-plus me-2"></i>
+              إضافة مستخدم جديد
+            </h5>
+            <button type="button" class="btn-close-custom" (click)="closeAddDepartment()">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form class="modal-form">
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="form-label">القطاع <span class="text-danger">*</span></label>
+                    <div class="custom-select-wrapper">
+                      <select class="form-control form-control-custom custom-select" [(ngModel)]="newDepartment.sector"
+                        name="sector" required>
+                        <option value="" disabled selected>اختر القطاع</option>
+                        <option *ngFor="let s of sectors" [value]="s._id">{{ s.sector }}</option>
+                      </select>
+                      <div class="select-arrow">
+                        <i class="fas fa-chevron-down"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="form-label">اسم المستخدم <span class="text-danger">*</span></label>
+                    <input class="form-control form-control-custom" [(ngModel)]="newDepartment.username" name="username"
+                      placeholder="اسم المستخدم" required />
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="form-label">الاسم الكامل <span class="text-danger">*</span></label>
+                    <input class="form-control form-control-custom" [(ngModel)]="newDepartment.fullname" name="fullname"
+                      placeholder="الاسم الكامل" required />
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="form-label">الدور <span class="text-danger">*</span></label>
+                    <div class="custom-select-wrapper">
+                      <select class="form-control form-control-custom custom-select" [(ngModel)]="newDepartment.role"
+                        name="role" required>
+                        <option value="preparer">مستخدم</option>
+                        <option value="supervisor">المراجع</option>
+                        <option value="UniversityPresident">رئيس الجامعة</option>
+                        <option value="admin">المدير</option>
+                      </select>
+                      <div class="select-arrow">
+                        <i class="fas fa-chevron-down"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="form-group">
+                    <label class="form-label">كلمة المرور <span class="text-danger">*</span></label>
+                    <div class="password-input-group">
+                      <input [type]="showPassword ? 'text' : 'password'"
+                        class="form-control form-control-custom password-field" [(ngModel)]="newDepartment.password"
+                        name="password" placeholder="كلمة المرور" required />
+                      <button type="button" class="password-toggle-btn" (click)="togglePassword('add')">
+                        <i class="fa" [class.fa-eye]="!showPassword" [class.fa-eye-slash]="showPassword"></i>
+                      </button>
+                    </div>
+                    <div class="form-text">يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل</div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer modal-footer-custom">
+            <button class="btn btn-cancel" (click)="closeAddDepartment()">إلغاء</button>
+            <button class="btn btn-save" (click)="saveDepartment()">
+              <i class="fas fa-save me-2"></i> حفظ المستخدم
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Add/Edit Sector -->
-  <div *ngIf="showSectorForm" class="modal fade show d-block modal-backdrop-custom">
-    <div class="modal-dialog">
-      <div class="modal-content d-flex flex-column gap-3">
-        <div class="modal-header">
-          <h5 class="modal-title">{{ newSector._id ? 'تعديل القطاع' : 'إضافة قطاع جديد' }}</h5>
-          <button type="button" class="btn-close" (click)="closeSectorForm()"></button>
-        </div>
-        <div class="modal-body d-flex flex-column gap-3">
-          <input class="form-control" [(ngModel)]="newSector.sector" placeholder="اسم القطاع" />
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" (click)="closeSectorForm()">إلغاء</button>
-          <button class="btn btn-primary" (click)="saveSector()">حفظ</button>
+  <div *ngIf="showSectorForm" class="modal-backdrop-custom">
+    <div class="modal-center-container">
+      <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content custom-modal">
+          <div class="modal-header modal-header-custom">
+            <h5 class="modal-title">
+              <i class="fas fa-building me-2"></i>
+              {{ newSector._id ? 'تعديل القطاع' : 'إضافة قطاع جديد' }}
+            </h5>
+            <button type="button" class="btn-close-custom" (click)="closeSectorForm()">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form class="modal-form">
+              <div class="form-group">
+                <label class="form-label">اسم القطاع <span class="text-danger">*</span></label>
+                <input class="form-control form-control-custom" [(ngModel)]="newSector.sector" name="sector"
+                  placeholder="اسم القطاع" required />
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer modal-footer-custom">
+            <button class="btn btn-cancel" (click)="closeSectorForm()">إلغاء</button>
+            <button class="btn btn-save" (click)="saveSector()">
+              <i class="fas fa-save me-2"></i> حفظ القطاع
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Edit User Modal -->
-  <div *ngIf="showEditUserModal" class="modal fade show d-block modal-backdrop-custom">
-    <div class="modal-dialog">
-      <div class="modal-content d-flex flex-column gap-3">
-        <div class="modal-header">
-          <h5 class="modal-title">تعديل المستخدم</h5>
-          <button type="button" class="btn-close" (click)="closeEditUser()"></button>
-        </div>
-        <div class="modal-body d-flex flex-column gap-3">
-          <label>القطاع:</label>
-          <select class="form-select" [(ngModel)]="selectedUser.sector">
-            <option *ngFor="let s of sectors" [value]="s._id">{{ s.sector }}</option>
-          </select>
-          <label>اسم المستخدم:</label>
-          <input class="form-control" [(ngModel)]="selectedUser.username" />
-          <label>الاسم الكامل:</label>
-          <input class="form-control" [(ngModel)]="selectedUser.fullname" />
-          <label>الدور:</label>
-          <select class="form-select" [(ngModel)]="selectedUser.role">
-            <option value="preparer">مستخدم</option>
-            <option value="supervisor">المراجع</option>
-            <option value="UniversityPresident">رئيس الجامعة</option>
-            <option value="admin">المدير</option>
-          </select>
-          <label>الحالة:</label>
-          <select class="form-select" [(ngModel)]="selectedUser.status">
-            <option value="active">نشط</option>
-            <option value="inactive">معطل</option>
-          </select>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" (click)="closeEditUser()">إلغاء</button>
-          <button class="btn btn-primary" (click)="confirmEditUser()">حفظ</button>
+  <div *ngIf="showEditUserModal" class="modal-backdrop-custom">
+    <div class="modal-center-container">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content custom-modal">
+          <div class="modal-header modal-header-custom">
+            <h5 class="modal-title">
+              <i class="fas fa-user-edit me-2"></i>
+              تعديل المستخدم
+            </h5>
+            <button type="button" class="btn-close-custom" (click)="closeEditUser()">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <!-- تغيير كلمة المرور -->
+            <div class="card password-card mb-4">
+              <div class="card-header password-card-header" (click)="showEditPassword = !showEditPassword">
+                <h6 class="mb-0 d-flex align-items-center justify-content-between">
+                  <span>
+                    <i class="fa fa-key me-2"></i>
+                    تغيير كلمة المرور
+                  </span>
+                  <i class="fa transition-icon" [class.fa-chevron-down]="!showEditPassword"
+                    [class.fa-chevron-up]="showEditPassword"></i>
+                </h6>
+              </div>
+              <div class="card-body password-card-body" *ngIf="showEditPassword">
+                <div class="alert alert-info info-alert">
+                  <i class="fas fa-info-circle me-2"></i>
+                  سيتم تحديث كلمة المرور مباشرة بدون التحقق من كلمة المرور الحالية
+                </div>
+                <div class="row g-3">
+                  <div class="col-12 col-md-6">
+                    <div class="form-group">
+                      <label class="form-label">كلمة المرور الجديدة</label>
+                      <div class="password-input-group">
+                        <input [type]="showNewPassword ? 'text' : 'password'"
+                          class="form-control form-control-custom password-field"
+                          [(ngModel)]="editPasswordData.newPassword" placeholder="كلمة المرور الجديدة" />
+                        <button type="button" class="password-toggle-btn" (click)="togglePassword('new')">
+                          <i class="fa" [class.fa-eye]="!showNewPassword" [class.fa-eye-slash]="showNewPassword"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <div class="form-group">
+                      <label class="form-label">تأكيد كلمة المرور الجديدة</label>
+                      <div class="password-input-group">
+                        <input type="password" class="form-control form-control-custom password-field"
+                          [(ngModel)]="editPasswordData.confirmPassword" placeholder="تأكيد كلمة المرور الجديدة" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <button class="btn btn-change-password" (click)="changePassword()">
+                      <i class="fa fa-key me-2"></i> تحديث كلمة المرور
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- بيانات المستخدم -->
+            <h6 class="section-title mb-3">
+              <i class="fas fa-user-circle me-2"></i>
+              بيانات المستخدم
+            </h6>
+            <form class="modal-form">
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="form-label">القطاع</label>
+                    <div class="custom-select-wrapper">
+                      <select class="form-control form-control-custom custom-select" [(ngModel)]="selectedUser.sector"
+                        name="editSector">
+                        <option *ngFor="let s of sectors" [value]="s._id">{{ s.sector }}</option>
+                      </select>
+                      <div class="select-arrow">
+                        <i class="fas fa-chevron-down"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="form-label">اسم المستخدم</label>
+                    <input class="form-control form-control-custom" [(ngModel)]="selectedUser.username"
+                      name="editUsername" />
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="form-label">الاسم الكامل</label>
+                    <input class="form-control form-control-custom" [(ngModel)]="selectedUser.fullname"
+                      name="editFullname" />
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="form-label">الدور</label>
+                    <div class="custom-select-wrapper">
+                      <select class="form-control form-control-custom custom-select" [(ngModel)]="selectedUser.role"
+                        name="editRole">
+                        <option value="preparer">مستخدم</option>
+                        <option value="supervisor">المراجع</option>
+                        <option value="UniversityPresident">رئيس الجامعة</option>
+                        <option value="admin">المدير</option>
+                      </select>
+                      <div class="select-arrow">
+                        <i class="fas fa-chevron-down"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="form-label">الحالة</label>
+                    <div class="custom-select-wrapper">
+                      <select class="form-control form-control-custom custom-select" [(ngModel)]="selectedUser.status"
+                        name="editStatus">
+                        <option value="active">نشط</option>
+                        <option value="inactive">معطل</option>
+                      </select>
+                      <div class="select-arrow">
+                        <i class="fas fa-chevron-down"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer modal-footer-custom">
+            <button class="btn btn-cancel" (click)="closeEditUser()">إلغاء</button>
+            <button class="btn btn-save" (click)="confirmEditUser()">
+              <i class="fas fa-save me-2"></i> حفظ التعديلات
+            </button>
+          </div>
         </div>
       </div>
     </div>

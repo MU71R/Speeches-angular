@@ -1,0 +1,183 @@
+<!-- src/app/components/home/home.component.html -->
+<div class="dashboard-container" *ngIf="!loading; else loadingTemplate">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div class="welcome-section">
+            <h1 class="welcome-title">مرحباً بك في لوحة التحكم</h1>
+            <p class="welcome-subtitle">{{ currentDate | date:'fullDate' }}</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-primary" routerLink="/letters/add">
+                <i class="fas fa-plus"></i>
+                إنشاء خطاب جديد
+            </button>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <!-- Users Card -->
+        <div class="stat-card users-card">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-value">{{ stats.totalUsers }}</h3>
+                <p class="stat-label">إجمالي المستخدمين</p>
+                <div class="stat-details">
+                    <span class="detail-item active">{{ stats.activeUsers }} نشط</span>
+                    <span class="detail-item inactive">{{ stats.inactiveUsers }} غير نشط</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Letters Card -->
+        <div class="stat-card letters-card">
+            <div class="stat-icon">
+                <i class="fas fa-envelope"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-value">{{ stats.totalLetters }}</h3>
+                <p class="stat-label">إجمالي الخطابات</p>
+                <div class="stat-details">
+                    <span class="detail-item pending">{{ stats.pendingLetters }} قيد الانتظار</span>
+                    <span class="detail-item approved">{{ stats.approvedLetters }} مقبول</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decisions Card -->
+        <div class="stat-card decisions-card">
+            <div class="stat-icon">
+                <i class="fas fa-file-contract"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-value">{{ stats.totalDecisions }}</h3>
+                <p class="stat-label">إجمالي القرارات</p>
+                <div class="stat-details">
+                    <span class="detail-item">جميع القرارات المسجلة</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Summary Card -->
+        <div class="stat-card status-card">
+            <div class="stat-icon">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-value">{{ stats.approvedLetters }}</h3>
+                <p class="stat-label">الخطابات المعتمدة</p>
+                <div class="stat-details">
+                    <span class="detail-item rejected">{{ stats.rejectedLetters }} مرفوض</span>
+                    <span class="detail-item in-progress">{{ stats.inProgressLetters }} قيد المعالجة</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats Section -->
+    <div class="quick-stats-section">
+        <h3 class="section-title">الإحصائيات السريعة</h3>
+        <div class="quick-stats-grid">
+            <div *ngFor="let stat of quickStats" class="quick-stat-card" [class]="'quick-stat-' + stat.color">
+                <div class="quick-stat-icon">
+                    <i [class]="stat.icon"></i>
+                </div>
+                <div class="quick-stat-content">
+                    <h4 class="quick-stat-value">{{ stat.value }}</h4>
+                    <p class="quick-stat-title">{{ stat.title }}</p>
+                    <span class="quick-stat-description">{{ stat.description }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Grid -->
+    <div class="content-grid">
+        <!-- System Overview -->
+        <div class="overview-section">
+            <div class="overview-card">
+                <h3 class="card-title">نظرة عامة على النظام</h3>
+                <div class="overview-list">
+                    <div class="overview-item">
+                        <div class="overview-icon success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="overview-content">
+                            <h4>النظام يعمل بكفاءة</h4>
+                            <p>جميع الخدمات تعمل بشكل طبيعي</p>
+                        </div>
+                    </div>
+                    <div class="overview-item">
+                        <div class="overview-icon primary">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="overview-content">
+                            <h4>إدارة المستخدمين</h4>
+                            <p>{{ stats.totalUsers }} مستخدم مسجل في النظام</p>
+                        </div>
+                    </div>
+                    <div class="overview-item">
+                        <div class="overview-icon warning">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="overview-content">
+                            <h4>خطابات قيد المراجعة</h4>
+                            <p>{{ stats.pendingLetters }} خطاب يحتاج إلى مراجعة</p>
+                        </div>
+                    </div>
+                    <div class="overview-item">
+                        <div class="overview-icon info">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="overview-content">
+                            <h4>إحصائيات الأداء</h4>
+                            <p>معدل إنجاز {{ calculateEfficiency() }}% لهذا الشهر</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activities -->
+        <div class="activities-section">
+            <div class="activities-card">
+                <div class="card-header">
+                    <h3 class="card-title">النشاطات الحديثة</h3>
+                    <button class="btn btn-sm btn-outline-primary" routerLink="/letters">
+                        عرض الكل
+                    </button>
+                </div>
+                <div class="activities-list">
+                    <div *ngFor="let activity of recentActivities" class="activity-item">
+                        <div class="activity-icon">
+                            <i [class]="getActivityIcon(activity.type)"></i>
+                        </div>
+                        <div class="activity-content">
+                            <h4 class="activity-title">{{ activity.title }}</h4>
+                            <p class="activity-description">{{ activity.action }}</p>
+                            <div class="activity-meta">
+                                <span class="activity-user">{{ activity.user }}</span>
+                                <span class="activity-time">{{ activity.timestamp | date:'short' }}</span>
+                                <span *ngIf="activity.status" class="activity-status badge"
+                                    [class]="'badge-' + getStatusColor(activity.status)">
+                                    {{ getStatusText(activity.status) }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #loadingTemplate>
+    <div class="loading-container">
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">جاري التحميل...</span>
+        </div>
+        <p>جاري تحميل البيانات...</p>
+    </div>
+</ng-template>

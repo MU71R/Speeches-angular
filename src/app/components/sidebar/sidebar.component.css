@@ -1,3 +1,34 @@
+:host {
+  direction: rtl;
+  font-family: "Tajawal", sans-serif;
+  display: block;
+}
+
+.sidebar-container {
+  position: relative;
+  height: 100%;
+}
+
+/* overlay للخلفية عند فتح الشريط على الجوال */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+.sidebar-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* الشريط الجانبي */
 .sidebar {
   width: 240px;
   height: 100vh;
@@ -10,11 +41,17 @@
   position: fixed;
   right: 0;
   top: 0;
-  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  z-index: 1000;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sidebar-header {
   text-align: center;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  margin: -15px -15px 0 -15px;
+  padding: 20px 16px 16px;
+  position: relative;
 }
 
 .logo-box {
@@ -23,57 +60,321 @@
   border-radius: 12px;
   padding: 8px;
   display: inline-block;
+  margin-bottom: 10px;
+}
+
+.logo-box i {
+  color: #fff;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+}
+
+.sidebar-header h5 {
+  color: #2d3748;
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 4px 8px;
 }
 
 .menu {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-top: 20px;
 }
 
 .menu-item {
   display: flex;
   align-items: center;
-  gap: 10px;
   text-decoration: none;
-  color: #333;
-  font-weight: 500;
-  padding: 8px 12px;
+  color: #4a5568;
+  font-weight: 600;
+  padding: 12px 16px;
   border-radius: 8px;
-  transition: 0.2s;
+  transition: all 0.25s ease;
+  border-right: 3px solid transparent;
+  margin: 2px 0;
+  position: relative;
+  overflow: hidden;
+  font-size: 0.9rem;
 }
 
 .menu-item i {
-  width: 20px;
+  font-size: 1.1rem;
+  width: 30px;
   text-align: center;
+  transition: transform 0.2s ease;
+  margin-left: 8px;
 }
 
-.menu-item:hover,
+.menu-item:hover {
+  background-color: #f7fafc;
+  color: #0b0b2e;
+  border-right-color: #0b0b2e;
+  transform: none;
+}
+
+.menu-item:hover i {
+  transform: scale(1.05);
+}
+
 .menu-item.active {
-  background: #0b0b2e;
-  color: #fff;
+  background: linear-gradient(135deg, #0b0b2e 0%, #1a1a4a 100%);
+  color: #fff !important;
+  border-right-color: #07071a;
+  box-shadow: 0 2px 4px rgba(11, 11, 46, 0.2);
+}
+
+.menu-item.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 3px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .sidebar-footer {
   border-top: 1px solid #eee;
   padding-top: 15px;
+  background: #f8f9fa;
+  margin: 0 -15px -15px -15px;
+  padding: 16px 16px 20px;
+}
+
+.user-box {
+  text-align: center;
+  margin-bottom: 10px;
 }
 
 .logout-btn {
   width: 100%;
-  background: #f5f5f5;
+  background: none;
   border: none;
-  border-radius: 8px;
-  padding: 8px;
+  color: #e53e3e;
   font-weight: 600;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: 0.2s;
 }
 
 .logout-btn:hover {
+  background-color: #fed7d7;
+  color: #c53030;
+  transform: translateY(-1px);
+}
+
+.toggle-btn {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 1100;
   background: #0b0b2e;
-  color: white;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 9px 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 5px rgba(11, 11, 46, 0.3);
+  display: none;
+}
+
+.toggle-btn:hover {
+  background: #07071a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(11, 11, 46, 0.4);
+}
+
+.toggle-btn i {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.toggle-btn:hover i {
+  transform: scale(1.05);
+}
+
+/* تحسينات للأجهزة الكبيرة */
+@media (min-width: 1920px) {
+  .sidebar {
+    width: 280px;
+    padding: 20px;
+  }
+
+  .sidebar-header {
+    padding: 28px 22px 20px;
+    margin: -20px -20px 0 -20px;
+  }
+
+  .menu-item {
+    padding: 16px 20px;
+    font-size: 1rem;
+  }
+
+  .menu-item i {
+    font-size: 1.2rem;
+    width: 32px;
+  }
+}
+
+@media (min-width: 1400px) and (max-width: 1919px) {
+  .sidebar {
+    width: 260px;
+  }
+
+  .sidebar-header {
+    padding: 24px 20px 18px;
+  }
+
+  .menu-item {
+    padding: 14px 18px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (min-width: 993px) and (max-width: 1399px) {
+  .sidebar {
+    width: 220px;
+  }
+
+  .menu-item {
+    padding: 11px 14px;
+    font-size: 0.88rem;
+  }
+
+  .sidebar-header h5 {
+    font-size: 1rem;
+  }
+}
+
+/* الحل الرئيسي - على الشاشات الكبيرة */
+@media (min-width: 993px) {
+  .sidebar {
+    position: fixed;
+    transform: translateX(0) !important;
+  }
+
+  .toggle-btn {
+    display: none !important;
+  }
+
+  .sidebar-overlay {
+    display: none !important;
+  }
+}
+
+/* على الجوال - إخفاء الشريط عندما يكون مغلقاً */
+@media (max-width: 992px) {
+  .sidebar {
+    transform: translateX(100%);
+    width: 280px;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .toggle-btn {
+    display: block !important;
+  }
+}
+
+/* باقي الوسائط الإعلامية */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 75vw;
+    max-width: 280px;
+  }
+
+  .sidebar-header {
+    padding: 18px 14px 14px;
+  }
+
+  .sidebar-header h5 {
+    font-size: 1rem;
+  }
+
+  .menu-item {
+    padding: 11px 14px;
+    font-size: 0.87rem;
+  }
+
+  .menu-item i {
+    font-size: 1rem;
+    width: 28px;
+  }
+
+  .toggle-btn {
+    top: 15px;
+    right: 15px;
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 576px) {
+  .sidebar {
+    width: 85vw;
+    max-width: 260px;
+  }
+
+  .sidebar-header {
+    padding: 16px 12px 12px;
+  }
+
+  .sidebar-header h5 {
+    font-size: 0.95rem;
+  }
+
+  .menu-item {
+    padding: 10px 12px;
+    font-size: 0.85rem;
+  }
+
+  .menu-item i {
+    font-size: 0.95rem;
+    width: 26px;
+    margin-left: 6px;
+  }
+
+  .toggle-btn {
+    top: 12px;
+    right: 12px;
+    padding: 7px 9px;
+  }
+
+  .toggle-btn i {
+    font-size: 1.1rem;
+  }
+
+  .logout-btn {
+    padding: 9px 12px;
+    font-size: 0.85rem;
+  }
+}
+
+/* تحسينات للوصول */
+.menu-item:focus {
+  outline: 2px solid #0b0b2e;
+  outline-offset: -2px;
+}
+
+.toggle-btn:focus {
+  outline: 2px solid #0b0b2e;
+  outline-offset: 2px;
+}
+
+.logout-btn:focus {
+  outline: 2px solid #e53e3e;
+  outline-offset: 2px;
 }

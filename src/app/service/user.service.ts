@@ -9,7 +9,7 @@ import { User, Sector } from '../model/user';
 export class AdministrationService {
   private baseUrl = 'http://localhost:3000/users';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
@@ -125,10 +125,10 @@ export class AdministrationService {
       { headers: this.getAuthHeaders() }
     );
   }
-  getusersbyrole(sectorId:string){
-    return this.http.get<User[]>(`${this.baseUrl}/supervisors/${sectorId}`,
-      { headers: this.getAuthHeaders() }
-    );
- 
-}
+  getusersbyrole(sectorId: string) {
+    return this.http.get<User[]>(`${this.baseUrl}/supervisors/${sectorId}`, {
+      headers: this.getAuthHeaders(),
+    });
+  }
+
 }

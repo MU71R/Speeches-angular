@@ -1,26 +1,22 @@
 /* ===== الصفحة ===== */
 .container-fluid {
-  padding-top: 30px;
-  padding-bottom: 30px;
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 
-/* Make the title and button in the same line */
-.d-flex.justify-content-between {
+/* رأس الصفحة */
+.page-header {
   flex-wrap: wrap;
+  gap: 15px;
 }
 
-.d-flex.justify-content-between h2 {
+.page-title {
   font-size: 24px;
   margin-bottom: 0;
 }
 
-.d-flex.justify-content-between .btn {
+.add-btn {
   min-width: 160px;
-}
-
-/* Improve the table */
-.table-responsive {
-  margin-top: 20px;
 }
 
 /* ===== Background for the modal ===== */
@@ -30,23 +26,22 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   z-index: 1040;
 }
 
 /* ===== مودال ===== */
-.modal-dialog {
+.responsive-modal {
   max-width: 500px;
   margin: 50px auto;
+  width: 95%;
 }
-
-
 
 .modal-content {
   background: #fff;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -59,12 +54,14 @@
   justify-content: space-between;
   align-items: center;
   border-bottom: none;
+  flex-wrap: wrap;
 }
 
 .modal-title {
   font-size: 20px;
   font-weight: 600;
   color: #1e3a8a;
+  margin-bottom: 0;
 }
 
 .btn-close {
@@ -72,6 +69,8 @@
   border: none;
   font-size: 1.3rem;
   cursor: pointer;
+  margin-left: 0;
+  margin-right: auto;
 }
 
 /* ===== بودي المودال ===== */
@@ -88,6 +87,15 @@
   border-radius: 8px;
   border: 1px solid #ccc;
   transition: all 0.2s ease;
+  direction: rtl;
+  text-align: right;
+}
+
+/* تعديل أسهم الـ dropdown لتكون على اليسار */
+.modal-body select.form-select {
+  background-position: left 0.75rem center;
+  padding-left: 2.25rem;
+  padding-right: 0.75rem;
 }
 
 .modal-body input.form-control:focus,
@@ -109,6 +117,7 @@
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .modal-footer .btn {
@@ -148,12 +157,10 @@
   opacity: 0;
 }
 
-/* ===== تحسين للجوال ===== */
-@media (max-width: 576px) {
-  .modal-dialog {
-    max-width: 95%;
-    margin: 20px auto;
-  }
+/* ===== الجدول ===== */
+.decisions-table {
+  margin-top: 20px;
+  overflow-x: auto;
 }
 
 /* ===== loading ===== */
@@ -202,8 +209,13 @@
 
 /* Spin Animation */
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Blur content when loading */
@@ -211,4 +223,169 @@
   filter: blur(2px);
   pointer-events: none;
   user-select: none;
+}
+
+/* ========== وسائط الاستعلام للشاشات المختلفة ========== */
+
+/* شاشات كبيرة (1200px فما فوق) */
+@media (min-width: 1200px) {
+  .container-fluid {
+    max-width: 1140px;
+    margin: 0 auto;
+  }
+}
+
+/* شاشات متوسطة (992px - 1199px) */
+@media (max-width: 1199px) {
+  .container-fluid {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}
+
+/* شاشات صغيرة (768px - 991px) */
+@media (max-width: 991px) {
+  .page-title {
+    font-size: 22px;
+  }
+
+  .add-btn {
+    min-width: 140px;
+  }
+
+  .responsive-modal {
+    max-width: 90%;
+  }
+
+  .modal-title {
+    font-size: 18px;
+  }
+
+  .table th, .table td {
+    padding: 0.5rem;
+  }
+}
+
+/* شاشات صغيرة جداً (576px - 767px) */
+@media (max-width: 767px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .add-btn {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .responsive-modal {
+    max-width: 95%;
+    margin: 20px auto;
+  }
+
+  .modal-header {
+    padding: 1rem;
+  }
+
+  .modal-body {
+    padding: 1rem;
+  }
+
+  .modal-footer {
+    padding: 1rem;
+    flex-direction: column-reverse;
+  }
+
+  .modal-footer .btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .table th, .table td {
+    font-size: 14px;
+    padding: 0.4rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 5px !important;
+  }
+
+  .action-buttons .btn {
+    width: 100%;
+  }
+}
+
+/* شاشات الهواتف (أقل من 576px) */
+@media (max-width: 575px) {
+  .container-fluid {
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+
+  .page-title {
+    font-size: 18px;
+  }
+
+  .responsive-modal {
+    max-width: 98%;
+    margin: 10px auto;
+  }
+
+  .modal-content {
+    padding: 15px;
+  }
+
+  .modal-title {
+    font-size: 16px;
+  }
+
+  .table-responsive {
+    font-size: 12px;
+  }
+
+  .table th, .table td {
+    padding: 0.3rem;
+  }
+
+  /* إخفاء بعض الأعمدة في الجدول للشاشات الصغيرة جداً */
+  .sector, .supervisor {
+    display: none;
+  }
+
+  .decision-type {
+    min-width: 120px;
+  }
+
+  .president-signature {
+    min-width: 60px;
+  }
+
+  .actions {
+    min-width: 80px;
+  }
+
+  .loading-spinner {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+/* تحسينات إضافية للطباعة */
+@media print {
+  .add-btn, .action-buttons, .modal-backdrop-custom {
+    display: none !important;
+  }
+
+  .container-fluid {
+    padding: 0;
+  }
+
+  .table {
+    border: 1px solid #ddd;
+  }
 }

@@ -1,9 +1,221 @@
-.modal {
-  backdrop-filter: blur(4px);
+/* pending-reviews.component.css */
+:host {
+  display: block;
 }
 
+.card {
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  min-height: 400px;
+}
+
+.table {
+  font-family: "Cairo", sans-serif;
+  direction: rtl;
+}
+
+.table th {
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 1rem 0.5rem;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 0.75rem 0.5rem;
+  vertical-align: middle;
+}
+
+.badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.btn {
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: 1px solid;
+  font-size: 0.875rem;
+  direction: rtl;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-outline-dark:hover {
+  background-color: #212529;
+  color: white;
+  border-color: #212529;
+}
+
+/* تحسين ألوان الحالات */
+.bg-primary {
+  background-color: #0d6efd !important;
+}
+
+.bg-warning {
+  background-color: #ffc107 !important;
+}
+
+.bg-success {
+  background-color: #198754 !important;
+}
+
+.bg-danger {
+  background-color: #dc3545 !important;
+}
+
+/* Modal Styles */
 .modal-content {
-  animation: fadeIn 0.25s ease-in-out;
+  animation: modalSlideIn 0.3s ease-out;
+  border: none;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  direction: rtl;
+}
+
+.modal-header {
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+}
+
+.modal-body {
+  font-family: "Cairo", sans-serif;
+  line-height: 1.8;
+  color: #2d3748;
+  max-height: 60vh;
+  overflow-y: auto;
+  direction: rtl;
+  text-align: right;
+}
+
+.modal-body .bg-light {
+  background-color: #f8f9fa !important;
+  border: 1px solid #e9ecef !important;
+  white-space: normal;
+  word-wrap: break-word;
+  text-align: right;
+}
+
+.modal-backdrop {
+  backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+.btn-close {
+  transition: all 0.3s ease;
+  opacity: 0.8;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-left: 0 !important;
+  margin-right: auto !important;
+}
+
+.btn-close:hover {
+  opacity: 1;
+  transform: rotate(90deg);
+}
+
+/* تحسين مظهر الأزرار في الشاشات الصغيرة */
+@media (max-width: 576px) {
+  .btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    min-width: 70px;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .card {
+    border-radius: 0.75rem;
+    margin: 0.25rem;
+    padding: 1rem;
+  }
+
+  .table-responsive {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    font-size: 0.875rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.8rem;
+  }
+
+  .modal-dialog {
+    margin: 0.5rem;
+  }
+
+  .modal-header {
+    padding: 1rem;
+  }
+
+  .modal-body {
+    padding: 1rem;
+    max-height: 70vh;
+  }
+
+  .modal-footer {
+    padding: 1rem;
+  }
+
+  .modal-title {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 576px) {
+
+  .table th:nth-child(2),
+  .table td:nth-child(2) {
+    display: none;
+  }
+
+  .badge {
+    font-size: 0.7rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .modal-dialog {
+    margin: 0.25rem;
+  }
+
+  .modal-content {
+    border-radius: 0.5rem;
+  }
+}
+
+@media (max-width: 400px) {
+
+  .table th:nth-child(3),
+  .table td:nth-child(3) {
+    display: none;
+  }
+
+  .card {
+    padding: 0.75rem;
+  }
+
+  .table {
+    font-size: 0.75rem;
+  }
+}
+
+/* Animations */
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @keyframes fadeIn {
@@ -11,23 +223,99 @@
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.modal-body {
-  font-family: "Cairo", sans-serif;
-  line-height: 1.9;
-  text-align: justify;
-  color: #333;
+/* Loading state */
+.table tbody tr {
+  animation: fadeIn 0.5s ease-out;
 }
 
-.modal-body .bg-light {
-  white-space: normal;
+/* Custom scrollbar for modal */
+.modal-body::-webkit-scrollbar {
+  width: 6px;
 }
 
-.btn-close:focus {
-  box-shadow: none;
+.modal-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* تحسينات إضافية للاستجابة */
+.min-w-0 {
+  min-width: 0;
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
+}
+
+/* تحسين عرض النص في الشاشات الصغيرة */
+@media (max-width: 360px) {
+
+  .table th,
+  .table td {
+    padding: 0.4rem 0.2rem;
+    font-size: 0.75rem;
+  }
+
+  .btn {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.75rem;
+  }
+
+  .badge {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.65rem;
+  }
+}
+
+/* RTL تحسينات إضافية */
+.text-start {
+  text-align: right !important;
+}
+
+.text-end {
+  text-align: left !important;
+}
+
+.me-auto {
+  margin-left: 0 !important;
+  margin-right: auto !important;
+}
+
+.ms-auto {
+  margin-right: 0 !important;
+  margin-left: auto !important;
+}
+
+/* تحسين الترتيب في الشاشات الصغيرة */
+@media (max-width: 576px) {
+  .modal-footer .btn {
+    order: 2;
+  }
+
+  .modal-footer .d-flex {
+    order: 1;
+    margin-bottom: 1rem;
+  }
 }

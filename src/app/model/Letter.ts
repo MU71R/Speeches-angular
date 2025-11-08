@@ -37,6 +37,7 @@ export interface addLetter {
     status: string;
   } | null;
   createdAt: string;
+  updatedAt?: string;
 }
 
 

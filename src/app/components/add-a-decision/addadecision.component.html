@@ -10,17 +10,16 @@
 <!-- محتوى الصفحة -->
 <div class="container-fluid" dir="rtl" [class.blur-content]="loading">
   <!-- رأس الصفحة + زر الإضافة -->
-  <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
-    <h2 class="fw-bold m-0">إدارة أنواع القرارات</h2>
-    <button class="btn btn-primary" (click)="openFormModal()">
+  <div class="d-flex justify-content-between align-items-center mb-4 mt-3 page-header">
+    <h2 class="fw-bold m-0 page-title">إدارة أنواع القرارات</h2>
+    <button class="btn btn-primary add-btn" (click)="openFormModal()">
       <i class="fas fa-plus-circle me-2"></i>إضافة نوع قرار
     </button>
   </div>
 
-
   <!-- Modal Add/Edit -->
   <div *ngIf="showFormModal" class="modal fade show d-block modal-backdrop-custom">
-    <div class="modal-dialog">
+    <div class="modal-dialog responsive-modal">
       <div class="modal-content d-flex flex-column gap-3">
 
         <!-- Header -->
@@ -47,7 +46,8 @@
           </select>
 
           <div class="form-check mt-2">
-            <input class="form-check-input" type="checkbox" [(ngModel)]="form.isPresidentDecision" id="presidentSignature">
+            <input class="form-check-input" type="checkbox" [(ngModel)]="form.isPresidentDecision"
+              id="presidentSignature">
             <label class="form-check-label" for="presidentSignature">يتطلب توقيع الرئيس</label>
           </div>
         </div>
@@ -62,39 +62,42 @@
     </div>
   </div>
 
- <!-- Table View Decisions -->
-<div class="table-responsive shadow-sm rounded bg-white mt-4">
-  <table class="table table-hover text-center align-middle mb-0">
-    <thead class="table-light">
-      <tr>
-        <th>نوع القرار</th>
-        <th>القطاع</th>
-        <th>جهة المراجعة</th>
-        <th>توقيع الرئيس</th>
-        <th>الإجراءات</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let d of decisions">
-        <td>{{ d.title }}</td>
-        <td>{{ d.sector?.sector || '—' }}</td>
-        <td>{{ d.supervisor?.fullname || '—' }}</td>
-        <td>
-          <i class="fas" [ngClass]="d.isPresidentDecision ? 'fa-check-circle text-success' : 'fa-times-circle text-secondary'"></i>
-        </td>
-        <td class="d-flex justify-content-center gap-2">
-          <button class="btn btn-sm btn-danger" (click)="deleteDecisionType(d._id)">
-            <i class="fas fa-trash"></i>
-          </button>
-          <button class="btn btn-sm btn-primary" (click)="editDecisionType(d)">
-            <i class="fas fa-edit"></i>
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <div *ngIf="decisions.length === 0" class="text-center py-3 text-muted">
-    لا يوجد أنواع قرارات لعرضها
+  <!-- Table View Decisions -->
+  <div class="table-responsive shadow-sm rounded bg-white mt-4 decisions-table">
+    <table class="table table-hover text-center align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th class="decision-type">نوع القرار</th>
+          <th class="sector">القطاع</th>
+          <th class="supervisor">جهة المراجعة</th>
+          <th class="president-signature">توقيع الرئيس</th>
+          <th class="actions">الإجراءات</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let d of decisions">
+          <td class="decision-type">{{ d.title }}</td>
+          <td class="sector">{{ d.sector?.sector || '—' }}</td>
+          <td class="supervisor">{{ d.supervisor?.fullname || '—' }}</td>
+          <td class="president-signature">
+            <i class="fas"
+              [ngClass]="d.isPresidentDecision ? 'fa-check-circle text-success' : 'fa-times-circle text-secondary'"></i>
+          </td>
+          <td class="actions">
+            <div class="d-flex justify-content-center gap-2 action-buttons">
+              <button class="btn btn-sm btn-danger" (click)="deleteDecisionType(d._id)">
+                <i class="fas fa-trash"></i>
+              </button>
+              <button class="btn btn-sm btn-primary" (click)="editDecisionType(d)">
+                <i class="fas fa-edit"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="decisions.length === 0" class="text-center py-3 text-muted">
+      لا يوجد أنواع قرارات لعرضها
+    </div>
   </div>
-</div>
 </div>

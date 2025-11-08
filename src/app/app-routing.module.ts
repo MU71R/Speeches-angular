@@ -9,6 +9,8 @@ import { PendingReviewsComponent } from './components/pending-reviews/pending-re
 import { LetterDetailComponent } from './components/letter-detail/letter-detail.component';
 import { ArchiveComponent } from './components/archive/archive.component';
 import { ArchiveDetailComponent } from './components/archive-detail/archive-detail.component';
+import { HomeComponent } from './components/home/home.component';
+
 
 const routes: Routes = [
   // صفحة تسجيل الدخول مستقلة
@@ -19,20 +21,22 @@ const routes: Routes = [
     path: '',
     component: LayoutComponent,
     children: [
+      { path: '', component: HomeComponent },
+      { path: 'home', component: HomeComponent },
       { path: 'department', component: DepartmentComponent },
       { path: 'add-decision', component: AddadecisionComponent },
       { path: 'declaration', component: DeclarationComponent },
-      { path:  'pending-reviews', component:PendingReviewsComponent},
-      { path: 'letter-details/:id', component:LetterDetailComponent },
-      { path: 'archive', component:ArchiveComponent },
-      { path: 'archive-detail', component:ArchiveDetailComponent },
+      { path: 'pending-reviews', component: PendingReviewsComponent },
+      { path: 'letter-details/:id', component: LetterDetailComponent },
+      { path: 'archive', component: ArchiveComponent },
+      { path: 'archive-detail', component: ArchiveDetailComponent },
       // الصفحة الرئيسية داخل النظام
-      { path: '', redirectTo: 'department', pathMatch: 'full' },
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
     ],
   },
 
   // أي رابط مش معروف يرجع للصفحة الرئيسية
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: '' },
 ];
 
 @NgModule({

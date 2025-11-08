@@ -1,52 +1,60 @@
-<div class="sidebar">
-  <div class="sidebar-header text-center">
-    <div class="logo-box">
-      <i class="fa-solid fa-graduation-cap fa-2x mb-2"></i>
-    </div>
-    <h5 class="fw-bold mb-0">UniLetters</h5>
-    <small class="text-muted">نظام المراسلات</small>
-  </div>
+<div class="sidebar-container">
+  <div class="sidebar-overlay" [class.active]="isSidebarOpen" (click)="closeSidebar()"></div>
 
-  <div class="menu mt-4">
-    <a routerLink="/dashboard" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-border-all"></i>
-      <span>الرئيسية</span>
-    </a>
+  <button class="toggle-btn" (click)="toggleSidebar()" aria-label="Toggle sidebar" [attr.aria-expanded]="isSidebarOpen">
+    <i class="fa-solid" [class.fa-bars]="!isSidebarOpen" [class.fa-xmark]="isSidebarOpen"></i>
+  </button>
 
-    <a routerLink="/declaration" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-paper-plane"></i>
-      <span>إنشاء خطاب جديد</span>
-    </a>
-
-    <a routerLink="/inbox" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-inbox"></i>
-      <span>الوارد</span>
-    </a>
-
-    <a routerLink="/archive" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-folder"></i>
-      <span>الأرشيف</span>
-    </a>
-
-    <a routerLink="/add-decision" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-magnifying-glass"></i>
-      <span>إضافة قرار جديد</span>
-    </a>
-
-    <a routerLink="/pending-reviews" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-gear"></i>
-      <span>الخطابات المعلقة</span>
-    </a>
-  </div>
-
-  <div class="sidebar-footer mt-auto">
-    <div class="user-box p-2">
-      <small>{{ user?.fullname }}</small><br />
+  <aside class="sidebar shadow-sm" [class.open]="isSidebarOpen" role="navigation" aria-label="القائمة الرئيسية">
+    <div class="sidebar-header text-center border-bottom pb-3">
+      <div class="logo-box">
+        <i class="fa-solid fa-graduation-cap fa-2x"></i>
+      </div>
+      <h5 class="fw-bold mb-1">UniLetters</h5>
+      <span class="badge bg-primary">نظام المراسلات</span>
     </div>
 
-    <button class="logout-btn" (click)="logout()">
-      <i class="fa-solid fa-right-from-bracket"></i>
-      تسجيل الخروج
-    </button>
-  </div>
+    <nav class="menu">
+      <a routerLink="/dashboard" routerLinkActive="active" class="menu-item" aria-current="page">
+        <i class="fa-solid fa-border-all"></i>
+        <span>الرئيسية</span>
+      </a>
+
+      <a routerLink="/declaration" routerLinkActive="active" class="menu-item">
+        <i class="fa-solid fa-paper-plane"></i>
+        <span>إنشاء خطاب جديد</span>
+      </a>
+
+      <a routerLink="/department" routerLinkActive="active" class="menu-item">
+        <i class="fa-solid fa-inbox"></i>
+        <span>إدارة المستخدمين</span>
+      </a>
+
+      <a routerLink="/archive" routerLinkActive="active" class="menu-item">
+        <i class="fa-solid fa-folder"></i>
+        <span>الأرشيف</span>
+      </a>
+
+      <a routerLink="/add-decision" routerLinkActive="active" class="menu-item">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <span>إضافة قرار جديد</span>
+      </a>
+
+      <a routerLink="/pending-reviews" routerLinkActive="active" class="menu-item">
+        <i class="fa-solid fa-gear"></i>
+        <span>الخطابات المعلقة</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-box">
+        <small>{{ user?.fullname }}</small><br />
+        <small class="text-muted">مسجل كـ مستخدم</small>
+      </div>
+      <button (click)="logout()" class="logout-btn" aria-label="تسجيل الخروج">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span>تسجيل الخروج</span>
+      </button>
+    </div>
+  </aside>
 </div>

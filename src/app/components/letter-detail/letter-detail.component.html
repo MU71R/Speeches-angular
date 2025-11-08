@@ -1,154 +1,214 @@
-<div class="container my-4" *ngIf="!loading; else loadTpl">
-  <div class="card shadow-lg">
-    <div class="card-header bg-primary text-white">
+<div class="container-fluid py-4" *ngIf="!loading; else loadTpl" dir="rtl">
+  <div class="card shadow-lg border-0 rounded-3 overflow-hidden">
+    <!-- Header -->
+    <div class="card-header bg-gradient-primary text-white py-4">
       <div class="d-flex justify-content-between align-items-center">
-        <div>
-          <h4 class="fw-bold mb-1">{{ form.value.title || 'تفاصيل الخطاب' }}</h4>
-          <p class="mb-0 small opacity-75">معلومات تفصيلية عن الخطاب</p>
+        <div class="flex-grow-1">
+          <h3 class="fw-bold mb-2">{{ form.value.title || 'تفاصيل الخطاب' }}</h3>
+          <p class="mb-0 opacity-85">معلومات تفصيلية عن الخطاب وحالة المعالجة</p>
         </div>
-        <div class="d-flex gap-2">
-          <button *ngIf="!isEditing" class="btn btn-light btn-sm" (click)="enableEdit()">
-            <i class="bi bi-pencil-square me-1"></i> تعديل
+        <div class="d-flex gap-3">
+          <button *ngIf="!isEditing" class="btn btn-light btn-lg px-4 rounded-2" (click)="enableEdit()">
+            <i class="bi bi-pencil-square me-2"></i> تعديل
           </button>
           <div *ngIf="isEditing" class="d-flex gap-2">
-            <button class="btn btn-success btn-sm" (click)="saveChanges()">
-              <i class="bi bi-check-lg me-1"></i> حفظ
+            <button class="btn btn-success btn-lg px-4 rounded-2" (click)="saveChanges()" [disabled]="processing">
+              <i class="bi bi-check-lg me-2"></i> حفظ
             </button>
-            <button class="btn btn-secondary btn-sm" (click)="cancelEdit()">
-              <i class="bi bi-x-lg me-1"></i> إلغاء
+            <button class="btn btn-outline-light btn-lg px-4 rounded-2" (click)="cancelEdit()">
+              <i class="bi bi-x-lg me-2"></i> إلغاء
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="card-body">
-      <div class="row">
+    <!-- Body -->
+    <div class="card-body p-4">
+      <div class="row g-4">
         <!-- معلومات الخطاب -->
-        <div class="col-md-6 border-end">
-          <h6 class="fw-semibold text-primary mb-3">معلومات الخطاب</h6>
+        <div class="col-lg-6">
+          <div class="border-end-lg pe-lg-4">
+            <h5 class="fw-bold text-primary mb-4 d-flex align-items-center gap-2">
+              <i class="bi bi-info-circle"></i>
+              معلومات الخطاب
+            </h5>
 
-          <div class="row mb-3">
-            <div class="col-sm-4">
-              <small class="text-muted">نوع القرار</small>
-              <div class="fw-semibold">{{ original?.decision?.title || '---' }}</div>
-            </div>
-            <div class="col-sm-4">
-              <small class="text-muted">الجهة المعدة</small>
-              <div class="fw-semibold">{{ original?.user?.fullname || '---' }}</div>
-            </div>
-            <div class="col-sm-4">
-              <small class="text-muted">الحالة</small>
-              <div class="fw-semibold">
-                <span [class]="getStatusBadgeClass(original?.status || '')">
-                  {{ getStatusText(original?.status || '') }}
-                </span>
+            <!-- معلومات أساسية -->
+            <div class="row g-3 mb-4">
+              <div class="col-md-4">
+                <div class="bg-light rounded-2 p-3 h-100">
+                  <small class="text-muted d-block mb-2">نوع القرار</small>
+                  <div class="fw-bold text-dark">{{ original?.decision?.title || '---' }}</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="bg-light rounded-2 p-3 h-100">
+                  <small class="text-muted d-block mb-2">الجهة المعدة</small>
+                  <div class="fw-bold text-dark">{{ original?.user?.fullname || '---' }}</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="bg-light rounded-2 p-3 h-100">
+                  <small class="text-muted d-block mb-2">الحالة</small>
+                  <span [class]="getStatusBadgeClass(original?.status || '')" class="badge fw-semibold">
+                    {{ getStatusText(original?.status || '') }}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="row mb-3">
-            <div class="col-sm-6">
-              <small class="text-muted">تاريخ الإنشاء</small>
-              <div class="fw-semibold">{{ original?.createdAt | date: 'd MMMM y, h:mm a' }}</div>
+            <!-- التوقيتات -->
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <div class="bg-light rounded-2 p-3 h-100">
+                  <small class="text-muted d-block mb-2">تاريخ الإنشاء</small>
+                  <div class="fw-bold text-dark d-flex align-items-center gap-2">
+                    <i class="bi bi-calendar3 text-primary"></i>
+                    {{ original?.createdAt | date: 'd MMMM y, h:mm a' }}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="bg-light rounded-2 p-3 h-100">
+                  <small class="text-muted d-block mb-2">آخر تحديث</small>
+                  <div class="fw-bold text-dark d-flex align-items-center gap-2">
+                    <i class="bi bi-clock-history text-primary"></i>
+                    {{ original?.updatedAt ? (original?.updatedAt | date: 'd MMMM y, h:mm a') : '—' }}
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="col-sm-6">
-              <small class="text-muted">آخر تحديث</small>
-              <div class="fw-semibold">{{ original?.updatedAt ? (original?.updatedAt | date: 'd MMMM y, h:mm a') : '—' }}</div>
-            </div>
-          </div>
 
-          <!-- محتوى الخطاب -->
-          <div class="mb-3">
-            <small class="text-muted">محتوى الخطاب</small>
-            <div *ngIf="!isEditing" class="border rounded p-3 bg-light mt-2" [innerHTML]="previewHtml"></div>
-            <div *ngIf="isEditing" [formGroup]="form">
-              <textarea class="form-control mt-2" rows="8" formControlName="description"
-                placeholder="اكتب محتوى الخطاب هنا..." (input)="onDescriptionChange()"></textarea>
+            <!-- محتوى الخطاب -->
+            <div class="mb-4">
+              <h6 class="fw-semibold text-dark mb-3 d-flex align-items-center gap-2">
+                <i class="bi bi-file-text text-primary"></i>
+                محتوى الخطاب
+              </h6>
+              <div *ngIf="!isEditing" class="border rounded-3 p-4 bg-light min-h-200" [innerHTML]="previewHtml"></div>
+              <div *ngIf="isEditing" [formGroup]="form">
+                <textarea class="form-control rounded-3 border-2" rows="10" formControlName="description"
+                  placeholder="اكتب محتوى الخطاب هنا..." (input)="onDescriptionChange()"
+                  style="border-color: #e9ecef; resize: vertical;"></textarea>
+                <small class="text-muted mt-2 d-block">يمكنك استخدام تنسيق HTML للمحتوى</small>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- إجراءات المراجعة -->
-        <div class="col-md-6">
-          <h6 class="fw-semibold text-primary mb-3">إجراءات المراجعة</h6>
+        <div class="col-lg-6">
+          <h5 class="fw-bold text-primary mb-4 d-flex align-items-center gap-2">
+            <i class="bi bi-gear"></i>
+            إجراءات المراجعة
+          </h5>
 
           <!-- مسار المعالجة -->
-          <div class="mb-4">
-            <small class="text-muted d-block mb-2">مسار المعالجة</small>
-            <div class="d-flex justify-content-between align-items-center">
-              <div class="text-center">
-                <div [class]="getStepClass(1)" class="step-circle">1</div>
-                <small class="d-block mt-1">الإدارة العامة</small>
+          <div class="mb-5">
+            <h6 class="fw-semibold text-dark mb-3">مسار المعالجة</h6>
+            <div class="process-track">
+              <div class="process-step" [class.active]="getStepClass(1) === 'active'"
+                [class.completed]="getStepClass(1) === 'completed'">
+                <div class="step-indicator">
+                  <i class="bi bi-building"></i>
+                </div>
+                <div class="step-content">
+                  <div class="step-title">الإدارة العامة</div>
+                  <div class="step-status">مرحلة المراجعة الأولية</div>
+                </div>
               </div>
-              <div class="flex-grow-1 border-top"></div>
-              <div class="text-center">
-                <div [class]="getStepClass(2)" class="step-circle">2</div>
-                <small class="d-block mt-1">رئيس الجامعة</small>
+
+              <div class="process-step" [class.active]="getStepClass(2) === 'active'"
+                [class.completed]="getStepClass(2) === 'completed'">
+                <div class="step-indicator">
+                  <i class="bi bi-person-badge"></i>
+                </div>
+                <div class="step-content">
+                  <div class="step-title">رئيس الجامعة</div>
+                  <div class="step-status">مرحلة الموافقة النهائية</div>
+                </div>
               </div>
-              <div class="flex-grow-1 border-top"></div>
-              <div class="text-center">
-                <div [class]="getStepClass(3)" class="step-circle">3</div>
-                <small class="d-block mt-1">الأرشيف</small>
+
+              <div class="process-step" [class.active]="getStepClass(3) === 'active'"
+                [class.completed]="getStepClass(3) === 'completed'">
+                <div class="step-indicator">
+                  <i class="bi bi-archive"></i>
+                </div>
+                <div class="step-content">
+                  <div class="step-title">الأرشيف</div>
+                  <div class="step-status">مرحلة الحفظ النهائي</div>
+                </div>
               </div>
             </div>
           </div>
 
           <!-- قسم الإجراءات -->
-          <div *ngIf="showReviewActions()" class="border rounded p-3 bg-light mt-4">
-            <div class="mb-3">
-              <label class="form-label fw-semibold small">ملاحظات</label>
-              <textarea class="form-control" rows="3" [(ngModel)]="reviewNotes" placeholder="أدخل ملاحظاتك هنا..."></textarea>
+          <div *ngIf="showReviewActions()" class="border rounded-3 p-4 bg-light mb-4">
+            <h6 class="fw-semibold text-dark mb-3">إجراءات المراجعة</h6>
+
+            <div class="mb-4">
+              <label class="form-label fw-semibold text-dark">ملاحظات المراجعة</label>
+              <textarea class="form-control rounded-2 border-2" rows="3" [(ngModel)]="reviewNotes"
+                placeholder="أدخل ملاحظاتك حول الخطاب..." style="border-color: #dee2e6;"></textarea>
             </div>
 
             <!-- أزرار المراجع -->
-            <div *ngIf="currentUserRole === 'supervisor' && original?.status === 'in_progress'" class="d-flex justify-content-between gap-2">
-              <button class="btn btn-danger flex-fill" (click)="rejectLetter()" [disabled]="processing">
-                <i class="bi bi-x-circle me-1"></i> رفض الخطاب
+            <div *ngIf="currentUserRole === 'supervisor' && original?.status === 'in_progress'" class="d-grid gap-3">
+              <button class="btn btn-danger btn-lg rounded-2 py-3 fw-semibold" (click)="rejectLetter()"
+                [disabled]="processing">
+                <i class="bi bi-x-circle me-2"></i> رفض الخطاب
               </button>
-              <button class="btn btn-success flex-fill" (click)="approveLetter()" [disabled]="processing">
-                <i class="bi bi-check-circle me-1"></i> موافقة (إرسال لرئيس الجامعة)
+              <button class="btn btn-success btn-lg rounded-2 py-3 fw-semibold" (click)="approveLetter()"
+                [disabled]="processing">
+                <i class="bi bi-check-circle me-2"></i> موافقة
               </button>
             </div>
 
             <!-- أزرار رئيس الجامعة -->
             <div *ngIf="currentUserRole === 'UniversityPresident' && original?.status === 'pending'">
-              <div *ngIf="!showPresidentOptions" class="d-flex flex-column gap-2">
-                <button class="btn btn-danger" (click)="rejectLetter()" [disabled]="processing">
-                  <i class="bi bi-x-circle me-1"></i> رفض الخطاب
+              <div *ngIf="!showPresidentOptions" class="d-grid gap-3">
+                <button class="btn btn-danger btn-lg rounded-2 py-3 fw-semibold" (click)="rejectLetter()"
+                  [disabled]="processing">
+                  <i class="bi bi-x-circle me-2"></i> رفض الخطاب
                 </button>
-                <button class="btn btn-success" (click)="showPresidentOptions = true" [disabled]="processing">
-                  <i class="bi bi-check-circle me-1"></i> موافقة
+                <button class="btn btn-success btn-lg rounded-2 py-3 fw-semibold" (click)="showPresidentOptions = true"
+                  [disabled]="processing">
+                  <i class="bi bi-check-circle me-2"></i> موافقة على الخطاب
                 </button>
               </div>
 
-              <!-- الخيارات بعد الضغط على "موافقة" -->
-              <div *ngIf="showPresidentOptions" class="d-flex flex-column gap-2">
-                <button class="btn btn-success" (click)="approveFinal('realscan')" [disabled]="processing">
-                  <i class="bi bi-check-circle me-1"></i> موافقة باستخدام Real Scan
+              <!-- خيارات الموافقة -->
+              <div *ngIf="showPresidentOptions" class="d-grid gap-3">
+                <button class="btn btn-success btn-lg rounded-2 py-3 fw-semibold" (click)="approveFinal('realscan')"
+                  [disabled]="processing">
+                  <i class="bi bi-qr-code-scan me-2"></i> موافقة باستخدام Real Scan
                 </button>
-                <button class="btn btn-outline-primary" (click)="approveFinal('signature')" [disabled]="processing">
-                  <i class="bi bi-pen me-1"></i> موافقة بالتوقيع الإلكتروني
+                <button class="btn btn-outline-primary btn-lg rounded-2 py-3 fw-semibold"
+                  (click)="approveFinal('signature')" [disabled]="processing">
+                  <i class="bi bi-pen-fill me-2"></i> موافقة بالتوقيع الإلكتروني
                 </button>
-                <button class="btn btn-secondary" (click)="showPresidentOptions = false">
-                  <i class="bi bi-arrow-return-right me-1"></i> رجوع
+                <button class="btn btn-outline-secondary btn-lg rounded-2 py-3" (click)="showPresidentOptions = false">
+                  <i class="bi bi-arrow-right me-2"></i> رجوع
                 </button>
               </div>
             </div>
           </div>
 
           <!-- سجل الإجراءات -->
-          <div class="mt-4">
-            <small class="text-muted d-block mb-2">سجل الإجراءات</small>
-            <div class="border rounded p-3">
-              <div class="d-flex justify-content-between align-items-center">
-                <span class="small">تاريخ المعالجة:</span>
-                <span class="fw-semibold">{{ original?.updatedAt ? (original?.updatedAt | date:'d MMMM y, h:mm a') : 'لم تتم المعالجة بعد' }}</span>
-              </div>
-              <div *ngIf="reviewNotes" class="mt-2">
-                <span class="small text-muted">آخر ملاحظة:</span>
-                <p class="mb-0 small">{{ reviewNotes }}</p>
-              </div>
+          <div class="border rounded-3 p-4 bg-white">
+            <h6 class="fw-semibold text-dark mb-3 d-flex align-items-center gap-2">
+              <i class="bi bi-clock-history text-primary"></i>
+              سجل الإجراءات
+            </h6>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <span class="text-muted">تاريخ المعالجة:</span>
+              <span class="fw-bold text-dark">{{ original?.updatedAt ? (original?.updatedAt | date:'d MMMM y, h:mm a') :
+                'لم تتم المعالجة بعد' }}</span>
+            </div>
+            <div *ngIf="reviewNotes" class="mt-3 p-3 bg-light rounded-2">
+              <span class="text-muted small d-block mb-2">آخر ملاحظة:</span>
+              <p class="mb-0 text-dark">{{ reviewNotes }}</p>
             </div>
           </div>
         </div>
@@ -158,9 +218,12 @@
 </div>
 
 <ng-template #loadTpl>
-  <div class="d-flex justify-content-center align-items-center" style="height:200px">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading...</span>
+  <div class="d-flex justify-content-center align-items-center min-vh-50">
+    <div class="text-center">
+      <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status">
+        <span class="visually-hidden">جاري التحميل...</span>
+      </div>
+      <p class="text-muted fw-semibold">جاري تحميل تفاصيل الخطاب...</p>
     </div>
   </div>
 </ng-template>

@@ -23,6 +23,7 @@ import { PendingReviewsComponent } from './components/pending-reviews/pending-re
 import { LetterDetailComponent } from './components/letter-detail/letter-detail.component';
 import { ArchiveComponent } from './components/archive/archive.component';
 import { ArchiveDetailComponent } from './components/archive-detail/archive-detail.component';
+import { HomeComponent } from './components/home/home.component';
 
 
 
@@ -39,6 +40,7 @@ import { ArchiveDetailComponent } from './components/archive-detail/archive-deta
     LetterDetailComponent,
     ArchiveComponent,
     ArchiveDetailComponent,
+    HomeComponent,
   ],
   imports: [
     BrowserModule,

@@ -10,7 +10,6 @@ import { DecisionService } from 'src/app/service/decision.service';
 import { LetterService } from 'src/app/service/letter.service';
 import Swal from 'sweetalert2';
 
-// Custom Validator لمنع المسافات في البداية فقط
 export function noLeadingSpaces(
   control: AbstractControl
 ): ValidationErrors | null {
@@ -25,14 +24,12 @@ export function noLeadingSpaces(
   return null;
 }
 
-// Custom Validator لحساب الطول بدون مسافات
 export function contentLengthWithoutSpaces(min: number, max: number) {
   return (control: AbstractControl): ValidationErrors | null => {
     if (!control.value) {
       return min > 0 ? { required: true } : null;
     }
 
-    // حساب الطول بدون المسافات
     const contentWithoutSpaces = control.value.replace(/\s/g, '');
     const length = contentWithoutSpaces.length;
 
@@ -70,7 +67,7 @@ export class DeclarationComponent implements OnInit {
   successMsg = '';
   errorMsg = '';
   contentWithoutSpacesLength = 0;
-  formSubmitted = false; // متغير لتتبع ما إذا تم محاولة إرسال النموذج
+  formSubmitted = false;
 
   constructor(
     private fb: FormBuilder,
@@ -102,10 +99,7 @@ export class DeclarationComponent implements OnInit {
       date: [{ value: new Date().toISOString().split('T')[0], disabled: true }],
     });
 
-    // حساب الطول الأولي بدون مسافات
     this.updateContentLengthWithoutSpaces();
-
-    // تحديث العداد عند تغيير المحتوى
     this.messageForm.get('content')?.valueChanges.subscribe(() => {
       this.updateContentLengthWithoutSpaces();
     });
@@ -130,7 +124,6 @@ export class DeclarationComponent implements OnInit {
     return this.messageForm.controls;
   }
 
-  // دالة لعرض خطأ الحقل (تظهر الأخطاء فقط للحقول التي تم التفاعل معها أو بعد الإرسال)
   showFieldError(fieldName: string): boolean {
     const field = this.f[fieldName];
     return (
@@ -138,38 +131,31 @@ export class DeclarationComponent implements OnInit {
     );
   }
 
-  // دالة لعرض ملخص النموذج (تظهر فقط بعد محاولة الإرسال)
   showFormSummary(): boolean {
     return this.messageForm.invalid && this.formSubmitted && !this.submitting;
   }
 
-  // دالة لتحديد الحقل كـ touched عند الخروج منه
   markFieldAsTouched(fieldName: string): void {
     this.f[fieldName].markAsTouched();
   }
 
-  // منع المسافات في بداية العنوان
   preventLeadingSpace(event: KeyboardEvent): void {
     const input = event.target as HTMLInputElement;
 
-    // إذا كان المؤشر في البداية والمفتاض مضغوط هو space
     if (input.selectionStart === 0 && event.key === ' ') {
       event.preventDefault();
     }
   }
 
-  // تحديث طول المحتوى بدون مسافات
   updateContentLengthWithoutSpaces(): void {
     const content = this.f['content'].value || '';
     this.contentWithoutSpacesLength = content.replace(/\s/g, '').length;
   }
 
-  // الحصول على طول المحتوى بدون مسافات للعرض
   getContentLengthWithoutSpaces(): number {
     return this.contentWithoutSpacesLength;
   }
 
-  // عند الكتابة في نص الخطاب
   onContentInput(): void {
     this.updateContentLengthWithoutSpaces();
   }
@@ -195,7 +181,6 @@ export class DeclarationComponent implements OnInit {
     }
   }
 
-  // دالة لإعادة تعيين النموذج
   private resetForm(): void {
     this.messageForm.reset();
     this.submitting = false;
@@ -206,12 +191,8 @@ export class DeclarationComponent implements OnInit {
   }
 
   onSubmit() {
-    // وضع علامة أن النموذج تم محاولة إرساله
     this.formSubmitted = true;
-
-    // التحقق من صحة النموذج
     if (this.messageForm.invalid) {
-      // وضع علامة touched لجميع الحقول لعرض الأخطاء
       Object.keys(this.f).forEach((key) => {
         this.f[key].markAsTouched();
       });
@@ -223,8 +204,6 @@ export class DeclarationComponent implements OnInit {
     this.submitting = true;
     this.successMsg = '';
     this.errorMsg = '';
-
-    // تنظيف النص من أي تنسيقات HTML محتملة
     const cleanContent = this.f['content'].value
       .replace(/<[^>]*>/g, '')
       .replace(/\s+/g, ' ')
@@ -239,23 +218,20 @@ export class DeclarationComponent implements OnInit {
 
     this.letterService.addLetterType(payload).subscribe({
       next: (res) => {
-        this.showSuccess('تم حفظ الخطاب بنجاح ✅');
+        this.showSuccess('تم حفظ الخطاب بنجاح ');
         this.resetForm();
-
-        // Reset form state
         Object.keys(this.f).forEach((key) => {
           this.f[key].markAsUntouched();
         });
       },
       error: (err) => {
         console.error('Error saving letter:', err);
-        this.showError('حدث خطأ أثناء حفظ الخطاب ❌');
+        this.showError('حدث خطأ أثناء حفظ الخطاب');
         this.submitting = false;
       },
     });
   }
 
-  // Helper methods for showing alerts
   private showSuccess(message: string): void {
     Swal.fire({
       icon: 'success',

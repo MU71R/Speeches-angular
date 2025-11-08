@@ -24,6 +24,8 @@ export class DepartmentComponent implements OnInit {
   showEditUserModal = false;
   showSectorForm = false;
   showPassword = false;
+  showEditPassword = false;
+  showNewPassword = false;
 
   // ====== DATA MODELS ======
   newDepartment: Partial<User> & { _id?: string } = {
@@ -36,6 +38,12 @@ export class DepartmentComponent implements OnInit {
 
   selectedUser: Partial<User> & { _id?: string } = {};
   newSector: Sector = { _id: '', sector: '' };
+
+  // ====== PASSWORD FIELDS ======
+  editPasswordData = {
+    newPassword: '',
+    confirmPassword: '',
+  };
 
   constructor(private adminService: AdministrationService) {}
 
@@ -106,6 +114,7 @@ export class DepartmentComponent implements OnInit {
       role: 'preparer',
       sector: '',
     };
+    this.showPassword = false;
     this.showAddDepartmentModal = true;
   }
 
@@ -115,13 +124,97 @@ export class DepartmentComponent implements OnInit {
 
   openEditUser(user: User): void {
     this.selectedUser = { ...user };
-    console.log(this.selectedUser);
+    this.editPasswordData = {
+      newPassword: '',
+      confirmPassword: '',
+    };
+    this.showEditPassword = false;
     this.showEditUserModal = true;
   }
 
   closeEditUser(): void {
     this.selectedUser = {};
     this.showEditUserModal = false;
+  }
+
+  // ====== PASSWORD MANAGEMENT ======
+  togglePassword(field: 'add' | 'edit' | 'new'): void {
+    if (field === 'add') {
+      this.showPassword = !this.showPassword;
+    } else if (field === 'edit') {
+      this.showEditPassword = !this.showEditPassword;
+    } else if (field === 'new') {
+      this.showNewPassword = !this.showNewPassword;
+    }
+  }
+
+  validatePassword(password: string): boolean {
+    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(password);
+  }
+
+  changePassword(): void {
+    const { newPassword, confirmPassword } = this.editPasswordData;
+
+    if (!newPassword || !confirmPassword) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'جميع الحقول مطلوبة',
+      });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'كلمة المرور الجديدة غير متطابقة',
+      });
+      return;
+    }
+
+    if (!this.validatePassword(newPassword)) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'كلمة المرور ضعيفة',
+        html: `<ul style="text-align:right;">
+                <li>8 أحرف على الأقل</li>
+                <li>حرف كبير واحد على الأقل</li>
+                <li>حرف صغير واحد على الأقل</li>
+                <li>رقم واحد على الأقل</li>
+                <li>رمز خاص واحد على الأقل</li>
+              </ul>`,
+      });
+      return;
+    }
+
+    if (!this.selectedUser._id) return;
+
+    // استخدام updateUser بدلاً من changePassword
+    this.adminService
+      .updateUser(this.selectedUser._id, {
+        password: newPassword,
+      })
+      .subscribe({
+        next: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'تم تحديث كلمة المرور بنجاح',
+            timer: 2000,
+            showConfirmButton: false,
+          });
+          this.editPasswordData = {
+            newPassword: '',
+            confirmPassword: '',
+          };
+          this.showEditPassword = false;
+        },
+        error: (err: HttpErrorResponse) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'خطأ في تحديث كلمة المرور',
+            text: err.message || 'حدث خطأ أثناء تحديث كلمة المرور',
+          });
+        },
+      });
   }
 
   confirmEditUser(): void {
@@ -311,14 +404,6 @@ export class DepartmentComponent implements OnInit {
   }
 
   // =================== DEPARTMENTS/USERS ===================
-  togglePassword(): void {
-    this.showPassword = !this.showPassword;
-  }
-
-  validatePassword(password: string): boolean {
-    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(password);
-  }
-
   saveDepartment(): void {
     const { fullname, username, password, role, sector } = this.newDepartment;
     if (!fullname?.trim()) {
@@ -337,7 +422,13 @@ export class DepartmentComponent implements OnInit {
       Swal.fire({
         icon: 'warning',
         title: 'كلمة المرور ضعيفة',
-        html: `<ul style="text-align:right;"><li>8 أحرف على الأقل</li><li>حرف كبير واحد على الأقل</li><li>حرف صغير واحد على الأقل</li><li>رقم واحد على الأقل</li><li>رمز خاص واحد على الأقل</li></ul>`,
+        html: `<ul style="text-align:right;">
+                <li>8 أحرف على الأقل</li>
+                <li>حرف كبير واحد على الأقل</li>
+                <li>حرف صغير واحد على الأقل</li>
+                <li>رقم واحد على الأقل</li>
+                <li>رمز خاص واحد على الأقل</li>
+              </ul>`,
       });
       return;
     }

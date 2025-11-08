@@ -1,6 +1,7 @@
 .layout {
   display: flex;
   flex-direction: row-reverse;
+  min-height: 100vh;
 }
 
 .content-area {
@@ -8,5 +9,43 @@
   padding: 20px;
   background-color: #f9fafc;
   min-height: 100vh;
-  margin-right: 240px;
+  transition: margin-right 0.3s ease;
+}
+
+/* على الشاشات الكبيرة - إضافة مساحة للشريط */
+@media (min-width: 993px) {
+  .content-area {
+    margin-right: 240px;
+  }
+
+  /* عندما يكون الشريط مخفي على الشاشات الكبيرة */
+  .layout.sidebar-closed .content-area {
+    margin-right: 0;
+  }
+}
+
+/* على الجوال - لا توجد مساحة إضافية */
+@media (max-width: 992px) {
+  .content-area {
+    margin-right: 0 !important;
+  }
+}
+
+/* تحسينات للشاشات الكبيرة جداً */
+@media (min-width: 1920px) {
+  .content-area {
+    margin-right: 280px;
+  }
+}
+
+@media (min-width: 1400px) and (max-width: 1919px) {
+  .content-area {
+    margin-right: 260px;
+  }
+}
+
+@media (min-width: 993px) and (max-width: 1399px) {
+  .content-area {
+    margin-right: 220px;
+  }
 }

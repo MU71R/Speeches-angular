@@ -1,4 +1,3 @@
-/* declaration.component.css */
 .page-wrapper {
   max-width: 1000px;
   margin: 0 auto;
@@ -9,6 +8,10 @@
   border: none;
   box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.08);
   transition: box-shadow 0.3s ease;
+}
+
+#h2 {
+  margin-top: 18px;
 }
 
 .card:hover {
@@ -115,7 +118,6 @@
   transform: translateY(-2px);
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .page-content {
     padding: 1rem !important;
@@ -160,14 +162,12 @@
   }
 }
 
-/* Loading state */
 .btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none !important;
 }
 
-/* Custom scrollbar for editor */
 .editor-area::-webkit-scrollbar {
   width: 8px;
 }
@@ -186,7 +186,6 @@
   background: #a8a8a8;
 }
 
-/* Print styles */
 @media print {
   .editor-toolbar, .btn {
     display: none !important;
