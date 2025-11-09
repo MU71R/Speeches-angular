@@ -28,4 +28,7 @@ export class ArchiveService {
     return this.http.get(this.url + '/get-user-archived-letters');
   }
 
+  getArchivedsupervisor() {
+    return this.http.get(this.url + '/get-reviewer-archives');
+  }
 }

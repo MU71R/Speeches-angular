@@ -1,84 +1,208 @@
 /* خلفية الصفحة وتوسيط المحتوى */
 .archive-container {
   animation: fadeIn 0.8s ease;
+  min-height: 80vh;
 }
 
 .title {
-  font-size: 2rem;
+  font-size: 2.5rem;
   color: #2b2b2b;
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #4a6cf7, #6a11cb);
+  border-radius: 2px;
+}
+
+.animate-charcter {
+  background: linear-gradient(90deg, #4a6cf7, #6a11cb, #2575fc, #4a6cf7);
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShine 3s ease-in-out infinite alternate;
+}
+
+@keyframes textShine {
+  to {
+    background-position: 200% center;
+  }
 }
 
 .subtitle {
-  font-size: 0.95rem;
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-/* تصميم الكروت */
+/* تصميم الكروت المحسن */
 .archive-card {
   background: #fff;
-  border-radius: 1rem;
+  border-radius: 1.2rem;
   padding: 2rem 1.5rem;
   text-align: center;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease-in-out;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .archive-card:hover {
-  transform: translateY(-7px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
 }
 
-/* شكل الأيقونة */
-.icon-wrapper {
-  width: 70px;
-  height: 70px;
-  margin: 0 auto 15px;
+.personal-card {
+  border: 2px solid rgba(13, 110, 253, 0.2);
+}
+
+/* شكل الأيقونة المحسن */
+.card-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  font-size: 2rem;
-  transition: all 0.3s ease;
+  font-size: 2.2rem;
+  transition: all 0.4s ease;
+  position: relative;
+  z-index: 2;
 }
 
-.archive-card:hover .icon-wrapper {
-  transform: rotate(10deg) scale(1.1);
+.archive-card:hover .card-icon {
+  transform: scale(1.15) rotate(5deg);
 }
 
-/* النص */
-.archive-card h5 {
+/* محتوى الكارت */
+.card-content {
+  position: relative;
+  z-index: 2;
+}
+
+.card-title {
   margin-top: 10px;
-  font-weight: 600;
+  font-weight: 700;
   color: #333;
+  font-size: 1.3rem;
 }
 
-.archive-card p {
-  font-size: 0.9rem;
+.card-text {
+  font-size: 0.95rem;
   color: #666;
-  margin-top: 5px;
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+/* شارة التصنيف */
+.card-badge {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 4px 12px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #555;
+}
+
+/* تأثير التحويم */
+.card-hover-effect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(74, 108, 247, 0.03) 0%, rgba(106, 17, 203, 0.03) 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 1;
+}
+
+.archive-card:hover .card-hover-effect {
+  opacity: 1;
 }
 
 /* تأثير الدخول */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* وضع داكن اختياري */
+/* تصميم متجاوب */
+@media (max-width: 768px) {
+  .title {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .archive-card {
+    padding: 1.5rem 1rem;
+  }
+
+  .card-icon {
+    width: 70px;
+    height: 70px;
+    font-size: 1.8rem;
+  }
+}
+
+/* وضع داكن */
 @media (prefers-color-scheme: dark) {
   .archive-card {
     background: #1f1f1f;
-    color: #ddd;
+    border-color: #333;
   }
-  .archive-card p {
+
+  .card-title {
+    color: #eee;
+  }
+
+  .card-text {
     color: #aaa;
+  }
+
+  .card-badge {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ccc;
+  }
+
+  .archive-container {
+    color: #eee;
+  }
+
+  .title {
+    color: #eee;
+  }
+
+  .subtitle {
+    color: #bbb;
   }
 }

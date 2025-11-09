@@ -1,64 +1,99 @@
-<div class="archive-container container py-5">
+<div class="archive-container container py-5" dir="rtl">
   <div class="text-center mb-5">
-    <h2 class="fw-bold title mb-2">📁 الأرشيف</h2>
-    <p class="text-muted subtitle">
-      تصفّح أرشيف القرارات والخطابات حسب مستوى التصنيف
+    <h2 class="fw-bold title mb-2 animate-charcter">📁 الأرشيف </h2>
+    <p class="text-muted subtitle fs-5">
+      تصفّح أرشيف القرارات والخطابات الرسمية حسب مستوى التصنيف
     </p>
   </div>
 
   <div class="row g-4 justify-content-center">
-    <!-- الجامعة -->
-    <div class="col-lg-3 col-md-4 col-sm-6">
-      <div class="archive-card" (click)="getArchivedLettersByType('عامة')">
-        <div class="icon-wrapper bg-primary-subtle text-primary">
-          <i class="fa-solid fa-building"></i>
-        </div>
-        <h5>الجامعة</h5>
-        <p>قرارات ووثائق الجامعة الرسمية</p>
-      </div>
-    </div>
-
-        <div class="col-lg-3 col-md-4 col-sm-6">
-  <div class="archive-card" (click)="openPersonalArchive()">
-    <div class="icon-wrapper bg-info-subtle text-info">
-      <i class="fa-solid fa-user-shield"></i>
-    </div>
-    <h5>أرشيفي الشخصي</h5>
-    <p>خطاباتي وقراراتي الخاصة التي أرسلتها أو استلمتها</p>
-  </div>
-</div>
-
     
-    <!-- وزارة التعليم العالي -->
-    <div class="col-lg-3 col-md-4 col-sm-6">
-      <div class="archive-card" (click)="getArchivedLettersByType('وزارة التعليم العالي')">
-        <div class="icon-wrapper bg-success-subtle text-success">
-          <i class="fa-solid fa-graduation-cap"></i>
+        <!-- رئيس الجمهورية -->
+        <div class="col-lg-4 col-md-6">
+          <div class="archive-card h-100" (click)="getArchivedLettersByType('رئاسة الجمهورية')">
+            <div class="card-icon bg-danger bg-opacity-10 text-danger">
+              <i class="fa-solid fa-crown"></i>
+            </div>
+            <div class="card-content">
+              <h5 class="card-title">رئيس الجمهورية</h5>
+              <p class="card-text">مراسيم وقرارات رئاسية</p>
+              <div class="card-badge">رئاسي</div>
+            </div>
+            <div class="card-hover-effect"></div>
+          </div>
         </div>
-        <h5>وزارة التعليم العالي</h5>
-        <p>قرارات ووثائق وزارة التعليم العالي</p>
+        <!-- رئيس الوزراء -->
+        <div class="col-lg-4 col-md-6">
+          <div class="archive-card h-100" (click)="getArchivedLettersByType('رئاسة الوزراء')">
+            <div class="card-icon bg-warning bg-opacity-10 text-warning">
+              <i class="fa-solid fa-landmark"></i>
+            </div>
+            <div class="card-content">
+              <h5 class="card-title">رئيس الوزراء</h5>
+              <p class="card-text">قرارات مجلس الوزراء الرسمية</p>
+              <div class="card-badge">حكومي</div>
+            </div>
+            <div class="card-hover-effect"></div>
+          </div>
+        </div>
+        <!-- وزارة التعليم العالي -->
+        <div class="col-lg-4 col-md-6">
+          <div class="archive-card h-100" (click)="getArchivedLettersByType('وزارة التعليم العالي')">
+            <div class="card-icon bg-success bg-opacity-10 text-success">
+              <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div class="card-content">
+              <h5 class="card-title">وزارة التعليم العالي</h5>
+              <p class="card-text">قرارات ووثائق وزارة التعليم العالي</p>
+              <div class="card-badge">وزاري</div>
+            </div>
+            <div class="card-hover-effect"></div>
+          </div>
+        </div>
+    <!-- الجامعة -->
+    <div class="col-lg-4 col-md-6">
+      <div class="archive-card h-100" (click)="getArchivedLettersByType('عامة')">
+        <div class="card-icon bg-primary bg-opacity-10 text-primary">
+          <i class="fa-solid fa-building-columns"></i>
+        </div>
+        <div class="card-content">
+          <h5 class="card-title">الجامعة</h5>
+          <p class="card-text">قرارات ووثائق الجامعة الرسمية</p>
+          <div class="card-badge">عام</div>
+        </div>
+        <div class="card-hover-effect"></div>
       </div>
     </div>
 
-    <!-- رئيس الوزراء -->
-    <div class="col-lg-3 col-md-4 col-sm-6">
-      <div class="archive-card" (click)="getArchivedLettersByType('رئاسة الوزراء')">
-        <div class="icon-wrapper bg-warning-subtle text-warning">
-          <i class="fa-solid fa-award"></i>
+    <!-- أرشيفي الشخصي -->
+    <div class="col-lg-4 col-md-6">
+      <div class="archive-card h-100 personal-card" (click)="openPersonalArchive()">
+        <div class="card-icon bg-info bg-opacity-10 text-info">
+          <i class="fa-solid fa-user-shield"></i>
         </div>
-        <h5>رئيس الوزراء</h5>
-        <p>قرارات مجلس الوزراء الرسمية</p>
+        <div class="card-content">
+          <h5 class="card-title">أرشيفي الشخصي</h5>
+          <p class="card-text">خطاباتي وقراراتي الخاصة التي أرسلتها أو استلمتها</p>
+          <div class="card-badge">خاص</div>
+        </div>
+        <div class="card-hover-effect"></div>
       </div>
     </div>
 
-    <!-- رئيس الجمهورية -->
-    <div class="col-lg-3 col-md-4 col-sm-6">
-      <div class="archive-card" (click)="getArchivedLettersByType('رئاسة الجمهورية')">
-        <div class="icon-wrapper bg-danger-subtle text-danger">
-          <i class="fa-solid fa-user"></i>
+
+
+    <!-- أرشيف المراجع -->
+    <div class="col-lg-4 col-md-6">
+      <div class="archive-card h-100" (click)="getArchivedSupervisor()">
+        <div class="card-icon bg-secondary bg-opacity-10 text-secondary">
+          <i class="fa-solid fa-user-check"></i>
         </div>
-        <h5>رئيس الجمهورية</h5>
-        <p>مراسيم وقرارات رئاسية</p>
+        <div class="card-content">
+          <h5 class="card-title">أرشيف المراجع</h5>
+          <p class="card-text">القرارات التي وافق عليها المراجع الخاص بك</p>
+          <div class="card-badge">مراجعة</div>
+        </div>
+        <div class="card-hover-effect"></div>
       </div>
     </div>
   </div>

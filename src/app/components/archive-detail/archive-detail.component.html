@@ -1,172 +1,303 @@
 <div class="container py-4 rtl">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <div>
-      <h3 class="fw-bold mb-1">أرشيف {{ type }}</h3>
-      <p class="text-muted mb-0">
-        قائمة الخطابات والأوامر المعتمدة ضمن هذا التصنيف
-      </p>
-    </div>
+  <!-- الهيدر المحسن -->
+  <div class="page-header mb-4">
+    <div class="d-flex justify-content-between align-items-start">
+      <div class="header-content">
+        <div class="d-flex align-items-center mb-2">
+          <button class="btn btn-outline-secondary btn-sm me-3" (click)="goBack()">
+            <i class="fa fa-arrow-right me-1"></i> رجوع
+          </button>
+          <h3 class="fw-bold mb-0 page-title">{{ getArchiveTitle() }}</h3>
+        </div>
+        <p class="text-muted mb-0 page-subtitle">
+          <i class="fa fa-folder-open me-2"></i>
+          {{ getArchiveSubtitle() }}
+        </p>
+      </div>
 
-    <!-- زر الإضافة يظهر فقط إذا كان النوع مسموح -->
-    <button
-      *ngIf="isSpecialArchive()"
-      class="btn btn-primary"
-      (click)="openUploadModal()"
-    >
-      <i class="fa fa-upload me-1"></i> رفع أرشيف جديد
+      <!-- زر الإضافة مع مؤشر -->
+      <button *ngIf="isSpecialArchive()" class="btn btn-primary btn-add" (click)="openUploadModal()"
+        [disabled]="loading">
+        <i class="fa fa-upload me-2"></i>
+        <span>رفع أرشيف جديد</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- إحصائيات سريعة -->
+  <div class="stats-cards mb-4" *ngIf="!loading && letters.length > 0">
+    <div class="row g-3">
+      <div class="col-md-3 col-6">
+        <div class="stat-card">
+          <div class="stat-icon bg-primary">
+            <i class="fa fa-file-alt"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{ letters.length }}</div>
+            <div class="stat-label">إجمالي المستندات</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-card">
+          <div class="stat-icon bg-success">
+            <i class="fa fa-calendar-check"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{ getCurrentYearDocuments() }}</div>
+            <div class="stat-label">مستندات {{ currentYear }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-card">
+          <div class="stat-icon bg-info">
+            <i class="fa fa-download"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{ getDocumentsWithAttachments() }}</div>
+            <div class="stat-label">تحتوي مرفقات</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-card">
+          <div class="stat-icon bg-warning">
+            <i class="fa fa-users"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{ getUniqueUsers() }}</div>
+            <div class="stat-label">مستخدمين مختلفين</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- حالة التحميل -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner-container">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">جار التحميل...</span>
+      </div>
+      <div class="loading-text">
+        <h5>جارٍ تحميل الأرشيف...</h5>
+        <p class="text-muted">يتم الآن جلب جميع المستندات والخطابات</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- حالة عدم وجود بيانات -->
+  <div *ngIf="!loading && letters.length === 0" class="empty-state">
+    <div class="empty-icon">
+      <i class="fa fa-folder-open"></i>
+    </div>
+    <h4 class="empty-title">لا توجد خطابات في هذا الأرشيف</h4>
+    <p class="empty-text text-muted">لم يتم إضافة أي خطابات أو قرارات إلى هذا الأرشيف بعد</p>
+    <button *ngIf="isSpecialArchive()" class="btn btn-primary mt-3" (click)="openUploadModal()">
+      <i class="fa fa-plus me-2"></i>إضافة أول مستند
     </button>
   </div>
 
-  <hr />
-
-  <div *ngIf="loading" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status"></div>
-    <p class="mt-2 text-muted small">جارٍ تحميل الأرشيف...</p>
-  </div>
-
-  <div
-    *ngIf="!loading && letters.length === 0"
-    class="text-center text-muted py-5"
-  >
-    لا توجد خطابات في هذا الأرشيف حالياً.
-  </div>
-
-  <div class="row g-4" *ngIf="!loading && letters.length > 0">
-    <div class="col-md-4" *ngFor="let letter of letters">
-      <div class="card shadow-sm border-0 h-100 hover-card p-3">
-        <div class="card-body">
-          <h6 class="fw-bold mb-2 text-primary">
-            <i class="fa fa-envelope-paper me-1"></i> {{ letter.title }}
-          </h6>
-
-          <p class="small text-muted mb-1">
-            <i class="fa fa-person-circle me-1"></i>
-            {{ letter.user?.fullname || 'غير محدد' }}
-          </p>
-
-          <p class="small text-muted mb-1">
-            <i class="fa fa-calendar-date me-1"></i>
-            {{ letter.date | date: 'dd/MM/yyyy' }}
-          </p>
-
-
-          <p class="small text-muted mb-3">
-            <i class="fa fa-tag me-1"></i> {{ letter.letterType }}
-          </p>
-
-          <div
-            class="d-flex justify-content-between align-items-center mt-auto"
-          >
-            <button
-              class="btn btn-sm btn-outline-primary"
-              (click)="viewLetter(letter._id)"
-            >
-              <i class="fa fa-eye me-1"></i> عرض التفاصيل
-            </button>
-
-            <a
-              *ngIf="letter.attachment"
-              [href]="getAttachmentUrl(letter.attachment)"
-              target="_blank"
-              class="btn btn-sm btn-outline-success"
-            >
-              <i class="fa fa-download me-1"></i> تحميل المرفق
-            </a>
+  <!-- شبكة البطاقات المحسنة -->
+  <div class="letters-grid" *ngIf="!loading && letters.length > 0">
+    <div class="row g-4">
+      <div class="col-xl-6 col-lg-6" *ngFor="let letter of letters">
+        <div class="letter-card">
+          <!-- الهيدر -->
+          <div class="card-header">
+            <div class="letter-type-badge" [ngClass]="getTypeBadgeClass(letter.letterType)">
+              {{ letter.letterType || 'عامة' }}
+            </div>
+            <div class="letter-status" [ngClass]="getStatusClass(letter.status)">
+              <i class="fa fa-circle me-1"></i>
+              {{ getStatusText(letter.status) }}
+            </div>
           </div>
+
+          <!-- المحتوى الرئيسي -->
+          <div class="card-body">
+            <!-- العنوان -->
+            <h5 class="letter-title">
+              <i class="fa fa-envelope text-primary me-2"></i>
+              {{ letter.title }}
+            </h5>
+
+            <!-- الوصف -->
+            <div class="letter-description" *ngIf="letter.description || letter.breeif">
+              <h6 class="description-label">الوصف:</h6>
+              <p class="description-text" [innerHTML]="formatDescription(letter.description || letter.breeif)"></p>
+            </div>
+
+            <!-- معلومات القرار -->
+            <div class="letter-info-section" *ngIf="letter.decision">
+              <h6 class="section-label">معلومات القرار:</h6>
+              <div class="info-grid">
+                <div class="info-item">
+                  <i class="fa fa-file-contract text-primary me-2"></i>
+                  <span class="info-label">القرار:</span>
+                  <span class="info-value">{{ letter.decision.title }}</span>
+                </div>
+                <div class="info-item" *ngIf="letter.decision.isPresidentDecision !== undefined">
+                  <i class="fa fa-star text-warning me-2"></i>
+                  <span class="info-label">النوع:</span>
+                  <span class="info-value">{{ letter.decision.isPresidentDecision ? 'قرار رئاسي' : 'قرار تنفيذي'
+                    }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- معلومات المرسل -->
+            <div class="letter-info-section">
+              <h6 class="section-label">معلومات المرسل:</h6>
+              <div class="info-grid">
+                <div class="info-item">
+                  <i class="fa fa-user-circle text-primary me-2"></i>
+                  <span class="info-label">المرسل:</span>
+                  <span class="info-value">{{ letter.user?.fullname || 'غير محدد' }}</span>
+                </div>
+                <div class="info-item">
+                  <i class="fa fa-calendar text-success me-2"></i>
+                  <span class="info-label">تاريخ الخطاب:</span>
+                  <span class="info-value">{{ letter.date | date: 'dd/MM/yyyy' }}</span>
+                </div>
+                <div class="info-item">
+                  <i class="fa fa-clock text-info me-2"></i>
+                  <span class="info-label">تاريخ الإنشاء:</span>
+                  <span class="info-value">{{ letter.createdAt | date: 'dd/MM/yyyy - hh:mm a' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- الموافقات -->
+            <div class="approvals-section" *ngIf="letter.approvals && letter.approvals.length > 0">
+              <h6 class="section-label">سجل الموافقات:</h6>
+              <div class="approvals-list">
+                <div class="approval-item" *ngFor="let approval of letter.approvals">
+                  <div class="approval-badge" [ngClass]="approval.approved ? 'approved' : 'rejected'">
+                    <i class="fa" [ngClass]="approval.approved ? 'fa-check' : 'fa-times'"></i>
+                  </div>
+                  <div class="approval-info">
+                    <span class="approval-role">{{ getRoleText(approval.role) }}</span>
+                    <span class="approval-date">{{ approval.date | date: 'dd/MM/yyyy - hh:mm a' }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- المرفقات -->
+            <div class="attachment-section" *ngIf="letter.attachment">
+              <h6 class="section-label">المرفقات:</h6>
+              <div class="attachment-item">
+                <i class="fa fa-paperclip text-danger me-2"></i>
+                <span class="attachment-name">{{ getFileName(letter.attachment) }}</span>
+                <a [href]="getAttachmentUrl(letter.attachment)" target="_blank" class="btn-download-attachment">
+                  <i class="fa fa-download me-1"></i>
+                  تحميل
+                </a>
+              </div>
+            </div>
+
+            <div class="no-attachment" *ngIf="!letter.attachment">
+              <i class="fa fa-times-circle text-muted me-2"></i>
+              <span class="text-muted">لا توجد مرفقات</span>
+            </div>
+          </div>
+
+
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- مودال رفع أرشيف جديد -->
-<div
-  *ngIf="showUploadModal"
-  class="modal fade show d-block"
-  tabindex="-1"
-  style="background-color: rgba(0,0,0,0.5);"
->
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow-lg rounded-4">
-      <div class="modal-header bg-light">
-        <h5 class="modal-title fw-bold">
-          <i class="fa fa-archive me-2"></i> رفع أرشيف قديم
-        </h5>
-        <button
-          type="button"
-          class="btn-close"
-          (click)="closeUploadModal()"
-        ></button>
+<!-- المودال المحسن -->
+<div *ngIf="showUploadModal" class="modal-overlay" (click)="closeUploadModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-icon">
+          <i class="fa fa-cloud-upload"></i>
+        </div>
+        <div class="modal-title">
+          <h5>رفع أرشيف جديد</h5>
+          <p class="text-muted">أضف مستنداً جديداً إلى الأرشيف</p>
+        </div>
+        <button type="button" class="btn-close" (click)="closeUploadModal()">
+          <i class="fa fa-times"></i>
+        </button>
       </div>
 
       <div class="modal-body">
         <form (ngSubmit)="uploadArchive()" #archiveForm="ngForm">
-          <div class="mb-3">
-            <label class="form-label">العنوان</label>
-            <input
-              type="text"
-              class="form-control"
-              [(ngModel)]="newArchive.title"
-              name="title"
-              placeholder="مثال: قرار رقم 245 لسنة 2023"
-              required
-            />
+          <div class="form-group">
+            <label class="form-label">عنوان المستند</label>
+            <input type="text" class="form-control" [(ngModel)]="newArchive.title" name="title"
+              placeholder="مثال: قرار رقم ٢٤٥ لسنة ٢٠٢٣" required />
           </div>
 
-          <div class="mb-3">
+          <div class="form-group">
             <label class="form-label">الوصف</label>
-            <textarea
-              class="form-control"
-              [(ngModel)]="newArchive.description"
-              name="description"
-              placeholder="وصف مختصر للقرار..."
-            ></textarea>
+            <textarea class="form-control" rows="3" [(ngModel)]="newArchive.description" name="description"
+              placeholder="وصف مختصر للمستند..."></textarea>
           </div>
 
-          <!-- تقويم التاريخ -->
-          <div class="mb-3">
-            <label class="form-label">تاريخ القرار / الخطاب</label>
-            <input
-              type="date"
-              class="form-control"
-              [(ngModel)]="newArchive.date"
-              name="date"
-              required
-            />
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">تاريخ المستند</label>
+                <input type="date" class="form-control" [(ngModel)]="newArchive.date" name="date" required />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">نوع الأرشيف</label>
+                <select class="form-select" [(ngModel)]="newArchive.letterType" name="letterType">
+                  <option value="رئاسة الجمهورية">رئاسة الجمهورية</option>
+                  <option value="وزارة التعليم العالي">وزارة التعليم العالي</option>
+                  <option value="رئاسة الوزراء">رئاسة الوزراء</option>
+                  <option value="عامة">عامة</option>
+                </select>
+              </div>
+            </div>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label">مستوى الأرشيف</label>
-        <select
-          class="form-select"
-          [(ngModel)]="newArchive.letterType"
-          name="letterType"
-        >
-          <option value="رئاسة الجمهورية">أرشيف رئاسة الجمهورية</option>
-          <option value="وزارة التعليم العالي">أرشيف وزارة التعليم العالي</option>
-          <option value="رئاسة الوزراء">أرشيف رئاسة الوزراء</option>
-        </select>
-            <small class="text-muted">مرئي لجميع المستخدمين أو مخصص</small>
+          <div class="form-group">
+            <label class="form-label">رفع الملف</label>
+            <div class="file-upload-area" [class.active]="newArchive.file">
+              <input type="file" class="file-input" (change)="onFileSelected($event)" #fileInput
+                accept=".pdf,.doc,.docx,.jpg,.png" />
+              <div class="upload-placeholder" (click)="fileInput.click()">
+                <i class="fa fa-cloud-upload-alt"></i>
+                <div class="upload-text">
+                  <span class="d-block">انقر لرفع الملف</span>
+                  <small class="text-muted">PDF, Word, أو صور - الحد الأقصى 10MB</small>
+                </div>
+              </div>
+              <div class="file-preview" *ngIf="newArchive.file">
+                <i class="fa fa-file"></i>
+                <div class="file-info">
+                  <span class="file-name">{{ newArchive.file.name }}</span>
+                  <span class="file-size">{{ getFileSize(newArchive.file.size) }}</span>
+                </div>
+                <button type="button" class="btn-remove" (click)="removeFile()">
+                  <i class="fa fa-times"></i>
+                </button>
+              </div>
+            </div>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label">الملفات</label>
-            <input
-              type="file"
-              class="form-control"
-              (change)="onFileSelected($event)"
-            />
-          </div>
-
-          <div class="d-grid">
-            <button
-              type="submit"
-              class="btn btn-dark"
-              [disabled]="uploading"
-              (click)="uploadArchive()"
-            >
-              <i class="fa fa-cloud-upload me-1"></i>
-              رفع إلى الأرشيف
+          <div class="modal-actions">
+            <button type="button" class="btn btn-cancel" (click)="closeUploadModal()">
+              إلغاء
+            </button>
+            <button type="submit" class="btn btn-submit" [disabled]="uploading || !archiveForm.form.valid">
+              <span *ngIf="!uploading">
+                <i class="fa fa-cloud-upload me-2"></i>رفع الأرشيف
+              </span>
+              <span *ngIf="uploading">
+                <i class="fa fa-spinner fa-spin me-2"></i>جاري الرفع...
+              </span>
             </button>
           </div>
         </form>
