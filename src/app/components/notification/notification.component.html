@@ -1,0 +1,95 @@
+<div class="notification-container" dir="rtl">
+    <button class="notification-button" (click)="openNotificationsModal()"
+        [class.has-notifications]="notifications.length > 0"
+        [attr.aria-label]="'إشعارات (' + notifications.length + ')'">
+        <span class="bell-icon">🔔</span>
+        <span *ngIf="notifications.length > 0" class="notification-badge">
+            {{ notifications.length > 99 ? '99+' : notifications.length }}
+        </span>
+    </button>
+
+    <div *ngIf="showNotificationsModal" class="notification-modal-overlay" (click)="closeNotificationsModal()">
+        <div class="notification-modal" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <div class="header-content">
+                    <h2 class="modal-title">
+                        <i class="fas fa-bell"></i>
+                        الإشعارات
+                    </h2>
+                </div>
+
+                <div class="filter-tabs">
+                    <button class="filter-tab" [class.active]="activeFilter === 'all'" (click)="setFilter('all')">
+                        الكل ({{ notifications.length }})
+                    </button>
+                </div>
+                <button class="close-btn" (click)="closeNotificationsModal()" title="إغلاق">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div *ngIf="isLoading" class="loading-state">
+                    <div class="spinner"></div>
+                    <p>جاري تحميل الإشعارات...</p>
+                </div>
+
+                <div *ngIf="!isLoading && filteredNotifications.length === 0" class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-bell-slash"></i>
+                    </div>
+                    <h3>لا توجد إشعارات</h3>
+                    <p *ngIf="activeFilter === 'all'">لم تتلق أي إشعارات حتى الآن</p>
+                    <p *ngIf="activeFilter === 'unread'">لا توجد إشعارات غير مقروءة</p>
+                    <p *ngIf="activeFilter !== 'all' && activeFilter !== 'unread'">
+                        لا توجد إشعارات من نوع {{ getTypeLabel(activeFilter) }}
+                    </p>
+                </div>
+
+                <div *ngIf="!isLoading && filteredNotifications.length > 0" class="notifications-list">
+                    <div *ngFor="let notification of filteredNotifications" class="notification-item"
+                        [class.unread]="!notification.read" [class]="'type-' + notification.type">
+
+                        <div class="notification-main">
+                            <div class="notification-icon" [class]="'icon-' + notification.type">
+                                {{ getNotificationIcon(notification.type) }}
+                            </div>
+
+                            <div class="notification-content">
+                                <div class="notification-header">
+                                    <h4 class="notification-title">{{ notification.title }}</h4>
+                                    <span class="notification-time">
+                                        {{ formatTimeAgo(notification.timestamp) }}
+                                    </span>
+                                </div>
+                                <p class="notification-message">{{ notification.message }}</p>
+                            </div>
+                        </div>
+
+                        <div class="notification-actions">
+                            <button class="action-btn read-delete-btn" (click)="markAsReadAndDelete(notification._id)"
+                                title="تعليم كمقروء وحذف" [disabled]="!notification._id">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <div class="header-actions">
+                    <button class="action-btn mark-all-read" (click)="markAllAsReadAndDelete()"
+                        *ngIf="notifications.length > 0">
+                        <i class="fas fa-check-double"></i>
+                        تعليم الكل كمقروء وحذف الكل
+                    </button>
+                </div>
+                <div class="footer-actions">
+                    <button class="btn-secondary" (click)="closeNotificationsModal()">
+                        إغلاق
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
