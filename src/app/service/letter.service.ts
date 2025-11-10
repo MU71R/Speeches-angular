@@ -107,7 +107,7 @@ export class LetterService {
       .pipe(map((r) => r.data));
   }
 
-  // ✅ دالة مساعدة للتحقق من الصلاحيات (اختيارية)
+  // دالة مساعدة للتحقق من الصلاحيات (اختيارية)
   canUpdateStatus(userRole: string, currentStatus: string): boolean {
     const statusPermissions = {
       supervisor: ['in_progress'],
@@ -121,7 +121,7 @@ export class LetterService {
     );
   }
 
-  // ✅ دالة للحصول على حالة الخطاب بالعربية (اختيارية)
+  // دالة للحصول على حالة الخطاب بالعربية (اختيارية)
   getStatusArabic(status: string): string {
     const statusMap: { [key: string]: string } = {
       pending: 'قيد الانتظار',
@@ -141,11 +141,11 @@ export class LetterService {
       .pipe(map((r) => r.data));
   }
 
-  addDigitalSignature(id: string, status: string): Observable<LetterDetail> {
+  printLetterByType(id: string, signatureType: string): Observable<LetterDetail> {
     return this.http
-      .put<{ success: boolean; data: LetterDetail }>(
-        `${this.baseUrl}/add-digital-signature/${id}`,
-        { status }
+      .post<{ success: boolean; data: LetterDetail }>(
+        `${this.baseUrl}/print-letter-by-type/${id}`,
+        { signatureType }
       )
       .pipe(map((r) => r.data));
   }

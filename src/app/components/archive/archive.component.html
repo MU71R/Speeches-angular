@@ -9,7 +9,7 @@
   <div class="row g-4 justify-content-center">
     
         <!-- رئيس الجمهورية -->
-        <div class="col-lg-4 col-md-6">
+        <div *ngIf="user?.role === 'UniversityPresident'" class="col-lg-4 col-md-6">
           <div class="archive-card h-100" (click)="getArchivedLettersByType('رئاسة الجمهورية')">
             <div class="card-icon bg-danger bg-opacity-10 text-danger">
               <i class="fa-solid fa-crown"></i>
@@ -23,7 +23,7 @@
           </div>
         </div>
         <!-- رئيس الوزراء -->
-        <div class="col-lg-4 col-md-6">
+        <div *ngIf="user?.role === 'UniversityPresident'" class="col-lg-4 col-md-6">
           <div class="archive-card h-100" (click)="getArchivedLettersByType('رئاسة الوزراء')">
             <div class="card-icon bg-warning bg-opacity-10 text-warning">
               <i class="fa-solid fa-landmark"></i>
@@ -37,7 +37,7 @@
           </div>
         </div>
         <!-- وزارة التعليم العالي -->
-        <div class="col-lg-4 col-md-6">
+        <div *ngIf="user?.role === 'UniversityPresident'" class="col-lg-4 col-md-6">
           <div class="archive-card h-100" (click)="getArchivedLettersByType('وزارة التعليم العالي')">
             <div class="card-icon bg-success bg-opacity-10 text-success">
               <i class="fa-solid fa-graduation-cap"></i>
@@ -83,7 +83,7 @@
 
 
     <!-- أرشيف المراجع -->
-    <div class="col-lg-4 col-md-6">
+    <div *ngIf="user?.role === 'supervisor'" class="col-lg-4 col-md-6">
       <div class="archive-card h-100" (click)="getArchivedSupervisor()">
         <div class="card-icon bg-secondary bg-opacity-10 text-secondary">
           <i class="fa-solid fa-user-check"></i>

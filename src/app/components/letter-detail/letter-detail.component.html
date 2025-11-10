@@ -180,12 +180,12 @@
 
               <!-- خيارات الموافقة -->
               <div *ngIf="showPresidentOptions" class="d-grid gap-3">
-                <button class="btn btn-success btn-lg rounded-2 py-3 fw-semibold" (click)="approveFinal('realscan')"
+                <button class="btn btn-success btn-lg rounded-2 py-3 fw-semibold" (click)="approveLetter('حقيقية')"
                   [disabled]="processing">
                   <i class="bi bi-qr-code-scan me-2"></i> موافقة باستخدام Real Scan
                 </button>
                 <button class="btn btn-outline-primary btn-lg rounded-2 py-3 fw-semibold"
-                  (click)="approveFinal('signature')" [disabled]="processing">
+                  (click)="approveLetter('الممسوحة ضوئيا')" [disabled]="processing">
                   <i class="bi bi-pen-fill me-2"></i> موافقة بالتوقيع الإلكتروني
                 </button>
                 <button class="btn btn-outline-secondary btn-lg rounded-2 py-3" (click)="showPresidentOptions = false">

@@ -23,7 +23,9 @@ export interface LetterDetail {
   title: string;
   description: string;
   notes: string;
-  decision: Decision; // ✅ كائن كامل
+  signatureType: string;
+  pdfUrl: string;
+  decision: Decision; // كائن كامل
   date: string;
   status: 'pending' | 'approved' | 'rejected' | 'in_progress';
   user: User;

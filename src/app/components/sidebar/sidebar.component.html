@@ -11,7 +11,7 @@
         <i class="fa-solid fa-graduation-cap fa-2x"></i>
       </div>
       <h5 class="fw-bold mb-1">خطاب</h5>
-      <span class="badge bg-primary">نظام المراسلات</span>
+      <span class="badge bg-primary">نظام الخطابات الجامعية الإلكتروني</span>
     </div>
 
     <nav class="menu">
@@ -20,28 +20,28 @@
         <span>الرئيسية</span>
       </a>
 
-      <a routerLink="/declaration" routerLinkActive="active" class="menu-item">
+      <a *ngIf="user?.role === 'supervisor' || user?.role === 'UniversityPresident' || user?.role === 'preparer'" routerLink="/declaration" routerLinkActive="active" class="menu-item">
         <i class="fa-solid fa-paper-plane"></i>
         <span>إنشاء خطاب جديد</span>
       </a>
 
-      <a routerLink="/department" routerLinkActive="active" class="menu-item">
-        <i class="fa-solid fa-inbox"></i>
+      <a *ngIf="user?.role === 'admin'" routerLink="/department" routerLinkActive="active" class="menu-item">
+        <i class="fa-solid fa-user"></i>
         <span>إدارة المستخدمين</span>
       </a>
 
-      <a routerLink="/archive" routerLinkActive="active" class="menu-item">
+      <a *ngIf="user?.role === 'supervisor' || user?.role === 'UniversityPresident' || user?.role === 'preparer'" routerLink="/archive" routerLinkActive="active" class="menu-item">
         <i class="fa-solid fa-folder"></i>
         <span>الأرشيف</span>
       </a>
 
-      <a routerLink="/add-decision" routerLinkActive="active" class="menu-item">
-        <i class="fa-solid fa-magnifying-glass"></i>
+      <a *ngIf="user?.role === 'admin'" routerLink="/add-decision" routerLinkActive="active" class="menu-item">
+        <i class="fa-solid fa-plus"></i>
         <span>إضافة خطاب جديد</span>
       </a>
 
-      <a routerLink="/pending-reviews" routerLinkActive="active" class="menu-item">
-        <i class="fa-solid fa-gear"></i>
+      <a *ngIf="user?.role === 'supervisor' || user?.role === 'UniversityPresident'" routerLink="/pending-reviews" routerLinkActive="active" class="menu-item">
+        <i class="fa-solid fa-inbox"></i>
         <span>الخطابات المعلقة</span>
       </a>
     </nav>

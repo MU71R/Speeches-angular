@@ -6,6 +6,7 @@ import {
   AbstractControl,
   ValidationErrors,
 } from '@angular/forms';
+import { Decision } from 'src/app/model/decision';
 import { DecisionService } from 'src/app/service/decision.service';
 import { LetterService } from 'src/app/service/letter.service';
 import Swal from 'sweetalert2';
@@ -92,6 +93,7 @@ export class DeclarationComponent implements OnInit {
           noLeadingSpaces,
         ],
       ],
+      Rationale: ['', [Validators.maxLength(500)]],
       content: [
         '',
         [Validators.required, contentLengthWithoutSpaces(20, 2000)],
@@ -107,7 +109,7 @@ export class DeclarationComponent implements OnInit {
 
   private loadMessageTypes(): void {
     this.declService.getDecisionTypes().subscribe({
-      next: (types: any[]) => {
+      next: (types: Decision[]) => {
         this.messageTypes = types.map((t) => ({
           _id: t._id || '',
           title: t.title || '',
@@ -213,6 +215,7 @@ export class DeclarationComponent implements OnInit {
       title: this.f['title'].value,
       description: cleanContent,
       decision: this.f['type'].value,
+      Rationale: this.f['Rationale'].value,
       date: new Date().toISOString().split('T')[0],
     };
 

@@ -8,6 +8,7 @@ export interface User {
 export interface Letter {
   title: string;
   description: string;
+  Rationale: string;
   decision: string; // ObjectId
   date: string | Date;
   status?: 'pending' | 'approved' | 'rejected' | 'in_progress';
@@ -18,6 +19,7 @@ export interface addLetter {
   _id: string;
   title: string;
   description: string;
+  Rationale: string;
   decision: {
     _id: string;
     title: string;

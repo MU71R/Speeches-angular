@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ArchiveService } from 'src/app/service/archive.service';
+import { AuthService } from 'src/app/service/auth.service';
 
 @Component({
   selector: 'app-archive',
@@ -10,7 +11,9 @@ import { ArchiveService } from 'src/app/service/archive.service';
 export class ArchiveComponent {
   loading = false;
 
-  constructor(private router: Router, private archiveService: ArchiveService) {}
+  constructor(private router: Router, private archiveService: ArchiveService, private authService: AuthService) {}
+
+  user = this.authService.currentUserValue;
 
   // 📂 عند الضغط على أي نوع أرشيف
   getArchivedLettersByType(type: string) {
