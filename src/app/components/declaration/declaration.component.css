@@ -196,3 +196,18 @@
     box-shadow: none !important;
   }
 }
+
+.rtl-date {
+  direction: rtl;
+  text-align: right;
+}
+
+.rtl-date::-webkit-calendar-picker-indicator {
+  margin-left: 0;
+  margin-right: 8px;
+}
+
+.rtl-date::-webkit-datetime-edit {
+  text-align: right;
+  padding-right: 8px;
+}

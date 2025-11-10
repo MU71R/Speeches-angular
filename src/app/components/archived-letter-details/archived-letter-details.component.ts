@@ -1,0 +1,240 @@
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ArchiveService } from 'src/app/service/archive.service';
+
+@Component({
+  selector: 'app-letter-detail',
+  templateUrl: './archived-letter-details.component.html',
+  styleUrls: ['./archived-letter-details.component.css'],
+})
+export class LetterDetailsComponent implements OnInit {
+  letterId: string = '';
+  letter: any = null;
+  loading = true;
+  private sectorsMap: Map<string, string> = new Map();
+  private usersMap: Map<string, any> = new Map();
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private archiveService: ArchiveService
+  ) {}
+
+  ngOnInit(): void {
+    this.letterId = this.route.snapshot.paramMap.get('id') || '';
+    if (this.letterId) {
+      this.getLetterDetails();
+    } else {
+      this.loading = false;
+    }
+  }
+
+  getLetterDetails() {
+    this.loading = true;
+    this.archiveService.getLetterById(this.letterId).subscribe({
+      next: (res: any) => {
+        this.letter = res?.data || null;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('خطأ أثناء جلب تفاصيل الخطاب:', err);
+        this.loading = false;
+      },
+    });
+  }
+
+  // دوال مساعدة محسنة
+  getStatusText(status: string): string {
+    const statusMap: { [key: string]: string } = {
+      approved: 'معتمد',
+      pending: 'قيد المراجعة',
+      rejected: 'مرفوض',
+      draft: 'مسودة',
+      reviewed: 'تمت المراجعة',
+      archived: 'مؤرشف',
+    };
+    return statusMap[status] || 'غير محدد';
+  }
+
+  getStatusClass(status: string): string {
+    const classMap: { [key: string]: string } = {
+      approved: 'status-approved',
+      pending: 'status-pending',
+      rejected: 'status-rejected',
+      draft: 'status-draft',
+      reviewed: 'status-reviewed',
+      archived: 'status-archived',
+    };
+    return classMap[status] || 'status-pending';
+  }
+
+  getTypeBadgeClass(type: string): string {
+    const badgeMap: { [key: string]: string } = {
+      'رئاسة الجمهورية': 'badge-presidential',
+      'وزارة التعليم العالي': 'badge-ministerial',
+      'رئاسة الوزراء': 'badge-governmental',
+      عامة: 'badge-general',
+      شخصي: 'badge-personal',
+      مراجع: 'badge-review',
+      رسمي: 'badge-official',
+      داخلي: 'badge-internal',
+    };
+    return badgeMap[type] || 'badge-general';
+  }
+
+  getTypeIcon(type: string): string {
+    const iconMap: { [key: string]: string } = {
+      'رئاسة الجمهورية': 'fa-flag',
+      'وزارة التعليم العالي': 'fa-graduation-cap',
+      'رئاسة الوزراء': 'fa-landmark',
+      عامة: 'fa-file',
+      شخصي: 'fa-user',
+      مراجع: 'fa-eye',
+      رسمي: 'fa-stamp',
+      داخلي: 'fa-building',
+    };
+    return iconMap[type] || 'fa-file';
+  }
+
+  getPriorityText(priority: string): string {
+    const priorityMap: { [key: string]: string } = {
+      high: 'عاجل',
+      medium: 'متوسط',
+      low: 'عادي',
+    };
+    return priorityMap[priority] || 'عادي';
+  }
+
+  getPriorityClass(priority: string): string {
+    const classMap: { [key: string]: string } = {
+      high: 'priority-high',
+      medium: 'priority-medium',
+      low: 'priority-low',
+    };
+    return classMap[priority] || 'priority-low';
+  }
+
+  getPriorityIcon(priority: string): string {
+    const iconMap: { [key: string]: string } = {
+      high: 'fa-exclamation-circle',
+      medium: 'fa-arrow-up',
+      low: 'fa-arrow-down',
+    };
+    return iconMap[priority] || 'fa-minus';
+  }
+
+  getRoleText(role: string): string {
+    const roleMap: { [key: string]: string } = {
+      supervisor: 'مراجع',
+      UniversityPresident: 'رئيس الجامعة',
+      admin: 'مدير نظام',
+      user: 'مستخدم',
+      manager: 'مدير',
+      director: 'مدير عام',
+    };
+    return roleMap[role] || role;
+  }
+
+  getSectorName(sectorId: string): string {
+    // يمكنك استبدال هذا بمنطق جلب أسماء الأقسام من خدمة
+    const sectorMap: { [key: string]: string } = {
+      '68ff54614859681125c5455f': 'الإدارة العامة للشئون القانونية',
+      '68ff54844859681125c54563': 'إدارة الوحدات ذات الطابع الخاص',
+    };
+    return sectorMap[sectorId] || sectorId;
+  }
+
+  getSupervisorName(supervisorId: string): string {
+    // يمكنك استبدال هذا بمنطق جلب أسماء المشرفين من خدمة
+    const supervisorMap: { [key: string]: string } = {
+      '68ff62b4936b0f8ca0412182': 'الإدارة العامة للشئون القانونية',
+      '68ffaf5984b59cbf1298c3d2': 'إدارة الوحدات ذات الطابع الخاص',
+    };
+    return supervisorMap[supervisorId] || supervisorId;
+  }
+
+  getUserName(userId: string): string {
+    // يمكنك استبدال هذا بمنطق جلب أسماء المستخدمين من خدمة
+    const userMap: { [key: string]: string } = {
+      '690dccb25b4f51cf531fd3b9': 'د/كتور احمد',
+      '68ffaf5984b59cbf1298c3d2': 'إدارة الوحدات ذات الطابع الخاص',
+      '68ff62b4936b0f8ca0412182': 'الإدارة العامة للشئون القانونية',
+    };
+    return userMap[userId] || userId;
+  }
+
+  getFileName(filePath: string): string {
+    if (!filePath) return 'ملف مرفق';
+    const parts = filePath.split(/[\\/]/);
+    return parts[parts.length - 1] || 'ملف مرفق';
+  }
+
+  getFileIcon(filePath: string): string {
+    const extension = filePath?.split('.').pop()?.toLowerCase() || '';
+    const iconMap: { [key: string]: string } = {
+      pdf: 'fa-file-pdf text-danger',
+      doc: 'fa-file-word text-primary',
+      docx: 'fa-file-word text-primary',
+      xls: 'fa-file-excel text-success',
+      xlsx: 'fa-file-excel text-success',
+      ppt: 'fa-file-powerpoint text-warning',
+      pptx: 'fa-file-powerpoint text-warning',
+      jpg: 'fa-file-image text-info',
+      jpeg: 'fa-file-image text-info',
+      png: 'fa-file-image text-info',
+      zip: 'fa-file-archive text-secondary',
+      rar: 'fa-file-archive text-secondary',
+    };
+    return iconMap[extension] || 'fa-file text-muted';
+  }
+
+  getFileSize(filePath: string): string {
+    // هذه دالة افتراضية - يمكنك استبدالها بالمنطق الفعلي لحساب حجم الملف
+    return ''; // مثال: '2.5 MB'
+  }
+
+  getAttachmentUrl(fileName: string): string {
+    if (!fileName) return '';
+    let cleanPath = fileName;
+    if (fileName.includes('\\')) {
+      const parts = fileName.split('\\');
+      cleanPath = parts[parts.length - 1];
+    }
+    return `http://localhost:5000/${cleanPath}`;
+  }
+
+  formatDescription(description: string): string {
+    if (!description) return '';
+    return description
+      .replace(/<br\s*\/?>/gi, '<br>')
+      .replace(/data-start="[^"]*"/g, '')
+      .replace(/data-end="[^"]*"/g, '')
+      .replace(/\\n/g, '<br>');
+  }
+
+  calculateDuration(startDate: string, endDate: string): string {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return `${diffDays} يوم`;
+  }
+
+  hasMultipleSections(): boolean {
+    let count = 1; // قسم المعلومات الإضافية موجود دائماً
+    if (this.letter?.description || this.letter?.breeif) count++;
+    if (this.letter?.Rationale) count++;
+    if (this.letter?.decision) count++;
+    if (this.letter?.approvals && this.letter.approvals.length > 0) count++;
+    if (this.letter?.attachment) count++;
+    if (this.letter?.StartDate || this.letter?.EndDate) count++;
+
+    return count > 2;
+  }
+
+  goBack() {
+    this.router.navigate(['/archive-detail'], {
+      queryParams: { type: localStorage.getItem('archiveType') || '' },
+    });
+  }
+}

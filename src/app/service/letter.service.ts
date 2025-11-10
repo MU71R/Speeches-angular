@@ -64,7 +64,7 @@ export class LetterService {
     approvalType: string
   ): Observable<LetterDetail> {
     return this.http
-      .put<{ success: boolean; data: LetterDetail, approvalType: string }>(
+      .put<{ success: boolean; data: LetterDetail; approvalType: string }>(
         `${this.baseUrl}/update-status-university-president/${id}`,
         { status, approvalType }
       )
@@ -132,7 +132,11 @@ export class LetterService {
     return statusMap[status] || status;
   }
 
-  updateLetterStatus(id: string, status: string, notes: string): Observable<LetterDetail> {
+  updateLetterStatus(
+    id: string,
+    status: string,
+    notes: string
+  ): Observable<LetterDetail> {
     return this.http
       .put<{ success: boolean; data: LetterDetail }>(
         `${this.baseUrl}/update-letter-status/${id}`,
@@ -141,7 +145,10 @@ export class LetterService {
       .pipe(map((r) => r.data));
   }
 
-  printLetterByType(id: string, signatureType: string): Observable<LetterDetail> {
+  printLetterByType(
+    id: string,
+    signatureType: string
+  ): Observable<LetterDetail> {
     return this.http
       .post<{ success: boolean; data: LetterDetail }>(
         `${this.baseUrl}/print-letter-by-type/${id}`,
@@ -149,4 +156,5 @@ export class LetterService {
       )
       .pipe(map((r) => r.data));
   }
+
 }

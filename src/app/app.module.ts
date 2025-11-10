@@ -24,6 +24,7 @@ import { LetterDetailComponent } from './components/letter-detail/letter-detail.
 import { ArchiveComponent } from './components/archive/archive.component';
 import { ArchiveDetailComponent } from './components/archive-detail/archive-detail.component';
 import { HomeComponent } from './components/home/home.component';
+import { LetterDetailsComponent } from './components/archived-letter-details/archived-letter-details.component';
 
 
 
@@ -41,6 +42,7 @@ import { HomeComponent } from './components/home/home.component';
     ArchiveComponent,
     ArchiveDetailComponent,
     HomeComponent,
+    LetterDetailsComponent,
   ],
   imports: [
     BrowserModule,
@@ -51,14 +53,17 @@ import { HomeComponent } from './components/home/home.component';
     BrowserAnimationsModule,
     EditorModule,
     ToastrModule.forRoot({
-      positionClass: 'toast-top-right', 
+      positionClass: 'toast-top-right',
       timeOut: 3000,
-      progressBar: true, 
-      closeButton: true, 
+      progressBar: true,
+      closeButton: true,
       preventDuplicates: true,
     }),
   ],
-  providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }, { provide: LOCALE_ID, useValue: 'ar-EG' }],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: LOCALE_ID, useValue: 'ar-EG' },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -1,0 +1,702 @@
+.rtl {
+    direction: rtl;
+    text-align: right;
+}
+
+/* زر الرجوع المحسن */
+.btn-back {
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(106, 17, 203, 0.3);
+}
+
+.btn-back:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(106, 17, 203, 0.4);
+    color: white;
+}
+
+/* الهيدر المحسن */
+.detail-header {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 1.25rem;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    position: relative;
+    overflow: hidden;
+}
+
+.detail-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: 100%;
+    background: linear-gradient(to bottom, #6a11cb, #2575fc);
+}
+
+.header-badges {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.letter-type-badge, .letter-status, .letter-priority, .letter-number {
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.letter-number {
+    background: linear-gradient(135deg, #6c757d, #a0a0a0);
+}
+
+.status-approved {
+    background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.status-pending {
+    background: linear-gradient(135deg, #ffc107, #fd7e14);
+}
+
+.status-rejected {
+    background: linear-gradient(135deg, #dc3545, #e83e8c);
+}
+
+.status-draft {
+    background: linear-gradient(135deg, #6c757d, #a0a0a0);
+}
+
+.status-reviewed {
+    background: linear-gradient(135deg, #17a2b8, #20c997);
+}
+
+.status-archived {
+    background: linear-gradient(135deg, #6f42c1, #a370f7);
+}
+
+.priority-high {
+    background: linear-gradient(135deg, #dc3545, #fd7e14);
+}
+
+.priority-medium {
+    background: linear-gradient(135deg, #ffc107, #ffd54f);
+    color: #212529;
+}
+
+.priority-low {
+    background: linear-gradient(135deg, #6c757d, #a0a0a0);
+}
+
+.header-content {
+    position: relative;
+    z-index: 1;
+}
+
+.letter-title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: #2c3e50;
+    line-height: 1.3;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.letter-meta {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.meta-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.meta-item {
+    color: #5a6c7d;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+}
+
+.meta-item i {
+    width: 20px;
+    text-align: center;
+}
+
+/* المحتوى الرئيسي المحسن */
+.detail-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.content-nav {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.nav-title {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.nav-link {
+    color: #6c757d;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    border: 1px solid #e9ecef;
+}
+
+.nav-link:hover {
+    background: #f8f9fa;
+    color: #495057;
+    text-decoration: none;
+}
+
+.content-section {
+    background: white;
+    border-radius: 1.25rem;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f8f9fa;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.content-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.section-title {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    padding: 1.5rem 2rem;
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #2c3e50;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    align-items: center;
+}
+
+.approvals-count {
+    background: #6a11cb;
+    color: white;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+}
+
+.section-content {
+    padding: 2rem;
+}
+
+/* الوصف المحسن */
+.description-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #495057;
+    text-align: justify;
+}
+
+.rationale-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #495057;
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    border-right: 4px solid #17a2b8;
+}
+
+/* الشبكات المحسنة */
+.info-grid, .timeline-info, .additional-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.info-item {
+    display: flex;
+    padding: 1.25rem;
+    background: #f8f9fa;
+    border-radius: 0.75rem;
+    border-left: 4px solid #6a11cb;
+    gap: 1rem;
+    transition: all 0.3s ease;
+}
+
+.info-item:hover {
+    background: #e9ecef;
+    transform: translateX(5px);
+}
+
+.info-icon {
+    width: 40px;
+    height: 40px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6a11cb;
+    font-size: 1rem;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.info-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.info-value {
+    color: #6c757d;
+    font-size: 1rem;
+}
+
+/* الموافقات المحسنة */
+.approvals-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    position: relative;
+}
+
+.timeline-line {
+    position: absolute;
+    right: 20px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, #6a11cb, #2575fc);
+    z-index: 0;
+}
+
+.approval-item {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    position: relative;
+    z-index: 1;
+}
+
+.approval-item.first-item .timeline-line {
+    top: 20px;
+}
+
+.approval-item.last-item .timeline-line {
+    bottom: calc(100% - 20px);
+}
+
+.approval-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    position: relative;
+    z-index: 2;
+}
+
+.approval-badge.approved {
+    background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.approval-badge.rejected {
+    background: linear-gradient(135deg, #dc3545, #e83e8c);
+}
+
+.approval-content {
+    flex: 1;
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.approval-content:hover {
+    background: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.approval-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.approval-role-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.approval-role {
+    font-weight: 700;
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+.approval-step {
+    font-size: 0.8rem;
+    color: #6c757d;
+    background: #e9ecef;
+    padding: 0.2rem 0.6rem;
+    border-radius: 1rem;
+    align-self: flex-start;
+}
+
+.approval-date {
+    color: #6c757d;
+    font-size: 0.9rem;
+    background: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e9ecef;
+}
+
+.approval-status {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.status-approved {
+    color: #28a745;
+}
+
+.status-rejected {
+    color: #dc3545;
+}
+
+.approval-user {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+}
+
+.approval-notes {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #dee2e6;
+    color: #495057;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* المرفقات المحسنة */
+.attachment-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.75rem;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 1rem;
+    border: 1px solid #e9ecef;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.attachment-card:hover {
+    background: white;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.attachment-info {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 1.5rem;
+}
+
+.attachment-icon {
+    font-size: 3rem;
+}
+
+.attachment-details {
+    flex: 1;
+}
+
+.attachment-name {
+    font-weight: 700;
+    color: #2c3e50;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.attachment-meta {
+    color: #6c757d;
+    font-size: 0.9rem;
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.attachment-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+/* حالات التحميل والفراغ المحسنة */
+.loading-state, .empty-state {
+    padding: 5rem 2rem;
+    text-align: center;
+}
+
+.spinner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.spinner-wrapper {
+    padding: 2rem;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.loading-text h5 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.empty-icon {
+    font-size: 5rem;
+    color: #bdc3c7;
+    margin-bottom: 2rem;
+    opacity: 0.7;
+}
+
+.empty-title {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.empty-text {
+    font-size: 1.1rem;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* فئات البادجات المحسنة */
+.badge-presidential {
+    background: linear-gradient(135deg, #dc3545, #e83e8c);
+}
+
+.badge-ministerial {
+    background: linear-gradient(135deg, #198754, #20c997);
+}
+
+.badge-governmental {
+    background: linear-gradient(135deg, #fd7e14, #ffc107);
+}
+
+.badge-general {
+    background: linear-gradient(135deg, #6f42c1, #a370f7);
+}
+
+.badge-personal {
+    background: linear-gradient(135deg, #0dcaf0, #6fdcf0);
+}
+
+.badge-review {
+    background: linear-gradient(135deg, #6c757d, #a0a0a0);
+}
+
+.badge-official {
+    background: linear-gradient(135deg, #6610f2, #8b46f5);
+}
+
+.badge-internal {
+    background: linear-gradient(135deg, #20c997, #3dd5a8);
+}
+
+/* التصميم المتجاوب المحسن */
+@media (max-width: 992px) {
+    .letter-meta {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .meta-group {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .detail-header {
+        padding: 1.5rem;
+    }
+
+    .letter-title {
+        font-size: 1.75rem;
+    }
+
+    .header-badges {
+        gap: 0.75rem;
+    }
+
+    .letter-type-badge, .letter-status, .letter-priority, .letter-number {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+    }
+
+    .section-content {
+        padding: 1.5rem;
+    }
+
+    .content-nav {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .nav-links {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .info-item {
+        flex-direction: column;
+        gap: 0.75rem;
+        text-align: center;
+    }
+
+    .info-icon {
+        align-self: center;
+    }
+
+    .attachment-card {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: center;
+    }
+
+    .attachment-info {
+        flex-direction: column;
+        text-align: center;
+        width: 100%;
+    }
+
+    .attachment-actions {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .approval-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .approval-item {
+        gap: 1rem;
+    }
+
+    .timeline-line {
+        right: 22px;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .letter-title {
+        font-size: 1.5rem;
+    }
+
+    .section-title {
+        padding: 1.25rem 1.5rem;
+        font-size: 1.2rem;
+    }
+
+    .attachment-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .attachment-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .attachment-actions .btn {
+        width: 100%;
+        margin: 0.25rem 0;
+    }
+}   

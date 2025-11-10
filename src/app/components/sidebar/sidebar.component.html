@@ -1,17 +1,18 @@
 <div class="sidebar-container">
   <div class="sidebar-overlay" [class.active]="isSidebarOpen" (click)="closeSidebar()"></div>
 
-  <button class="toggle-btn" (click)="toggleSidebar()" aria-label="Toggle sidebar" [attr.aria-expanded]="isSidebarOpen">
+  <button class="toggle-btn" (click)="toggleSidebar()" aria-label="تبديل الشريط الجانبي"
+    [attr.aria-expanded]="isSidebarOpen">
     <i class="fa-solid" [class.fa-bars]="!isSidebarOpen" [class.fa-xmark]="isSidebarOpen"></i>
   </button>
 
-  <aside class="sidebar shadow-sm" [class.open]="isSidebarOpen" role="navigation" aria-label="القائمة الرئيسية">
-    <div class="sidebar-header text-center border-bottom pb-3">
+  <aside class="sidebar shadow-lg" [class.open]="isSidebarOpen" role="navigation" aria-label="القائمة الرئيسية">
+    <div class="sidebar-header text-center">
       <div class="logo-box">
-        <i class="fa-solid fa-graduation-cap fa-2x"></i>
+        <i class="fa-solid fa-graduation-cap"></i>
       </div>
       <h5 class="fw-bold mb-1">خطاب</h5>
-      <span class="badge bg-primary">نظام الخطابات الجامعية الإلكتروني</span>
+      <span class="badge bg-primary">نظام الخطابات الجامعية</span>
     </div>
 
     <nav class="menu">
@@ -20,36 +21,44 @@
         <span>الرئيسية</span>
       </a>
 
-      <a *ngIf="user?.role === 'supervisor' || user?.role === 'UniversityPresident' || user?.role === 'preparer'" routerLink="/declaration" routerLinkActive="active" class="menu-item">
+      <a *ngIf="user?.role === 'supervisor' || user?.role === 'UniversityPresident' || user?.role === 'preparer'"
+        routerLink="/declaration" routerLinkActive="active" class="menu-item">
         <i class="fa-solid fa-paper-plane"></i>
         <span>إنشاء خطاب جديد</span>
       </a>
 
       <a *ngIf="user?.role === 'admin'" routerLink="/department" routerLinkActive="active" class="menu-item">
-        <i class="fa-solid fa-user"></i>
+        <i class="fa-solid fa-users-gear"></i>
         <span>إدارة المستخدمين</span>
       </a>
 
-      <a *ngIf="user?.role === 'supervisor' || user?.role === 'UniversityPresident' || user?.role === 'preparer'" routerLink="/archive" routerLinkActive="active" class="menu-item">
-        <i class="fa-solid fa-folder"></i>
+      <a *ngIf="user?.role === 'supervisor' || user?.role === 'UniversityPresident' || user?.role === 'preparer'"
+        routerLink="/archive" routerLinkActive="active" class="menu-item">
+        <i class="fa-solid fa-box-archive"></i>
         <span>الأرشيف</span>
       </a>
 
       <a *ngIf="user?.role === 'admin'" routerLink="/add-decision" routerLinkActive="active" class="menu-item">
-        <i class="fa-solid fa-plus"></i>
+        <i class="fa-solid fa-file-circle-plus"></i>
         <span>إضافة خطاب جديد</span>
       </a>
 
-      <a *ngIf="user?.role === 'supervisor' || user?.role === 'UniversityPresident'" routerLink="/pending-reviews" routerLinkActive="active" class="menu-item">
+      <a *ngIf="user?.role === 'supervisor' || user?.role === 'UniversityPresident'" routerLink="/pending-reviews"
+        routerLinkActive="active" class="menu-item">
         <i class="fa-solid fa-inbox"></i>
         <span>الخطابات المعلقة</span>
       </a>
     </nav>
 
     <div class="sidebar-footer">
-      <div class="user-box">
-        <small>{{ user?.fullname }}</small><br />
-        <small class="text-muted"></small>
+      <div class="user-info">
+        <div class="user-avatar">
+          <i class="fa-solid fa-user"></i>
+        </div>
+        <div class="user-details">
+          <h6 class="mb-0">{{ user?.fullname }}</h6>
+          <small class="text-muted user-role">{{ getUserRoleDisplayName() }}</small>
+        </div>
       </div>
       <button (click)="logout()" class="logout-btn" aria-label="تسجيل الخروج">
         <i class="fa-solid fa-right-from-bracket"></i>

@@ -60,10 +60,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   private checkScreenSize(): void {
     if (window.innerWidth >= 992) {
-      // على الشاشات الكبيرة، الشريط مفتوح دائماً
       this.isSidebarOpen = true;
     } else {
-      // على الجوال، الشريط مغلق افتراضياً
       this.isSidebarOpen = false;
     }
     this.sidebarToggled.emit(this.isSidebarOpen);
@@ -75,6 +73,20 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.loginService.user$.subscribe((user) => {
       this.user = user;
     });
+  }
+
+
+  getUserRoleDisplayName(): string {
+    if (!this.user?.role) return 'مستخدم';
+
+    const roleNames: { [key: string]: string } = {
+      admin: 'مدير النظام',
+      supervisor: 'مراجع',
+      UniversityPresident: 'رئيس الجامعة',
+      preparer: 'معد الخطابات',
+    };
+
+    return roleNames[this.user.role] || 'مستخدم';
   }
 
   toggleSidebar(): void {

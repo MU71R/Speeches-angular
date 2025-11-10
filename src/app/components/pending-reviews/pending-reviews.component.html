@@ -5,12 +5,47 @@
       <h5 class="fw-bold mb-1 text-dark">الخطابات المعلقة</h5>
       <p class="text-muted small mb-0">خطابات تحتاج إلى مراجعتك وموافقتك</p>
     </div>
+
+    <div class="dropdown position-relative">
+      <button class="btn btn-outline-secondary d-flex align-items-center gap-2" type="button" (click)="toggleDropdown()"
+        dir="rtl">
+        <i class="bi bi-funnel"></i>
+        تصفية حسب الحالة
+        <i class="bi bi-chevron-down small" [class.rotate-180]="isDropdownOpen"></i>
+      </button>
+
+      <div class="dropdown-menu-custom shadow border-0 rounded-3" [class.show]="isDropdownOpen" dir="rtl">
+        <button class="dropdown-item-custom d-flex align-items-center gap-2 py-2" (click)="filterByStatus('all')">
+          <i class="bi bi-list-ul text-muted"></i>
+          جميع الخطابات
+        </button>
+        <div class="dropdown-divider-custom"></div>
+        <button class="dropdown-item-custom d-flex align-items-center gap-2 py-2"
+          (click)="filterByStatus('in_progress')">
+          <i class="bi bi-clock-history text-primary"></i>
+          قيد المراجعة
+        </button>
+        <button class="dropdown-item-custom d-flex align-items-center gap-2 py-2" (click)="filterByStatus('pending')">
+          <i class="bi bi-hourglass-split text-warning"></i>
+          معلق
+        </button>
+        <button class="dropdown-item-custom d-flex align-items-center gap-2 py-2" (click)="filterByStatus('approved')">
+          <i class="bi bi-check-circle text-success"></i>
+          تمت الموافقة
+        </button>
+        <button class="dropdown-item-custom d-flex align-items-center gap-2 py-2" (click)="filterByStatus('rejected')">
+          <i class="bi bi-x-circle text-danger"></i>
+          مرفوض
+        </button>
+      </div>
+    </div>
   </div>
 
   <div class="table-responsive">
     <table class="table align-middle mb-0 text-center" dir="rtl">
       <thead class="bg-light">
         <tr>
+          <th class="fw-semibold text-dark border-0 px-2" style="width: 60px;">#</th>
           <th class="fw-semibold text-dark border-0 px-2">العنوان</th>
           <th class="fw-semibold text-dark border-0 d-none d-md-table-cell">نوع القرار</th>
           <th class="fw-semibold text-dark border-0">تاريخ الإنشاء</th>
@@ -19,16 +54,19 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let item of pendingList" class="border-bottom">
+        <tr *ngFor="let item of filteredList; let i = index" class="border-bottom">
           <td class="py-3 px-2">
-            <div class="d-flex align-items-center justify-content-center gap-2" dir="rtl">
+            <span class="fw-medium text-muted">{{ i + 1 }}</span>
+          </td>
+          <td class="py-3 px-2">
+            <div class="title-container" dir="rtl">
               <i class="bi bi-file-text text-primary flex-shrink-0"></i>
-              <span class="fw-medium text-truncate" [title]="item.title">{{ item.title }}</span>
+              <span class="title-text fw-medium" [title]="item.title">{{ item.title }}</span>
             </div>
           </td>
           <td class="py-3 d-none d-md-table-cell">
             <span class="badge bg-secondary bg-opacity-10 text-dark rounded-pill px-3 py-2 border">
-              {{ item.decision?.title || 'غير محدد' }}
+              {{ item.decision.title || 'غير محدد' }}
             </span>
           </td>
           <td class="py-3">
@@ -68,12 +106,17 @@
             </button>
           </td>
         </tr>
-        <tr *ngIf="pendingList.length === 0">
-          <td colspan="5" class="text-center py-5" dir="rtl">
+        <tr *ngIf="filteredList.length === 0">
+          <td colspan="6" class="text-center py-5" dir="rtl">
             <div class="d-flex flex-column align-items-center justify-content-center text-muted">
               <i class="bi bi-inbox display-4 mb-3 opacity-50"></i>
-              <p class="mb-2 fw-medium">لا توجد خطابات معلقة حالياً</p>
-              <small class="text-muted">سيظهر هنا الخطابات التي تحتاج إلى مراجعتك</small>
+              <p class="mb-2 fw-medium">لا توجد خطابات لعرضها</p>
+              <small class="text-muted" *ngIf="selectedStatus !== 'all'">
+                لا توجد خطابات بحالة "{{ getStatusText(selectedStatus) }}"
+              </small>
+              <small class="text-muted" *ngIf="selectedStatus === 'all'">
+                لا توجد خطابات لعرضها حالياً
+              </small>
             </div>
           </td>
         </tr>
@@ -81,95 +124,3 @@
     </table>
   </div>
 </div>
-
-<!-- Modal -->
-<div class="modal fade show d-block" [class.show]="selectedLetter" tabindex="-1" *ngIf="selectedLetter">
-  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" dir="rtl">
-    <div class="modal-content border-0 rounded-4 shadow-lg">
-      <!-- Modal Header -->
-      <div class="modal-header bg-gradient bg-dark text-white rounded-4 rounded-bottom-0 border-0 py-4" dir="rtl">
-        <div class="d-flex align-items-center gap-3 w-100">
-          <i class="bi bi-file-text display-6 flex-shrink-0"></i>
-          <div class="flex-grow-1 min-w-0">
-            <h5 class="modal-title fw-bold mb-1 text-truncate">{{ selectedLetter.title }}</h5>
-            <div class="d-flex flex-wrap gap-2 align-items-center mt-2">
-              <small
-                class="badge bg-light bg-opacity-20 text-white rounded-pill px-3 py-1 d-flex align-items-center gap-1">
-                <i class="bi bi-calendar3"></i>
-                <span>{{ selectedLetter.date | date: 'd MMMM y' : '' : 'ar-EG' }}</span>
-              </small>
-              <small
-                class="badge bg-light bg-opacity-20 text-white rounded-pill px-3 py-1 d-flex align-items-center gap-1">
-                <i class="bi bi-tag"></i>
-                <span>{{ selectedLetter.decision?.title || 'غير محدد' }}</span>
-              </small>
-            </div>
-          </div>
-          <button type="button"
-            class="btn-close btn-close-white bg-white bg-opacity-20 rounded-circle p-2 flex-shrink-0 ms-0 me-auto"
-            (click)="closeModal()"></button>
-        </div>
-      </div>
-
-      <!-- Modal Body -->
-      <div class="modal-body py-4" dir="rtl">
-        <div class="row g-3 mb-4">
-          <div class="col-12 col-sm-6">
-            <div class="bg-light rounded-3 p-3 border">
-              <small class="text-muted d-block mb-1">الحالة الحالية</small>
-              <span class="badge rounded-pill px-3 py-2 fw-medium border-0" [ngClass]="{
-                'bg-primary text-white': selectedLetter.status === 'in_progress',
-                'bg-warning text-dark': selectedLetter.status === 'pending',
-                'bg-success text-white': selectedLetter.status === 'approved',
-                'bg-danger text-white': selectedLetter.status === 'rejected'
-              }">
-                {{ getStatusText(selectedLetter.status) }}
-              </span>
-            </div>
-          </div>
-          <div class="col-12 col-sm-6">
-            <div class="bg-light rounded-3 p-3 border">
-              <small class="text-muted d-block mb-1">آخر تحديث</small>
-              <span class="fw-medium">{{ (selectedLetter.updatedAt || selectedLetter.date) | date: 'short' : '' :
-                'ar-EG' }}</span>
-            </div>
-          </div>
-        </div>
-
-        <h6 class="fw-bold mb-3 text-dark border-bottom pb-2 d-flex align-items-center gap-2">
-          <i class="bi bi-card-text"></i>
-          <span>محتوى الخطاب</span>
-        </h6>
-
-        <div class="p-3 p-md-4 bg-light rounded-3 border" [innerHTML]="safeDescription" dir="rtl"></div>
-      </div>
-
-      <!-- Modal Footer -->
-      <div class="modal-footer border-0 bg-light rounded-4 rounded-top-0 py-3" dir="rtl">
-        <div class="d-flex flex-column flex-sm-row w-100 gap-2 justify-content-between">
-          <button
-            class="btn btn-outline-secondary rounded-3 d-flex align-items-center gap-2 order-2 order-sm-1 flex-grow-1 flex-sm-grow-0 justify-content-center"
-            (click)="closeModal()">
-            <i class="bi bi-x-circle"></i>
-            <span>إغلاق</span>
-          </button>
-          <div class="d-flex gap-2 order-1 order-sm-2 w-100 w-sm-auto justify-content-center justify-content-sm-end">
-            <button
-              class="btn btn-success rounded-3 d-flex align-items-center gap-2 px-3 px-sm-4 flex-grow-1 flex-sm-grow-0 justify-content-center">
-              <i class="bi bi-check-lg"></i>
-              <span>اعتماد الخطاب</span>
-            </button>
-            <button
-              class="btn btn-outline-danger rounded-3 d-flex align-items-center gap-2 flex-grow-1 flex-sm-grow-0 justify-content-center">
-              <i class="bi bi-x-lg"></i>
-              <span>رفض</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Backdrop -->
-<div class="modal-backdrop fade show" *ngIf="selectedLetter"></div>

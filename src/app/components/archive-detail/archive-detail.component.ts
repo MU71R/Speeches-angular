@@ -14,7 +14,6 @@ export class ArchiveDetailComponent implements OnInit {
   loading = true;
   showUploadModal = false;
   uploading = false;
-  currentYear = new Date().getFullYear();
 
   newArchive = {
     title: '',
@@ -33,7 +32,9 @@ export class ArchiveDetailComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       this.type = params['type'] || localStorage.getItem('archiveType') || '';
-      if (this.type) localStorage.setItem('archiveType', this.type);
+      if (this.type) {
+        localStorage.setItem('archiveType', this.type);
+      }
 
       if (this.type === 'شخصي') {
         this.getPersonalArchive();
@@ -45,15 +46,20 @@ export class ArchiveDetailComponent implements OnInit {
     });
   }
 
-  // الدوال الأساسية
-  getPersonalArchive() {
+  // دالة لتتبع العناصر في ngFor
+  trackByLetterId(index: number, letter: any): string {
+    return letter._id;
+  }
+
+  // الدوال الأساسية لجلب البيانات
+  getPersonalArchive(): void {
     this.loading = true;
     this.archiveService.getPersonalArchive().subscribe({
       next: (res: any) => {
         this.letters = res?.data || [];
         this.loading = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('خطأ أثناء جلب الأرشيف الشخصي:', err);
         this.loading = false;
         this.showError('حدث خطأ أثناء جلب الأرشيف الشخصي');
@@ -61,14 +67,14 @@ export class ArchiveDetailComponent implements OnInit {
     });
   }
 
-  getArchivedSupervisor() {
+  getArchivedSupervisor(): void {
     this.loading = true;
     this.archiveService.getArchivedsupervisor().subscribe({
       next: (res: any) => {
         this.letters = res?.data || [];
         this.loading = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('خطأ أثناء جلب أرشيف المراجع:', err);
         this.loading = false;
         this.showError('حدث خطأ أثناء جلب أرشيف المراجع');
@@ -76,15 +82,14 @@ export class ArchiveDetailComponent implements OnInit {
     });
   }
 
-  getArchivedLettersByType(type: string) {
+  getArchivedLettersByType(type: string): void {
     this.loading = true;
     this.archiveService.getArchivedLettersByType(type).subscribe({
       next: (res: any) => {
-        // استخدام جميع البيانات بدون تصفية لأن الخادم يعيد البيانات المصفاة بالفعل
         this.letters = res?.data || [];
         this.loading = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('خطأ أثناء جلب الأرشيف:', err);
         this.loading = false;
         this.showError('حدث خطأ أثناء جلب الأرشيف');
@@ -92,7 +97,12 @@ export class ArchiveDetailComponent implements OnInit {
     });
   }
 
-  // دوال جديدة للتعامل مع البيانات الفعلية
+  // دالة جديدة لفتح صفحة تفاصيل الخطاب
+  viewLetterDetails(letterId: string): void {
+    this.router.navigate(['/letter-detail', letterId]);
+  }
+
+  // الدوال المستخدمة في الـ HTML
   getArchiveTitle(): string {
     const titles: { [key: string]: string } = {
       شخصي: 'الأرشيف الشخصي',
@@ -119,97 +129,6 @@ export class ArchiveDetailComponent implements OnInit {
     );
   }
 
-  // تنسيق الوصف لعرض HTML بشكل صحيح
-  formatDescription(description: string): string {
-    if (!description) return '';
-
-    // تنظيف النص من العلامات غير المرغوب فيها
-    let cleanedDescription = description
-      .replace(/<br\s*\/?>/gi, '<br>')
-      .replace(/data-start="[^"]*"/g, '')
-      .replace(/data-end="[^"]*"/g, '')
-      .replace(/\\n/g, '<br>');
-
-    return cleanedDescription;
-  }
-
-  // الحصول على اسم الملف من المسار
-  getFileName(filePath: string): string {
-    if (!filePath) return 'ملف مرفق';
-
-    // استخراج اسم الملف من المسار
-    const parts = filePath.split(/[\\/]/);
-    return parts[parts.length - 1] || 'ملف مرفق';
-  }
-
-  // الحصول على نص حالة الخطاب
-  getStatusText(status: string): string {
-    const statusMap: { [key: string]: string } = {
-      approved: 'معتمد',
-      pending: 'قيد المراجعة',
-      rejected: 'مرفوض',
-      draft: 'مسودة',
-    };
-    return statusMap[status] || 'غير محدد';
-  }
-
-  // الحصول على كلاس الحالة
-  getStatusClass(status: string): string {
-    const classMap: { [key: string]: string } = {
-      approved: 'status-approved',
-      pending: 'status-pending',
-      rejected: 'status-rejected',
-      draft: 'status-pending',
-    };
-    return classMap[status] || 'status-pending';
-  }
-
-  // الحصول على نص الدور
-  getRoleText(role: string): string {
-    const roleMap: { [key: string]: string } = {
-      supervisor: 'مراجع',
-      UniversityPresident: 'رئيس الجامعة',
-      admin: 'مدير نظام',
-      user: 'مستخدم',
-    };
-    return roleMap[role] || role;
-  }
-
-  // الدوال الجديدة للإحصائيات
-  getCurrentYearDocuments(): number {
-    return this.letters.filter((letter) => {
-      try {
-        const letterYear = new Date(letter.date).getFullYear();
-        return letterYear === this.currentYear;
-      } catch {
-        return false;
-      }
-    }).length;
-  }
-
-  getDocumentsWithAttachments(): number {
-    return this.letters.filter((letter) => letter.attachment).length;
-  }
-
-  getUniqueUsers(): number {
-    const users = new Set(
-      this.letters.map((letter) => letter.user?._id).filter((id) => id) // إزالة القيم null/undefined
-    );
-    return users.size;
-  }
-
-  getTypeBadgeClass(type: string): string {
-    const badgeMap: { [key: string]: string } = {
-      'رئاسة الجمهورية': 'badge-presidential',
-      'وزارة التعليم العالي': 'badge-ministerial',
-      'رئاسة الوزراء': 'badge-governmental',
-      عامة: 'badge-general',
-      شخصي: 'badge-personal',
-      مراجع: 'badge-review',
-    };
-    return badgeMap[type] || 'badge-general';
-  }
-
   getFileSize(bytes: number): string {
     if (!bytes || bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -218,12 +137,8 @@ export class ArchiveDetailComponent implements OnInit {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 
-  removeFile() {
+  removeFile(): void {
     this.newArchive.file = null;
-  }
-
-  goBack() {
-    this.router.navigate(['/archive']);
   }
 
   isSpecialArchive(): boolean {
@@ -231,26 +146,23 @@ export class ArchiveDetailComponent implements OnInit {
       'رئاسة الوزراء',
       'رئاسة الجمهورية',
       'وزارة التعليم العالي',
-      'رئيس الجمهورية',
-      'رئيس الوزراء',
     ];
     return allowed.includes(this.type);
   }
 
-  openUploadModal() {
+  openUploadModal(): void {
     this.showUploadModal = true;
   }
 
-  closeUploadModal() {
+  closeUploadModal(): void {
     this.showUploadModal = false;
     this.newArchive.file = null;
   }
 
-  onFileSelected(event: any) {
+  onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
       if (file.size > 10 * 1024 * 1024) {
-        // 10MB limit
         this.showError('حجم الملف يجب أن يكون أقل من 10MB');
         return;
       }
@@ -258,7 +170,7 @@ export class ArchiveDetailComponent implements OnInit {
     }
   }
 
-  uploadArchive() {
+  uploadArchive(): void {
     if (!this.newArchive.title || !this.newArchive.date) {
       this.showError('الرجاء إدخال العنوان والتاريخ');
       return;
@@ -281,11 +193,9 @@ export class ArchiveDetailComponent implements OnInit {
         this.showUploadModal = false;
         this.showSuccess('تم رفع الأرشيف بنجاح');
         this.resetForm();
-
-        // إعادة تحميل البيانات حسب النوع
         this.reloadData();
       },
-      error: (err) => {
+      error: (err: any) => {
         this.uploading = false;
         console.error('خطأ أثناء الرفع:', err);
         this.showError('حدث خطأ أثناء رفع الأرشيف');
@@ -293,8 +203,7 @@ export class ArchiveDetailComponent implements OnInit {
     });
   }
 
-  // دالة مساعدة لإعادة تحميل البيانات
-  private reloadData() {
+  private reloadData(): void {
     if (this.type === 'شخصي') {
       this.getPersonalArchive();
     } else if (this.type === 'مراجع') {
@@ -304,7 +213,7 @@ export class ArchiveDetailComponent implements OnInit {
     }
   }
 
-  resetForm() {
+  private resetForm(): void {
     this.newArchive = {
       title: '',
       description: '',
@@ -314,54 +223,23 @@ export class ArchiveDetailComponent implements OnInit {
     };
   }
 
-  viewLetter(id: string) {
-    this.router.navigate(['/letter-detail', id]);
-  }
-
-  getAttachmentUrl(fileName: string): string {
-    if (!fileName) return '';
-
-    // تنظيف مسار الملف إذا كان يحتوي على مسار كامل
-    let cleanPath = fileName;
-    if (fileName.includes('\\')) {
-      const parts = fileName.split('\\');
-      cleanPath = parts[parts.length - 1];
-    }
-
-    return `http://localhost:5000/${cleanPath}`;
-  }
-
-  // دوال المساعدة للتنبيهات
-  private showSuccess(message: string) {
+  private showSuccess(message: string): void {
     Swal.fire({
       icon: 'success',
       title: message,
       showConfirmButton: false,
-      timer: 1500,
+      timer: 2000,
+      position: 'top-start',
     });
   }
 
-  private showError(message: string) {
+  private showError(message: string): void {
     Swal.fire({
       icon: 'error',
       title: message,
       showConfirmButton: false,
-      timer: 2000,
+      timer: 3000,
+      position: 'top-start',
     });
-  }
-
-  // دالة إضافية للتحقق من وجود بيانات المستخدم
-  hasUserData(letter: any): boolean {
-    return letter.user && letter.user.fullname;
-  }
-
-  // دالة إضافية للتحقق من وجود قرار
-  hasDecisionData(letter: any): boolean {
-    return letter.decision && letter.decision.title;
-  }
-
-  // دالة إضافية للتحقق من وجود موافقات
-  hasApprovals(letter: any): boolean {
-    return letter.approvals && letter.approvals.length > 0;
   }
 }

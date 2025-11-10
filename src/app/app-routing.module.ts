@@ -10,6 +10,8 @@ import { LetterDetailComponent } from './components/letter-detail/letter-detail.
 import { ArchiveComponent } from './components/archive/archive.component';
 import { ArchiveDetailComponent } from './components/archive-detail/archive-detail.component';
 import { HomeComponent } from './components/home/home.component';
+import { LetterDetailsComponent } from './components/archived-letter-details/archived-letter-details.component';
+
 
 
 const routes: Routes = [
@@ -28,6 +30,7 @@ const routes: Routes = [
       { path: 'declaration', component: DeclarationComponent },
       { path: 'pending-reviews', component: PendingReviewsComponent },
       { path: 'letter-details/:id', component: LetterDetailComponent },
+      { path: 'letter-detail/:id', component: LetterDetailsComponent },
       { path: 'archive', component: ArchiveComponent },
       { path: 'archive-detail', component: ArchiveDetailComponent },
       // الصفحة الرئيسية داخل النظام

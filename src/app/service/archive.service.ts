@@ -3,11 +3,10 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ArchiveService {
-
-  constructor(private http: HttpClient) {  } 
+  constructor(private http: HttpClient) {}
 
   url = 'http://localhost:3000/letters';
 
@@ -19,9 +18,8 @@ export class ArchiveService {
     return this.http.get(this.url + '/get-archived/' + type);
   }
 
-   addArchive(formData: FormData): Observable<any> {
-    return this.http.post(`${this.url}/add-archive`, formData, {
-    });
+  addArchive(formData: FormData): Observable<any> {
+    return this.http.post(`${this.url}/add-archive`, formData, {});
   }
 
   getPersonalArchive() {
@@ -30,5 +28,9 @@ export class ArchiveService {
 
   getArchivedsupervisor() {
     return this.http.get(this.url + '/get-reviewer-archives');
+  }
+
+  getLetterById(id: string): Observable<any> {
+    return this.http.get(`${this.url}/get-letter/${id}`);
   }
 }

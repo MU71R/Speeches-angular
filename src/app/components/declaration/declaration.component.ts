@@ -5,6 +5,7 @@ import {
   Validators,
   AbstractControl,
   ValidationErrors,
+  ValidatorFn,
 } from '@angular/forms';
 import { Decision } from 'src/app/model/decision';
 import { DecisionService } from 'src/app/service/decision.service';
@@ -56,6 +57,44 @@ export function contentLengthWithoutSpaces(min: number, max: number) {
   };
 }
 
+export function dateValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    if (!control.value) return null;
+
+    const date = new Date(control.value);
+    if (isNaN(date.getTime())) {
+      return { invalidDate: true };
+    }
+
+    return null;
+  };
+}
+
+export function endDateAfterStartValidator(
+  startDateControlName: string,
+  endDateControlName: string
+): ValidatorFn {
+  return (formGroup: AbstractControl): ValidationErrors | null => {
+    const startDate = formGroup.get(startDateControlName)?.value;
+    const endDate = formGroup.get(endDateControlName)?.value;
+
+    if (!startDate || !endDate) return null;
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (start >= end) {
+      formGroup
+        .get(endDateControlName)
+        ?.setErrors({ endDateBeforeStart: true });
+      return { endDateBeforeStart: true };
+    } else {
+      formGroup.get(endDateControlName)?.setErrors(null);
+      return null;
+    }
+  };
+}
+
 @Component({
   selector: 'app-declaration',
   templateUrl: './declaration.component.html',
@@ -68,6 +107,7 @@ export class DeclarationComponent implements OnInit {
   successMsg = '';
   errorMsg = '';
   contentWithoutSpacesLength = 0;
+  rationaleWithoutSpacesLength = 0;
   formSubmitted = false;
 
   constructor(
@@ -82,28 +122,46 @@ export class DeclarationComponent implements OnInit {
   }
 
   private initializeForm(): void {
-    this.messageForm = this.fb.group({
-      type: ['', [Validators.required]],
-      title: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(5),
-          Validators.maxLength(100),
-          noLeadingSpaces,
+    this.messageForm = this.fb.group(
+      {
+        type: ['', [Validators.required]],
+        title: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(5),
+            Validators.maxLength(100),
+            noLeadingSpaces,
+          ],
         ],
-      ],
-      Rationale: ['', [Validators.maxLength(500)]],
-      content: [
-        '',
-        [Validators.required, contentLengthWithoutSpaces(20, 2000)],
-      ],
-      date: [{ value: new Date().toISOString().split('T')[0], disabled: true }],
-    });
+        Rationale: [
+          '',
+          [Validators.required, contentLengthWithoutSpaces(10, 500)],
+        ],
+        content: [
+          '',
+          [Validators.required, contentLengthWithoutSpaces(20, 2000)],
+        ],
+        startDate: ['', [dateValidator()]],
+        endDate: ['', [dateValidator()]],
+        date: [
+          { value: new Date().toISOString().split('T')[0], disabled: true },
+        ],
+      },
+      {
+        validators: endDateAfterStartValidator('startDate', 'endDate'),
+      }
+    );
 
     this.updateContentLengthWithoutSpaces();
+    this.updateRationaleLengthWithoutSpaces();
+
     this.messageForm.get('content')?.valueChanges.subscribe(() => {
       this.updateContentLengthWithoutSpaces();
+    });
+
+    this.messageForm.get('Rationale')?.valueChanges.subscribe(() => {
+      this.updateRationaleLengthWithoutSpaces();
     });
   }
 
@@ -154,12 +212,25 @@ export class DeclarationComponent implements OnInit {
     this.contentWithoutSpacesLength = content.replace(/\s/g, '').length;
   }
 
+  updateRationaleLengthWithoutSpaces(): void {
+    const rationale = this.f['Rationale'].value || '';
+    this.rationaleWithoutSpacesLength = rationale.replace(/\s/g, '').length;
+  }
+
   getContentLengthWithoutSpaces(): number {
     return this.contentWithoutSpacesLength;
   }
 
+  getRationaleLengthWithoutSpaces(): number {
+    return this.rationaleWithoutSpacesLength;
+  }
+
   onContentInput(): void {
     this.updateContentLengthWithoutSpaces();
+  }
+
+  onRationaleInput(): void {
+    this.updateRationaleLengthWithoutSpaces();
   }
 
   onCancel() {
@@ -189,6 +260,7 @@ export class DeclarationComponent implements OnInit {
     this.successMsg = '';
     this.errorMsg = '';
     this.contentWithoutSpacesLength = 0;
+    this.rationaleWithoutSpacesLength = 0;
     this.formSubmitted = false;
   }
 
@@ -206,7 +278,13 @@ export class DeclarationComponent implements OnInit {
     this.submitting = true;
     this.successMsg = '';
     this.errorMsg = '';
+
     const cleanContent = this.f['content'].value
+      .replace(/<[^>]*>/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    const cleanRationale = this.f['Rationale'].value
       .replace(/<[^>]*>/g, '')
       .replace(/\s+/g, ' ')
       .trim();
@@ -215,8 +293,14 @@ export class DeclarationComponent implements OnInit {
       title: this.f['title'].value,
       description: cleanContent,
       decision: this.f['type'].value,
-      Rationale: this.f['Rationale'].value,
+      Rationale: cleanRationale,
       date: new Date().toISOString().split('T')[0],
+      StartDate: this.f['startDate'].value
+        ? new Date(this.f['startDate'].value).toISOString()
+        : null,
+      EndDate: this.f['endDate'].value
+        ? new Date(this.f['endDate'].value).toISOString()
+        : null,
     };
 
     this.letterService.addLetterType(payload).subscribe({
@@ -261,4 +345,5 @@ export class DeclarationComponent implements OnInit {
       timer: 2000,
     });
   }
+  
 }
