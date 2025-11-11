@@ -5,6 +5,19 @@ import { Letter } from '../model/Letter';
 import { map } from 'rxjs/operators';
 import { LetterDetail } from '../model/letter-detail';
 
+// نموذج لملف PDF
+export interface PDFFile {
+  _id: string;
+  pdfurl: string;
+  userId: {
+    _id: string;
+    fullname?: string;
+    name?: string;
+    role: string;
+  };
+  createdAt: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -42,17 +55,21 @@ export class LetterService {
       .pipe(map((res) => res.data));
   }
 
-  // الدوال الجديدة المضافة
-
   // تحديث حالة الخطاب بواسطة المشرف
   updateStatusBySupervisor(
     id: string,
-    status: string
+    status: string,
+    reasonForRejection?: string
   ): Observable<LetterDetail> {
+    const payload: any = { status };
+    if (status === 'rejected' && reasonForRejection) {
+      payload.reasonForRejection = reasonForRejection;
+    }
+
     return this.http
       .put<{ success: boolean; data: LetterDetail }>(
         `${this.baseUrl}/update-status-supervisor/${id}`,
-        { status }
+        payload
       )
       .pipe(map((r) => r.data));
   }
@@ -61,12 +78,17 @@ export class LetterService {
   updateStatusByUniversityPresident(
     id: string,
     status: string,
-    approvalType: string
+    reasonForRejection?: string
   ): Observable<LetterDetail> {
+    const payload: any = { status };
+    if (status === 'rejected' && reasonForRejection) {
+      payload.reasonForRejection = reasonForRejection;
+    }
+
     return this.http
-      .put<{ success: boolean; data: LetterDetail; approvalType: string }>(
+      .put<{ success: boolean; data: LetterDetail }>(
         `${this.baseUrl}/update-status-university-president/${id}`,
-        { status, approvalType }
+        payload
       )
       .pipe(map((r) => r.data));
   }
@@ -107,7 +129,93 @@ export class LetterService {
       .pipe(map((r) => r.data));
   }
 
-  // دالة مساعدة للتحقق من الصلاحيات (اختيارية)
+  // الحصول على الأرشيف الخاص بالمراجع
+  getReviewerArchives(): Observable<LetterDetail[]> {
+    return this.http
+      .get<{ success: boolean; data: LetterDetail[] }>(
+        `${this.baseUrl}/get-reviewer-archives`
+      )
+      .pipe(map((r) => r.data));
+  }
+
+  // إضافة خطاب مؤرشف عام
+  addArchiveGeneralLetter(formData: FormData): Observable<LetterDetail> {
+    return this.http
+      .post<{ success: boolean; data: LetterDetail }>(
+        `${this.baseUrl}/add-archive`,
+        formData
+      )
+      .pipe(map((r) => r.data));
+  }
+
+  // الحصول على الخطابات المؤرشفة حسب النوع
+  getArchivedLettersByType(type: string): Observable<LetterDetail[]> {
+    return this.http
+      .get<{ success: boolean; data: LetterDetail[] }>(
+        `${this.baseUrl}/get-archived/${type}`
+      )
+      .pipe(map((r) => r.data));
+  }
+
+  // توليد ملف PDF للخطاب
+  generateOfficialLetterPDF(id: string): Observable<{ pdfUrl: string }> {
+    return this.http
+      .get<{ success: boolean; data: { pdfUrl: string } }>(
+        `${this.baseUrl}/generate-official-letter-pdf/${id}`
+      )
+      .pipe(map((r) => r.data));
+  }
+
+  // طباعة الخطاب حسب النوع
+  printLetterByType(
+    id: string,
+    signatureType: string
+  ): Observable<{ pdfUrl: string }> {
+    return this.http
+      .post<{ success: boolean; data: { pdfUrl: string } }>(
+        `${this.baseUrl}/print-letter-by-type/${id}`,
+        { signatureType }
+      )
+      .pipe(map((r) => r.data));
+  }
+
+  // عرض ملف PDF (الدوال الجديدة المضافة)
+  viewPDF(filename: string): Observable<Blob> {
+    return this.http.get(`${this.baseUrl}/view-pdf/${filename}`, {
+      responseType: 'blob',
+    });
+  }
+
+  // الحصول على جميع ملفات PDF
+  getAllPDFs(): Observable<{ success: boolean; pdfFiles: PDFFile[] }> {
+    return this.http.get<{ success: boolean; pdfFiles: PDFFile[] }>(
+      `${this.baseUrl}/all-pdfs`
+    );
+  }
+
+  // دالة مساعدة لتحميل ملف PDF
+  downloadPDF(filename: string, downloadName?: string): void {
+    this.viewPDF(filename).subscribe((blob: Blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = downloadName || filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    });
+  }
+
+  // دالة مساعدة لفتح ملف PDF في نافذة جديدة
+  openPDFInNewWindow(filename: string): void {
+    this.viewPDF(filename).subscribe((blob: Blob) => {
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    });
+  }
+
+  // دالة مساعدة للتحقق من الصلاحيات
   canUpdateStatus(userRole: string, currentStatus: string): boolean {
     const statusPermissions = {
       supervisor: ['in_progress'],
@@ -121,7 +229,7 @@ export class LetterService {
     );
   }
 
-  // دالة للحصول على حالة الخطاب بالعربية (اختيارية)
+  // دالة للحصول على حالة الخطاب بالعربية
   getStatusArabic(status: string): string {
     const statusMap: { [key: string]: string } = {
       pending: 'قيد الانتظار',
@@ -132,29 +240,12 @@ export class LetterService {
     return statusMap[status] || status;
   }
 
-  updateLetterStatus(
-    id: string,
-    status: string,
-    notes: string
-  ): Observable<LetterDetail> {
-    return this.http
-      .put<{ success: boolean; data: LetterDetail }>(
-        `${this.baseUrl}/update-letter-status/${id}`,
-        { status, notes }
-      )
-      .pipe(map((r) => r.data));
+  // دالة للحصول على نوع التوقيع بالعربية
+  getSignatureTypeArabic(signatureType: string): string {
+    const signatureMap: { [key: string]: string } = {
+      'الممسوحة ضوئيا': 'الممسوحة ضوئياً',
+      حقيقية: 'حقيقية',
+    };
+    return signatureMap[signatureType] || signatureType;
   }
-
-  printLetterByType(
-    id: string,
-    signatureType: string
-  ): Observable<LetterDetail> {
-    return this.http
-      .post<{ success: boolean; data: LetterDetail }>(
-        `${this.baseUrl}/print-letter-by-type/${id}`,
-        { signatureType }
-      )
-      .pipe(map((r) => r.data));
-  }
-
 }

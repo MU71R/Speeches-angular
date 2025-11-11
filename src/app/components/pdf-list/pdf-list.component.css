@@ -1,0 +1,264 @@
+.table th {
+    text-align: right;
+    font-weight: 600;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.badge-admin {
+    background-color: #dc3545;
+    color: white;
+}
+
+.badge-supervisor {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.badge-universityPresident {
+    background-color: #198754;
+    color: white;
+}
+
+.badge-user {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-blue-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: white;
+}
+
+.btn-blue-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+    color: white;
+}
+
+.btn-blue-success {
+    background-color: #198754;
+    border-color: #198754;
+    color: white;
+}
+
+.btn-blue-success:hover {
+    background-color: #157347;
+    border-color: #146c43;
+    color: white;
+}
+
+.action-btn,
+.action-btn-mobile {
+    transition: all 0.2s ease-in-out;
+}
+
+.action-btn:hover,
+.action-btn-mobile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.min-width-0 {
+    min-width: 0;
+}
+
+.bg-blue-50 {
+    background-color: #e3f2fd;
+}
+
+.border-blue-200 {
+    border-color: #90caf9 !important;
+}
+
+.text-blue-600 {
+    color: #1e88e5;
+}
+
+.text-blue-900 {
+    color: #0d47a1;
+}
+
+.text-blue-700 {
+    color: #1976d2;
+}
+
+.empty-icon {
+    opacity: 0.6;
+}
+
+.search-container {
+    position: relative;
+}
+
+.search-input-wrapper {
+    position: relative;
+}
+
+.search-input {
+    border: 2px solid #e3f2fd;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    padding-right: 2.5rem;
+    padding-left: 2.5rem;
+    height: 44px;
+}
+
+.search-input:focus {
+    border-color: #1e88e5;
+    box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.1);
+    background: #ffffff;
+    transform: translateY(-1px);
+}
+
+.search-input::placeholder {
+    color: #90a4ae;
+    font-size: 0.85rem;
+}
+
+.search-icon {
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus+.search-icon {
+    color: #1e88e5 !important;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.clear-search {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    opacity: 0.7;
+}
+
+.clear-search:hover {
+    background: rgba(0, 0, 0, 0.1);
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.search-stats {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.search-input-wrapper:has(.search-input:focus) {
+    transform: translateY(-1px);
+}
+
+@media (max-width: 767.98px) {
+    .pdf-cards-container {
+        padding: 1rem !important;
+    }
+
+    .pdf-card {
+        margin-bottom: 1rem;
+    }
+
+    .action-btn-mobile {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    .card-header {
+        padding: 1rem !important;
+    }
+
+    .search-container {
+        max-width: 100% !important;
+    }
+
+    .search-input {
+        height: 42px;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .file-info-mobile h6 {
+        font-size: 0.9rem;
+    }
+
+    .file-meta .badge {
+        font-size: 0.75rem !important;
+    }
+
+    .icon-wrapper {
+        width: 40px !important;
+        height: 40px !important;
+    }
+
+    .icon-wrapper i {
+        font-size: 1rem !important;
+    }
+
+    .card-header h5 {
+        font-size: 1.1rem;
+    }
+
+    .card-header small {
+        font-size: 0.8rem;
+    }
+
+    .search-stats {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .card-header {
+        padding: 0.75rem !important;
+    }
+
+    .icon-wrapper {
+        width: 36px !important;
+        height: 36px !important;
+        margin-left: 0.5rem !important;
+    }
+
+    .card-header h5 {
+        font-size: 1rem;
+    }
+
+    .search-input {
+        padding-right: 2rem;
+        padding-left: 2rem;
+        font-size: 0.8rem;
+    }
+}
+
+.search-container:focus-within {
+    transform: translateY(-1px);
+}
+
+.search-input:not(:placeholder-shown) {
+    border-color: #90caf9;
+    background: #ffffff;
+}

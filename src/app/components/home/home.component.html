@@ -7,10 +7,6 @@
             <p class="welcome-subtitle">{{ currentDate | date:'fullDate' }}</p>
         </div>
         <div class="header-actions">
-            <button class="btn btn-primary" routerLink="/letters/add">
-                <i class="fas fa-plus"></i>
-                إنشاء خطاب جديد
-            </button>
             <app-notification></app-notification>
         </div>
     </div>
@@ -73,23 +69,6 @@
                 <div class="stat-details">
                     <span class="detail-item rejected">{{ stats.rejectedLetters }} مرفوض</span>
                     <span class="detail-item in-progress">{{ stats.inProgressLetters }} قيد المعالجة</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Quick Stats Section -->
-    <div class="quick-stats-section">
-        <h3 class="section-title">الإحصائيات السريعة</h3>
-        <div class="quick-stats-grid">
-            <div *ngFor="let stat of quickStats" class="quick-stat-card" [class]="'quick-stat-' + stat.color">
-                <div class="quick-stat-icon">
-                    <i [class]="stat.icon"></i>
-                </div>
-                <div class="quick-stat-content">
-                    <h4 class="quick-stat-value">{{ stat.value }}</h4>
-                    <p class="quick-stat-title">{{ stat.title }}</p>
-                    <span class="quick-stat-description">{{ stat.description }}</span>
                 </div>
             </div>
         </div>

@@ -26,6 +26,7 @@ import { ArchiveDetailComponent } from './components/archive-detail/archive-deta
 import { HomeComponent } from './components/home/home.component';
 import { LetterDetailsComponent } from './components/archived-letter-details/archived-letter-details.component';
 import { NotificationComponent } from './components/notification/notification.component';
+import { PdfListComponent } from './components/pdf-list/pdf-list.component';
 
 
 
@@ -46,6 +47,7 @@ import { NotificationComponent } from './components/notification/notification.co
     HomeComponent,
     LetterDetailsComponent,
     NotificationComponent,
+    PdfListComponent,
   ],
   imports: [
     BrowserModule,

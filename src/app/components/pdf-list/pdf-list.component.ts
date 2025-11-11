@@ -1,0 +1,131 @@
+import { Component, OnInit } from '@angular/core';
+import { LetterService, PDFFile } from '../../service/letter.service';
+
+@Component({
+  selector: 'app-pdf-list',
+  templateUrl: './pdf-list.component.html',
+  styleUrls: ['./pdf-list.component.css'],
+})
+export class PdfListComponent implements OnInit {
+  pdfFiles: PDFFile[] = [];
+  filteredPDFs: PDFFile[] = [];
+  loading: boolean = false;
+  error: string = '';
+  searchTerm: string = '';
+
+  constructor(private letterService: LetterService) {}
+
+  ngOnInit() {
+    this.loadAllPDFs();
+  }
+
+  loadAllPDFs() {
+    this.loading = true;
+    this.error = '';
+
+    this.letterService.getAllPDFs().subscribe({
+      next: (response) => {
+        this.loading = false;
+        if (response.success) {
+          this.pdfFiles = response.pdfFiles;
+          this.filteredPDFs = [...this.pdfFiles];
+        } else {
+          this.error = 'فشل في تحميل الملفات';
+        }
+      },
+      error: (error) => {
+        this.loading = false;
+        this.error = 'حدث خطأ أثناء تحميل الملفات';
+        console.error('Error loading PDFs:', error);
+      },
+    });
+  }
+
+  filterPDFs() {
+    if (!this.searchTerm) {
+      this.filteredPDFs = [...this.pdfFiles];
+      return;
+    }
+
+    const term = this.searchTerm.toLowerCase();
+    this.filteredPDFs = this.pdfFiles.filter(
+      (pdf) =>
+        this.getFileName(pdf.pdfurl).toLowerCase().includes(term) ||
+        (pdf.userId?.fullname || '').toLowerCase().includes(term) ||
+        (pdf.userId?.name || '').toLowerCase().includes(term) ||
+        this.getUserRoleArabic(pdf.userId?.role).toLowerCase().includes(term)
+    );
+  }
+
+  getFileName(url: string): string {
+    return url.split('/').pop() || 'ملف غير معروف';
+  }
+
+  openPDF(pdf: PDFFile) {
+    window.open(pdf.pdfurl, '_blank');
+  }
+
+  downloadPDF(pdf: PDFFile) {
+    const filename = this.getFileName(pdf.pdfurl);
+    const downloadName = `document_${pdf._id}.pdf`;
+    this.letterService.downloadPDF(filename, downloadName);
+  }
+
+  getRoleBadgeClass(role: string | undefined): string {
+    switch (role) {
+      case 'admin':
+        return 'bg-danger';
+      case 'supervisor':
+        return 'bg-primary';
+      case 'UniversityPresident':
+        return 'bg-success';
+      default:
+        return 'bg-secondary';
+    }
+  }
+
+  getRoleIcon(role: string | undefined): string {
+    switch (role) {
+      case 'admin':
+        return 'fa-user-shield';
+      case 'supervisor':
+        return 'fa-user-check';
+      case 'UniversityPresident':
+        return 'fa-user-tie';
+      default:
+        return 'fa-user';
+    }
+  }
+
+  getUserRoleArabic(role: string | undefined): string {
+    const roleMap: { [key: string]: string } = {
+      admin: 'مدير النظام',
+      supervisor: 'مراجع',
+      UniversityPresident: 'رئيس الجامعة',
+      user: 'مستخدم',
+    };
+    return roleMap[role || 'user'] || role || 'مستخدم';
+  }
+
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ar-EG', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  }
+
+  formatTime(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('ar-EG', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  }
+
+  clearSearch() {
+    this.searchTerm = '';
+    this.filterPDFs();
+  }
+}

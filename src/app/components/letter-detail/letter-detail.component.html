@@ -1,191 +1,360 @@
 <div class="container-fluid py-4" *ngIf="!loading; else loadTpl" dir="rtl">
-  <div class="card shadow-lg border-0 rounded-3 overflow-hidden">
-    <!-- Header -->
-    <div class="card-header bg-gradient-primary text-white py-4">
-      <div class="d-flex justify-content-between align-items-center">
-        <div class="flex-grow-1">
-          <h3 class="fw-bold mb-2">{{ form.value.title || 'تفاصيل الخطاب' }}</h3>
-          <p class="mb-0 opacity-85">معلومات تفصيلية عن الخطاب وحالة المعالجة</p>
-        </div>
-        <div class="d-flex gap-3">
-          <button *ngIf="!isEditing" class="btn btn-light btn-lg px-4 rounded-2" (click)="enableEdit()">
-            <i class="bi bi-pencil-square me-2"></i> تعديل
+  <!-- الهيدر الرئيسي -->
+  <div class="page-header mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h1 class="page-title">{{ form.value.title || 'تفاصيل الخطاب' }}</h1>
+        <p class="page-subtitle">عرض كافة المعلومات والتفاصيل المتعلقة بالخطاب</p>
+      </div>
+      <div class="action-buttons">
+        <button *ngIf="canEdit() && !isEditing" class="btn btn-primary btn-edit" (click)="enableEdit()">
+          <i class="bi bi-pencil-square me-2"></i> تعديل الخطاب
+        </button>
+        <div *ngIf="isEditing" class="edit-actions">
+          <button class="btn btn-success btn-save" (click)="saveChanges()" [disabled]="processing">
+            <i class="bi bi-check-lg me-2"></i> حفظ التعديلات
           </button>
-          <div *ngIf="isEditing" class="d-flex gap-2">
-            <button class="btn btn-success btn-lg px-4 rounded-2" (click)="saveChanges()" [disabled]="processing">
-              <i class="bi bi-check-lg me-2"></i> حفظ
-            </button>
-            <button class="btn btn-outline-light btn-lg px-4 rounded-2" (click)="cancelEdit()">
-              <i class="bi bi-x-lg me-2"></i> إلغاء
-            </button>
+          <button class="btn btn-outline-secondary btn-cancel" (click)="cancelEdit()">
+            <i class="bi bi-x-lg me-2"></i> إلغاء
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- العمود الأيسر - المحتوى الرئيسي -->
+    <div class="col-xl-8">
+      <!-- بطاقة محتوى الخطاب -->
+      <div class="card content-card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h3 class="card-title">
+            <i class="bi bi-file-text me-2"></i>
+            محتوى الخطاب
+          </h3>
+          <span class="badge bg-primary">المحتوى الرئيسي</span>
+        </div>
+        <div class="card-body">
+          <div *ngIf="!isEditing" class="letter-content" [innerHTML]="previewHtml"></div>
+          <div *ngIf="isEditing" [formGroup]="form">
+            <textarea class="form-control content-textarea" rows="12" formControlName="description"
+              placeholder="اكتب محتوى الخطاب هنا..." (input)="onDescriptionChange()"></textarea>
+            <div class="form-text">يمكنك استخدام تنسيق HTML للمحتوى</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- المبررات -->
+      <div class="card rationale-card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h3 class="card-title">
+            <i class="bi bi-journal-text me-2"></i>
+            المبررات
+          </h3>
+          <span class="badge bg-info">الأساس المنطقي</span>
+        </div>
+        <div class="card-body">
+          <div *ngIf="!isEditing" class="rationale-content">
+            {{ original?.Rationale || 'لا توجد مبررات مضافة' }}
+          </div>
+          <div *ngIf="isEditing">
+            <textarea class="form-control rationale-textarea" rows="6" formControlName="rationale"
+              placeholder="أدخل المبررات المنطقية للخطاب..."></textarea>
+            <div class="form-text">شرح الأسباب والمبررات لإنشاء هذا الخطاب</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- معلومات إضافية -->
+      <div class="row g-4">
+        <!-- سبب الرفض -->
+        <div class="col-12" *ngIf="showRejectionDetails()">
+          <div class="card rejection-card">
+            <div class="card-header">
+              <h4 class="card-title text-danger">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                سبب الرفض
+              </h4>
+            </div>
+            <div class="card-body">
+              <div class="rejection-content">
+                <i class="bi bi-chat-left-quote me-2"></i>
+                {{ original?.reasonForRejection }}
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Body -->
-    <div class="card-body p-4">
-      <div class="row g-4">
-        <!-- معلومات الخطاب -->
-        <div class="col-lg-6">
-          <div class="border-end-lg pe-lg-4">
-            <h5 class="fw-bold text-primary mb-4 d-flex align-items-center gap-2">
-              <i class="bi bi-info-circle"></i>
-              معلومات الخطاب
-            </h5>
+    <!-- العمود الأيمن - المعلومات الجانبية -->
+    <div class="col-xl-4">
+      <!-- بطاقة الحالة والإجراءات -->
+      <div class="card status-card mb-4">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="bi bi-info-circle me-2"></i>
+            حالة الخطاب
+          </h3>
+        </div>
+        <div class="card-body">
+          <div class="status-badge-container">
+            <span [class]="getStatusBadgeClass(original?.status || '')" class="status-badge">
+              <i class="bi bi-circle-fill me-2"></i>
+              {{ getStatusText(original?.status || '') }}
+            </span>
+          </div>
 
-            <!-- معلومات أساسية -->
-            <div class="row g-3 mb-4">
-              <div class="col-md-4">
-                <div class="bg-light rounded-2 p-3 h-100">
-                  <small class="text-muted d-block mb-2">نوع القرار</small>
-                  <div class="fw-bold text-dark">{{ original?.decision?.title || '---' }}</div>
-                </div>
+          <!-- مسار التقدم -->
+          <div class="progress-track mt-4">
+            <div class="progress-step" [class.active]="getStepClass(1) === 'active'"
+              [class.completed]="getStepClass(1) === 'completed'">
+              <div class="step-marker">
+                <i class="bi bi-building"></i>
               </div>
-              <div class="col-md-4">
-                <div class="bg-light rounded-2 p-3 h-100">
-                  <small class="text-muted d-block mb-2">الجهة المعدة</small>
-                  <div class="fw-bold text-dark">{{ original?.user?.fullname || '---' }}</div>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="bg-light rounded-2 p-3 h-100">
-                  <small class="text-muted d-block mb-2">الحالة</small>
-                  <span [class]="getStatusBadgeClass(original?.status || '')" class="badge fw-semibold">
-                    {{ getStatusText(original?.status || '') }}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <!-- التوقيتات -->
-            <div class="row g-3 mb-4">
-              <div class="col-md-6">
-                <div class="bg-light rounded-2 p-3 h-100">
-                  <small class="text-muted d-block mb-2">تاريخ الإنشاء</small>
-                  <div class="fw-bold text-dark d-flex align-items-center gap-2">
-                    <i class="bi bi-calendar3 text-primary"></i>
-                    {{ original?.createdAt | date: 'd MMMM y, h:mm a' }}
+              <div class="step-info">
+                <div class="step-title">الإدارة العامة</div>
+                <div class="step-desc">مرحلة المراجعة الأولية</div>
+                <div class="step-progress" *ngIf="getStepClass(1) === 'active'">
+                  <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- محتوى الخطاب -->
-            <div class="mb-4">
-              <h6 class="fw-semibold text-dark mb-3 d-flex align-items-center gap-2">
-                <i class="bi bi-file-text text-primary"></i>
-                محتوى الخطاب
-              </h6>
-              <div *ngIf="!isEditing" class="border rounded-3 p-4 bg-light min-h-200" [innerHTML]="previewHtml"></div>
-              <div *ngIf="isEditing" [formGroup]="form">
-                <textarea class="form-control rounded-3 border-2" rows="10" formControlName="description"
-                  placeholder="اكتب محتوى الخطاب هنا..." (input)="onDescriptionChange()"
-                  style="border-color: #e9ecef; resize: vertical;"></textarea>
-                <small class="text-muted mt-2 d-block">يمكنك استخدام تنسيق HTML للمحتوى</small>
+            <div class="progress-step" [class.active]="getStepClass(2) === 'active'"
+              [class.completed]="getStepClass(2) === 'completed'">
+              <div class="step-marker">
+                <i class="bi bi-person-badge"></i>
+              </div>
+              <div class="step-info">
+                <div class="step-title">رئيس الجامعة</div>
+                <div class="step-desc">مرحلة الموافقة النهائية</div>
+                <div class="step-progress" *ngIf="getStepClass(2) === 'active'">
+                  <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 60%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="progress-step" [class.active]="getStepClass(3) === 'active'"
+              [class.completed]="getStepClass(3) === 'completed'">
+              <div class="step-marker">
+                <i class="bi bi-archive"></i>
+              </div>
+              <div class="step-info">
+                <div class="step-title">الأرشيف</div>
+                <div class="step-desc">مرحلة الحفظ النهائي</div>
+                <div class="step-progress" *ngIf="getStepClass(3) === 'active'">
+                  <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 30%"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- إجراءات المراجعة -->
-        <div class="col-lg-6">
-          <h5 class="fw-bold text-primary mb-4 d-flex align-items-center gap-2">
-            <i class="bi bi-gear"></i>
-            إجراءات المراجعة
-          </h5>
-
-          <!-- مسار المعالجة -->
-          <div class="mb-5">
-            <h6 class="fw-semibold text-dark mb-3">مسار المعالجة</h6>
-            <div class="process-track">
-              <div class="process-step" [class.active]="getStepClass(1) === 'active'"
-                [class.completed]="getStepClass(1) === 'completed'">
-                <div class="step-indicator">
-                  <i class="bi bi-building"></i>
-                </div>
-                <div class="step-content">
-                  <div class="step-title">الإدارة العامة</div>
-                  <div class="step-status">مرحلة المراجعة الأولية</div>
-                </div>
+      <!-- بطاقة المعلومات الأساسية -->
+      <div class="card details-card mb-4">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="bi bi-card-checklist me-2"></i>
+            المعلومات الأساسية
+          </h3>
+        </div>
+        <div class="card-body">
+          <div class="detail-grid">
+            <div class="detail-item">
+              <div class="detail-icon">
+                <i class="bi bi-hash"></i>
               </div>
-
-              <div class="process-step" [class.active]="getStepClass(2) === 'active'"
-                [class.completed]="getStepClass(2) === 'completed'">
-                <div class="step-indicator">
-                  <i class="bi bi-person-badge"></i>
-                </div>
-                <div class="step-content">
-                  <div class="step-title">رئيس الجامعة</div>
-                  <div class="step-status">مرحلة الموافقة النهائية</div>
-                </div>
+              <div class="detail-content">
+                <label class="detail-label">رقم المعرف</label>
+                <div class="detail-value code">{{ original?._id || '---' }}</div>
               </div>
-
-              <div class="process-step" [class.active]="getStepClass(3) === 'active'"
-                [class.completed]="getStepClass(3) === 'completed'">
-                <div class="step-indicator">
-                  <i class="bi bi-archive"></i>
-                </div>
-                <div class="step-content">
-                  <div class="step-title">الأرشيف</div>
-                  <div class="step-status">مرحلة الحفظ النهائي</div>
-                </div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-icon">
+                <i class="bi bi-envelope"></i>
+              </div>
+              <div class="detail-content">
+                <label class="detail-label">نوع الخطاب</label>
+                <div class="detail-value">{{ original?.letterType || '---' }}</div>
+              </div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-icon">
+                <i class="bi bi-person"></i>
+              </div>
+              <div class="detail-content">
+                <label class="detail-label">الجهة المعدة</label>
+                <div class="detail-value">{{ original?.user?.fullname || '---' }}</div>
+              </div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-icon">
+                <i class="bi bi-file-earmark-check"></i>
+              </div>
+              <div class="detail-content">
+                <label class="detail-label">نوع القرار</label>
+                <div class="detail-value highlight">{{ original?.decision?.title || '---' }}</div>
               </div>
             </div>
           </div>
+        </div>
+      </div>
 
-          <!-- قسم الإجراءات -->
-          <div *ngIf="showReviewActions()" class="border rounded-3 p-4 bg-light mb-4">
-            <h6 class="fw-semibold text-dark mb-3">إجراءات المراجعة</h6>
-
-            <div class="mb-4">
-              <label class="form-label fw-semibold text-dark">ملاحظات المراجعة</label>
-              <textarea class="form-control rounded-2 border-2" rows="3" [(ngModel)]="reviewNotes"
-                placeholder="أدخل ملاحظاتك حول الخطاب..." style="border-color: #dee2e6;"></textarea>
+      <!-- بطاقة التوقيتات -->
+      <div class="card timeline-card mb-4">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="bi bi-clock me-2"></i>
+            الجدول الزمني
+          </h3>
+        </div>
+        <div class="card-body">
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-icon success">
+                <i class="bi bi-calendar-plus"></i>
+              </div>
+              <div class="timeline-content">
+                <div class="timeline-title">تاريخ الإنشاء</div>
+                <div class="timeline-date">{{ original?.createdAt | date: 'd MMMM y, h:mm a' }}</div>
+              </div>
             </div>
+            <div class="timeline-item">
+              <div class="timeline-icon primary">
+                <i class="bi bi-calendar-event"></i>
+              </div>
+              <div class="timeline-content">
+                <div class="timeline-title">تاريخ الخطاب</div>
+                <div class="timeline-date">{{ original?.date | date: 'd MMMM y' }}</div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-icon info">
+                <i class="bi bi-play-circle"></i>
+              </div>
+              <div class="timeline-content">
+                <div class="timeline-title">تاريخ البدء</div>
+                <div class="timeline-date">{{ original?.StartDate | date: 'd MMMM y' }}</div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-icon warning">
+                <i class="bi bi-stop-circle"></i>
+              </div>
+              <div class="timeline-content">
+                <div class="timeline-title">تاريخ الانتهاء</div>
+                <div class="timeline-date">{{ original?.EndDate | date: 'd MMMM y' }}</div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-icon secondary">
+                <i class="bi bi-clock-history"></i>
+              </div>
+              <div class="timeline-content">
+                <div class="timeline-title">مدة التنفيذ</div>
+                <div class="timeline-date highlight">{{ original?.durationDays || 0 }} يوم</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-            <!-- أزرار المراجع -->
-            <div *ngIf="currentUserRole === 'supervisor' && original?.status === 'in_progress'" class="d-grid gap-3">
-              <button class="btn btn-danger btn-lg rounded-2 py-3 fw-semibold" (click)="rejectLetter()"
-                [disabled]="processing">
+      <!-- إجراءات المراجعة -->
+      <div *ngIf="showReviewActions()" class="card actions-card">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="bi bi-gear me-2"></i>
+            إجراءات المراجعة
+          </h3>
+        </div>
+        <div class="card-body">
+          <!-- نموذج سبب الرفض -->
+          <div *ngIf="showRejectionReason" class="rejection-section mb-4">
+            <label class="form-label fw-semibold">سبب الرفض <span class="text-danger">*</span></label>
+            <textarea class="form-control" rows="3" [(ngModel)]="rejectionReason"
+              placeholder="أدخل سبب الرفض..."></textarea>
+            <div class="d-flex gap-2 mt-3">
+              <button class="btn btn-danger btn-confirm flex-fill" (click)="confirmRejection()"
+                [disabled]="processing || !rejectionReason.trim()">
+                <i class="bi bi-check-circle me-2"></i> تأكيد الرفض
+              </button>
+              <button class="btn btn-outline-secondary btn-cancel" (click)="cancelRejection()">
+                <i class="bi bi-x-circle me-2"></i> إلغاء
+              </button>
+            </div>
+          </div>
+
+          <!-- أزرار المراجع -->
+          <div *ngIf="currentUserRole === 'supervisor' && original?.status === 'in_progress' && !showRejectionReason"
+            class="action-buttons-vertical">
+            <button class="btn btn-success btn-approve" (click)="approveLetter()" [disabled]="processing">
+              <i class="bi bi-check-circle me-2"></i> موافقة وارسال للرئيس
+            </button>
+            <button class="btn btn-danger btn-reject" (click)="showRejectionForm()" [disabled]="processing">
+              <i class="bi bi-x-circle me-2"></i> رفض الخطاب
+            </button>
+          </div>
+
+          <!-- أزرار رئيس الجامعة -->
+          <div
+            *ngIf="currentUserRole === 'UniversityPresident' && original?.status === 'pending' && !showRejectionReason">
+            <div *ngIf="!showPresidentOptions" class="action-buttons-vertical">
+              <button class="btn btn-success btn-approve" (click)="showPresidentOptions = true" [disabled]="processing">
+                <i class="bi bi-check-circle me-2"></i> موافقة على الخطاب
+              </button>
+              <button class="btn btn-danger btn-reject" (click)="showRejectionForm()" [disabled]="processing">
                 <i class="bi bi-x-circle me-2"></i> رفض الخطاب
               </button>
-              <button class="btn btn-success btn-lg rounded-2 py-3 fw-semibold" (click)="approveLetter()"
-                [disabled]="processing">
-                <i class="bi bi-check-circle me-2"></i> موافقة
-              </button>
             </div>
 
-            <!-- أزرار رئيس الجامعة -->
-            <div *ngIf="currentUserRole === 'UniversityPresident' && original?.status === 'pending'">
-              <div *ngIf="!showPresidentOptions" class="d-grid gap-3">
-                <button class="btn btn-danger btn-lg rounded-2 py-3 fw-semibold" (click)="rejectLetter()"
-                  [disabled]="processing">
-                  <i class="bi bi-x-circle me-2"></i> رفض الخطاب
-                </button>
-                <button class="btn btn-success btn-lg rounded-2 py-3 fw-semibold" (click)="showPresidentOptions = true"
-                  [disabled]="processing">
-                  <i class="bi bi-check-circle me-2"></i> موافقة على الخطاب
-                </button>
-              </div>
+            <!-- خيارات الموافقة -->
+            <div *ngIf="showPresidentOptions" class="approval-options">
+              <button class="btn btn-success btn-option" (click)="approveLetter('حقيقية')" [disabled]="processing">
+                <i class="bi bi-qr-code-scan me-2"></i> Real Scan
+              </button>
+              <button class="btn btn-outline-primary btn-option" (click)="approveLetter('الممسوحة ضوئيا')"
+                [disabled]="processing">
+                <i class="bi bi-pen-fill me-2"></i> توقيع إلكتروني
+              </button>
+              <button class="btn btn-outline-secondary btn-back" (click)="showPresidentOptions = false">
+                <i class="bi bi-arrow-right me-2"></i> رجوع
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-              <!-- خيارات الموافقة -->
-              <div *ngIf="showPresidentOptions" class="d-grid gap-3">
-                <button class="btn btn-success btn-lg rounded-2 py-3 fw-semibold" (click)="approveLetter('حقيقية')"
-                  [disabled]="processing">
-                  <i class="bi bi-qr-code-scan me-2"></i> موافقة باستخدام Real Scan
-                </button>
-                <button class="btn btn-outline-primary btn-lg rounded-2 py-3 fw-semibold"
-                  (click)="approveLetter('الممسوحة ضوئيا')" [disabled]="processing">
-                  <i class="bi bi-pen-fill me-2"></i> موافقة بالتوقيع الإلكتروني
-                </button>
-                <button class="btn btn-outline-secondary btn-lg rounded-2 py-3" (click)="showPresidentOptions = false">
-                  <i class="bi bi-arrow-right me-2"></i> رجوع
-                </button>
+      <!-- سجل الموافقات -->
+      <div class="card approvals-card mt-4" *ngIf="original?.approvals && original.approvals.length > 0">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="bi bi-list-check me-2"></i>
+            سجل الموافقات
+          </h3>
+        </div>
+        <div class="card-body">
+          <div class="approvals-list">
+            <div *ngFor="let approval of original.approvals" class="approval-item">
+              <div class="approval-avatar">
+                <i class="bi bi-person-circle"></i>
+              </div>
+              <div class="approval-info">
+                <div class="approval-role">{{ approval.role === 'supervisor' ? 'المراجع' : 'رئيس الجامعة' }}</div>
+                <div class="approval-date">{{ approval.date | date: 'd/M/y - h:mm a' }}</div>
+              </div>
+              <div class="approval-status" [class]="approval.approved ? 'approved' : 'rejected'">
+                {{ approval.approved ? 'موافق' : 'مرفوض' }}
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -193,12 +362,12 @@
 </div>
 
 <ng-template #loadTpl>
-  <div class="d-flex justify-content-center align-items-center min-vh-50">
-    <div class="text-center">
-      <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status">
+  <div class="loading-container">
+    <div class="loading-spinner">
+      <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
         <span class="visually-hidden">جاري التحميل...</span>
       </div>
-      <p class="text-muted fw-semibold">جاري تحميل تفاصيل الخطاب...</p>
     </div>
+    <p class="loading-text">جاري تحميل تفاصيل الخطاب...</p>
   </div>
 </ng-template>

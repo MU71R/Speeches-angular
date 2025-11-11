@@ -5,6 +5,38 @@ import {
   DashboardStats,
   RecentActivity,
 } from '../../service/home.service';
+import { LoginService } from 'src/app/service/login.service';
+import { User } from 'src/app/model/user';
+
+interface UserPersonalStats {
+  createdLetters: number;
+  approvedLetters: number;
+  pendingLetters: number;
+  rejectedLetters: number;
+  createdThisMonth: number;
+  pendingReview?: number;
+  reviewedThisWeek?: number;
+  pendingApproval?: number;
+  approvedThisMonth?: number;
+  avgResponseTime?: number;
+  sectorLetters?: number;
+}
+
+interface QuickAction {
+  title: string;
+  icon: string;
+  link: string;
+  color: string;
+  description: string;
+}
+
+interface MiniStat {
+  label: string;
+  value: number | string;
+  icon: string;
+  color: string;
+  trend?: string;
+}
 
 @Component({
   selector: 'app-home',
@@ -24,17 +56,50 @@ export class HomeComponent implements OnInit {
     totalDecisions: 0,
   };
 
+  userPersonalStats: UserPersonalStats = {
+    createdLetters: 0,
+    approvedLetters: 0,
+    pendingLetters: 0,
+    rejectedLetters: 0,
+    createdThisMonth: 0,
+    pendingReview: 0,
+    reviewedThisWeek: 0,
+    pendingApproval: 0,
+    approvedThisMonth: 0,
+    avgResponseTime: 0,
+    sectorLetters: 0,
+  };
+
   recentActivities: RecentActivity[] = [];
+  filteredActivities: RecentActivity[] = [];
   loading = true;
   currentDate = new Date();
 
-  // مصفوفة للإحصائيات السريعة
-  quickStats: any[] = [];
+  // معلومات المستخدم الحالي
+  currentUser: User | null = null;
+  currentUserRole: string = '';
+  currentUserSector: string = '';
 
-  constructor(private dashboardService: DashboardService) {}
+  quickStats: any[] = [];
+  quickActions: QuickAction[] = [];
+  miniStats: MiniStat[] = [];
+
+  constructor(
+    private dashboardService: DashboardService,
+    private loginService: LoginService
+  ) {}
 
   ngOnInit(): void {
+    this.loadCurrentUserInfo();
     this.loadDashboardData();
+  }
+
+  loadCurrentUserInfo(): void {
+    this.currentUser = this.loginService.getUserFromLocalStorage();
+    if (this.currentUser) {
+      this.currentUserRole = this.currentUser.role || '';
+      this.currentUserSector = this.currentUser.sector || '';
+    }
   }
 
   loadDashboardData(): void {
@@ -44,12 +109,14 @@ export class HomeComponent implements OnInit {
       next: (stats) => {
         console.log('✅ Stats loaded successfully:', stats);
         this.stats = stats;
+        this.loadUserPersonalStats();
         this.updateQuickStats();
+        this.updateQuickActions();
+        this.updateMiniStats();
         this.loading = false;
       },
       error: (error) => {
         console.error('❌ Error loading dashboard:', error);
-        // استخدام بيانات افتراضية بناءً على البيانات التي رأيتها
         this.useDefaultData();
         this.loading = false;
       },
@@ -59,62 +126,105 @@ export class HomeComponent implements OnInit {
       next: (activities) => {
         console.log('✅ Activities loaded successfully:', activities);
         this.recentActivities = activities;
+        this.filteredActivities = this.filterActivitiesByRole(activities);
       },
       error: (error) => {
         console.error('❌ Error loading activities:', error);
-        // استخدام بيانات افتراضية بناءً على البيانات التي رأيتها
         this.useDefaultActivities();
       },
     });
   }
 
-  useDefaultData(): void {
-    // استخدام بيانات حقيقية من الـ API الذي عرضته
-    this.stats = {
-      totalUsers: 5,
-      activeUsers: 5,
-      inactiveUsers: 0,
-      totalLetters: 35, // تقريباً من البيانات
-      pendingLetters: 8, // تقريباً من البيانات
-      approvedLetters: 20, // تقريباً من البيانات
-      rejectedLetters: 5, // تقريباً من البيانات
-      inProgressLetters: 2, // تقريباً من البيانات
-      totalDecisions: 6, // تقريباً من البيانات
-    };
-    this.updateQuickStats();
+  loadUserPersonalStats(): void {
+    // محاكاة بيانات شخصية حسب الدور والقطاع
+    switch (this.currentUserRole) {
+      case 'preparer':
+        this.userPersonalStats = {
+          createdLetters: 15,
+          approvedLetters: 10,
+          pendingLetters: 3,
+          rejectedLetters: 2,
+          createdThisMonth: 4,
+          sectorLetters: this.getSectorLettersCount(),
+        };
+        break;
+
+      case 'supervisor':
+        this.userPersonalStats = {
+          createdLetters: 0,
+          approvedLetters: 0,
+          pendingLetters: 0,
+          rejectedLetters: 0,
+          createdThisMonth: 0,
+          pendingReview: this.stats.pendingLetters,
+          reviewedThisWeek: 8,
+          avgResponseTime: 24,
+          sectorLetters: this.getSectorLettersCount(),
+        };
+        break;
+
+      case 'UniversityPresident':
+        this.userPersonalStats = {
+          createdLetters: 0,
+          approvedLetters: 0,
+          pendingLetters: 0,
+          rejectedLetters: 0,
+          createdThisMonth: 0,
+          pendingApproval: this.stats.inProgressLetters,
+          approvedThisMonth: 12,
+          sectorLetters: this.stats.totalLetters,
+        };
+        break;
+
+      case 'admin':
+        this.userPersonalStats = {
+          createdLetters: 0,
+          approvedLetters: 0,
+          pendingLetters: 0,
+          rejectedLetters: 0,
+          createdThisMonth: 0,
+          sectorLetters: 0,
+        };
+        break;
+
+      default:
+        this.userPersonalStats = {
+          createdLetters: 0,
+          approvedLetters: 0,
+          pendingLetters: 0,
+          rejectedLetters: 0,
+          createdThisMonth: 0,
+          sectorLetters: 0,
+        };
+    }
   }
 
-  useDefaultActivities(): void {
-    // استخدام بيانات حقيقية من الـ API
-    this.recentActivities = [
-      {
-        id: '690f7d118928be33f22f866b',
-        title: 'asdfghj',
-        type: 'letter',
-        action: 'تمت الموافقة',
-        user: 'إدارة الوحدات ذات الطابع الخاص',
-        timestamp: new Date('2025-11-08T17:25:37.916Z'),
-        status: 'approved',
-      },
-      {
-        id: '690f65e02f6a7eb2f2124e6b',
-        title: 'fklmfdm',
-        type: 'letter',
-        action: 'قيد المعالجة',
-        user: 'مكتب المدير التنفيذي للمستشفيات الجامعية',
-        timestamp: new Date('2025-11-08T15:46:40.900Z'),
-        status: 'in_progress',
-      },
-      {
-        id: '690f477a2f6a7eb2f2124cb1',
-        title: 'jfdgjfdl',
-        type: 'letter',
-        action: 'قيد المعالجة',
-        user: 'الإدارة العامة للشئون القانونية',
-        timestamp: new Date('2025-11-08T13:36:58.536Z'),
-        status: 'in_progress',
-      },
-    ];
+  getSectorLettersCount(): number {
+    // محاكاة عدد الخطابات في قطاع المستخدم
+    const sectorMultipliers: { [key: string]: number } = {
+      'الإدارة العامة للشئون القانونية': 8,
+      'مكتب المدير التنفيذي للمستشفيات الجامعية': 6,
+      'إدارة الوحدات ذات الطابع الخاص': 4,
+      default: 5,
+    };
+
+    return (
+      sectorMultipliers[this.currentUserSector] || sectorMultipliers['default']
+    );
+  }
+
+  filterActivitiesByRole(activities: RecentActivity[]): RecentActivity[] {
+    if (this.currentUserRole === 'admin') {
+      return activities; // المدير يرى كل النشاطات
+    }
+
+    // المستخدمين العاديين يرون فقط النشاطات المرتبطة بقطاعهم أو نشاطاتهم
+    return activities.filter((activity) => {
+      if (this.currentUserRole === 'preparer') {
+        return activity.user === this.currentUser?.fullname;
+      }
+      return true;
+    });
   }
 
   updateQuickStats(): void {
@@ -124,30 +234,304 @@ export class HomeComponent implements OnInit {
         value: this.calculateActivityRate() + '%',
         icon: 'fas fa-chart-line',
         color: 'primary',
-        description: 'المستخدمين النشطين',
+        description: this.getQuickStatDescription('activity'),
       },
       {
         title: 'معدل القبول',
         value: this.calculateApprovalRate() + '%',
         icon: 'fas fa-check-circle',
         color: 'success',
-        description: 'الخطابات المقبولة',
+        description: this.getQuickStatDescription('approval'),
       },
       {
         title: 'الكفاءة',
         value: this.calculateEfficiency() + '%',
         icon: 'fas fa-bolt',
         color: 'warning',
-        description: 'أداء النظام',
+        description: this.getQuickStatDescription('efficiency'),
       },
       {
-        title: 'النمو',
-        value: '+12%',
+        title: this.getGrowthTitle(),
+        value: this.getGrowthValue(),
         icon: 'fas fa-seedling',
         color: 'info',
-        description: 'هذا الشهر',
+        description: this.getQuickStatDescription('growth'),
       },
     ];
+  }
+
+  getQuickStatDescription(type: string): string {
+    const descriptions: { [key: string]: { [key: string]: string } } = {
+      activity: {
+        preparer: 'نشاطك في النظام',
+        supervisor: 'نشاط المراجعة',
+        UniversityPresident: 'نشاط الاعتماد',
+        admin: 'نشاط النظام العام',
+        default: 'مستوى النشاط',
+      },
+      approval: {
+        preparer: 'نسبة قبول خطاباتك',
+        supervisor: 'نسبة القبول بعد المراجعة',
+        UniversityPresident: 'نسبة الاعتماد النهائي',
+        admin: 'معدل القبول العام',
+        default: 'الخطابات المقبولة',
+      },
+      efficiency: {
+        preparer: 'كفاءة إنجازك',
+        supervisor: 'كفاءة المراجعة',
+        UniversityPresident: 'كفاءة الاعتماد',
+        admin: 'كفاءة النظام',
+        default: 'أداء النظام',
+      },
+      growth: {
+        preparer: 'نمو إنتاجيتك',
+        supervisor: 'نمو المراجعات',
+        UniversityPresident: 'نمو الاعتمادات',
+        admin: 'نمو النظام',
+        default: 'هذا الشهر',
+      },
+    };
+
+    return (
+      descriptions[type]?.[this.currentUserRole] ||
+      descriptions[type]?.['default'] ||
+      ''
+    );
+  }
+
+  getGrowthTitle(): string {
+    const titles: { [key: string]: string } = {
+      preparer: 'النمو',
+      supervisor: 'المراجعات',
+      UniversityPresident: 'الاعتمادات',
+      admin: 'التوسع',
+    };
+    return titles[this.currentUserRole] || 'النمو';
+  }
+
+  getGrowthValue(): string {
+    const values: { [key: string]: string } = {
+      preparer: `+${this.userPersonalStats.createdThisMonth}`,
+      supervisor: `+${this.userPersonalStats.reviewedThisWeek}`,
+      UniversityPresident: `+${this.userPersonalStats.approvedThisMonth}`,
+      admin: '+12%',
+    };
+    return values[this.currentUserRole] || '+8%';
+  }
+
+  updateQuickActions(): void {
+    const baseActions = [
+      {
+        title: 'عرض الأرشيف',
+        icon: 'fas fa-archive',
+        link: '/archive',
+        color: 'secondary',
+        description: 'الوصول إلى الخطابات المؤرشفة',
+      },
+      {
+        title: 'البحث المتقدم',
+        icon: 'fas fa-search',
+        link: '/search',
+        color: 'info',
+        description: 'بحث في الخطابات والقرارات',
+      },
+    ];
+
+    const roleActions: { [key: string]: QuickAction[] } = {
+      preparer: [
+        {
+          title: 'إنشاء خطاب',
+          icon: 'fas fa-plus',
+          link: '/letters/add',
+          color: 'primary',
+          description: 'بدء إنشاء خطاب جديد',
+        },
+        {
+          title: 'خطاباتي',
+          icon: 'fas fa-list',
+          link: '/letters/my-letters',
+          color: 'success',
+          description: 'عرض جميع خطاباتك',
+        },
+      ],
+      supervisor: [
+        {
+          title: 'المراجعة',
+          icon: 'fas fa-clipboard-check',
+          link: '/letters/supervisor',
+          color: 'warning',
+          description: 'مراجعة الخطابات المعلقة',
+        },
+        {
+          title: 'تقارير المراجعة',
+          icon: 'fas fa-chart-bar',
+          link: '/reports/review',
+          color: 'info',
+          description: 'تقارير أداء المراجعة',
+        },
+      ],
+      UniversityPresident: [
+        {
+          title: 'الاعتماد',
+          icon: 'fas fa-stamp',
+          link: '/letters/president',
+          color: 'success',
+          description: 'اعتماد الخطابات النهائية',
+        },
+        {
+          title: 'التقارير',
+          icon: 'fas fa-file-alt',
+          link: '/reports/approval',
+          color: 'primary',
+          description: 'تقارير الاعتماد الشاملة',
+        },
+      ],
+      admin: [
+        {
+          title: 'إدارة المستخدمين',
+          icon: 'fas fa-users-cog',
+          link: '/admin/users',
+          color: 'danger',
+          description: 'إدارة مستخدمي النظام',
+        },
+        {
+          title: 'إعدادات النظام',
+          icon: 'fas fa-cogs',
+          link: '/admin/settings',
+          color: 'dark',
+          description: 'ضبط إعدادات النظام',
+        },
+      ],
+    };
+
+    this.quickActions = [
+      ...(roleActions[this.currentUserRole] || []),
+      ...baseActions,
+    ];
+  }
+
+  updateMiniStats(): void {
+    this.miniStats = [
+      {
+        label: this.getMiniStatLabel('users'),
+        value: this.getMiniStatValue('users'),
+        icon: 'fas fa-user-check',
+        color: 'success',
+        trend: '+5%',
+      },
+      {
+        label: this.getMiniStatLabel('letters'),
+        value: this.getMiniStatValue('letters'),
+        icon: 'fas fa-envelope-open',
+        color: 'primary',
+        trend: '+12%',
+      },
+      {
+        label: this.getMiniStatLabel('approval'),
+        value: this.calculateApprovalRate() + '%',
+        icon: 'fas fa-chart-line',
+        color: 'info',
+        trend: '+3%',
+      },
+      {
+        label: this.getMiniStatLabel('efficiency'),
+        value: this.calculateEfficiency() + '%',
+        icon: 'fas fa-bolt',
+        color: 'warning',
+        trend: '+8%',
+      },
+    ];
+  }
+
+  getMiniStatLabel(type: string): string {
+    const labels: { [key: string]: { [key: string]: string } } = {
+      users: {
+        preparer: 'خطاباتي',
+        supervisor: 'قيد المراجعة',
+        UniversityPresident: 'قيد الاعتماد',
+        admin: 'المستخدمين النشطين',
+      },
+      letters: {
+        preparer: 'هذا الشهر',
+        supervisor: 'هذا الأسبوع',
+        UniversityPresident: 'هذا الشهر',
+        admin: 'خطابات الشهر',
+      },
+      approval: {
+        preparer: 'معدل القبول',
+        supervisor: 'معدل المراجعة',
+        UniversityPresident: 'معدل الاعتماد',
+        admin: 'معدل القبول',
+      },
+      efficiency: {
+        preparer: 'كفاءتي',
+        supervisor: 'كفاءة المراجعة',
+        UniversityPresident: 'كفاءة الاعتماد',
+        admin: 'كفاءة النظام',
+      },
+    };
+
+    return (
+      labels[type]?.[this.currentUserRole] || labels[type]?.['admin'] || ''
+    );
+  }
+
+  getMiniStatValue(type: string): string {
+    const values: { [key: string]: { [key: string]: number | string } } = {
+      users: {
+        preparer: this.userPersonalStats.createdLetters,
+        supervisor: this.userPersonalStats.pendingReview || 0,
+        UniversityPresident: this.userPersonalStats.pendingApproval || 0,
+        admin: this.stats.activeUsers,
+      },
+      letters: {
+        preparer: this.userPersonalStats.createdThisMonth,
+        supervisor: this.userPersonalStats.reviewedThisWeek || 0,
+        UniversityPresident: this.userPersonalStats.approvedThisMonth || 0,
+        admin: this.stats.totalLetters,
+      },
+    };
+
+    return values[type]?.[this.currentUserRole]?.toString() || '0';
+  }
+
+  // الدوال المساعدة
+  getWelcomeMessage(): string {
+    const messages: { [key: string]: string } = {
+      preparer: `مرحباً ${this.currentUser?.fullname}`,
+      supervisor: `أهلاً بك ${this.currentUser?.fullname}`,
+      UniversityPresident: `سعادة ${this.currentUser?.fullname}`,
+      admin: `مدير النظام ${this.currentUser?.fullname}`,
+    };
+    return messages[this.currentUserRole] || 'مرحباً بك';
+  }
+
+  getRoleDisplayName(): string {
+    const roles: { [key: string]: string } = {
+      preparer: 'منشئ الخطابات',
+      supervisor: 'مراجع',
+      UniversityPresident: 'رئيس الجامعة',
+      admin: 'مدير النظام',
+    };
+    return roles[this.currentUserRole] || 'مستخدم';
+  }
+
+  getStatsTitle(): string {
+    const titles: { [key: string]: string } = {
+      preparer: 'إحصائيات أدائك',
+      supervisor: 'إحصائيات المراجعة',
+      UniversityPresident: 'نظرة عامة على الاعتمادات',
+      admin: 'إحصائيات النظام',
+    };
+    return titles[this.currentUserRole] || 'الإحصائيات';
+  }
+
+  getPerformanceText(): string {
+    const efficiency = this.calculateEfficiency();
+    if (efficiency >= 80) return 'أداء ممتاز';
+    if (efficiency >= 60) return 'أداء جيد';
+    if (efficiency >= 40) return 'أداء متوسط';
+    return 'يحتاج تحسين';
   }
 
   calculateActivityRate(): number {
@@ -195,5 +579,49 @@ export class HomeComponent implements OnInit {
       user: 'fas fa-user',
     };
     return icons[type] || 'fas fa-circle';
+  }
+
+  useDefaultData(): void {
+    this.stats = {
+      totalUsers: 5,
+      activeUsers: 5,
+      inactiveUsers: 0,
+      totalLetters: 35,
+      pendingLetters: 8,
+      approvedLetters: 20,
+      rejectedLetters: 5,
+      inProgressLetters: 2,
+      totalDecisions: 6,
+    };
+    this.loadUserPersonalStats();
+    this.updateQuickStats();
+    this.updateQuickActions();
+    this.updateMiniStats();
+  }
+
+  useDefaultActivities(): void {
+    this.recentActivities = [
+      {
+        id: '690f7d118928be33f22f866b',
+        title: 'خطاب اعتماد ميزانية',
+        type: 'letter',
+        action: 'تمت الموافقة',
+        user: 'إدارة الوحدات ذات الطابع الخاص',
+        timestamp: new Date('2025-11-08T17:25:37.916Z'),
+        status: 'approved',
+      },
+      {
+        id: '690f65e02f6a7eb2f2124e6b',
+        title: 'طلب توفير موارد',
+        type: 'letter',
+        action: 'قيد المعالجة',
+        user: 'مكتب المدير التنفيذي للمستشفيات الجامعية',
+        timestamp: new Date('2025-11-08T15:46:40.900Z'),
+        status: 'in_progress',
+      },
+    ];
+    this.filteredActivities = this.filterActivitiesByRole(
+      this.recentActivities
+    );
   }
 }

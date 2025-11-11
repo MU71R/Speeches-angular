@@ -11,7 +11,7 @@ import { ArchiveComponent } from './components/archive/archive.component';
 import { ArchiveDetailComponent } from './components/archive-detail/archive-detail.component';
 import { HomeComponent } from './components/home/home.component';
 import { LetterDetailsComponent } from './components/archived-letter-details/archived-letter-details.component';
-
+import { PdfListComponent } from './components/pdf-list/pdf-list.component';
 
 
 const routes: Routes = [
@@ -33,6 +33,7 @@ const routes: Routes = [
       { path: 'letter-detail/:id', component: LetterDetailsComponent },
       { path: 'archive', component: ArchiveComponent },
       { path: 'archive-detail', component: ArchiveDetailComponent },
+      {path: 'pdf-list', component: PdfListComponent},
       // الصفحة الرئيسية داخل النظام
       { path: '', redirectTo: 'home', pathMatch: 'full' },
     ],

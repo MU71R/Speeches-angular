@@ -20,6 +20,8 @@ export class LetterDetailComponent implements OnInit {
   isEditing = false;
   currentUserRole: string = '';
   showPresidentOptions = false;
+  showRejectionReason = false;
+  rejectionReason = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -33,6 +35,7 @@ export class LetterDetailComponent implements OnInit {
     this.form = this.fb.group({
       title: [''],
       description: [''],
+      rationale: [''],
     });
     const user = this.loginService.getUserFromLocalStorage();
     this.currentUserRole =
@@ -51,6 +54,7 @@ export class LetterDetailComponent implements OnInit {
         this.form.patchValue({
           title: this.original?.title || '',
           description: this.original?.description || '',
+          rationale: this.original?.Rationale || '',
         });
         this.previewHtml = this.original?.description || '';
         this.loading = false;
@@ -71,77 +75,29 @@ export class LetterDetailComponent implements OnInit {
     this.form.patchValue({
       title: this.original?.title,
       description: this.original?.description,
+      rationale: this.original?.Rationale,
     });
     this.previewHtml = this.original?.description;
   }
 
   saveChanges() {
     this.processing = true;
-    this.letterService
-      .updateLetter(this.original._id, this.form.value)
-      .subscribe(
-        () => {
-          this.original = { ...this.original, ...this.form.value };
-          this.previewHtml = this.form.value.description;
-          this.isEditing = false;
-          this.processing = false;
-        },
-        (err) => {
-          console.error(err);
-          this.processing = false;
-        }
-      );
-  }
 
-  onDescriptionChange() {
-    this.previewHtml = this.form.value.description;
-  }
+    // تحديث البيانات مع تضمين المبررات
+    const updatedData = {
+      ...this.form.value,
+      Rationale: this.form.value.rationale,
+    };
 
-  // approveLetter() {
-  //   this.processing = true;
-  //   const newStatus =
-  //     this.currentUserRole === 'supervisor' ? 'pending' : 'approved';
-  //   const updateObs =
-  //     this.currentUserRole === 'supervisor'
-  //       ? this.letterService.updateStatusBySupervisor(
-  //           this.original._id,
-  //           newStatus
-  //         )
-  //       : this.letterService.updateStatusByUniversityPresident(
-  //           this.original._id,
-  //           newStatus,
-  //           'realscan'
-  //         );
-
-  //   updateObs.subscribe(
-  //     () => {
-  //       this.original.status = newStatus;
-  //       this.processing = false;
-  //     },
-  //     (err) => {
-  //       console.error(err);
-  //       this.processing = false;
-  //     }
-  //   );
-  // }
-
-  rejectLetter() {
-    this.processing = true;
-    const updateObs =
-      this.currentUserRole === 'supervisor'
-        ? this.letterService.updateStatusBySupervisor(
-            this.original._id,
-            'rejected'
-          )
-        : this.letterService.updateStatusByUniversityPresident(
-            this.original._id,
-            'rejected',
-            'حقيقية'
-          );
-
-    updateObs.subscribe(
+    this.letterService.updateLetter(this.original._id, updatedData).subscribe(
       () => {
-        this.original.status = 'rejected';
+        this.original = {
+          ...this.original,
+          ...this.form.value,
+          Rationale: this.form.value.rationale,
+        };
+        this.previewHtml = this.form.value.description;
+        this.isEditing = false;
         this.processing = false;
       },
       (err) => {
@@ -151,28 +107,185 @@ export class LetterDetailComponent implements OnInit {
     );
   }
 
-  // approveFinal(option: 'حقيقية' | 'الممسوحة ضوئيا') {
-  //   this.processing = true;
-  //   const payload = { status: 'approved', approvalType: option };
+  onDescriptionChange() {
+    this.previewHtml = this.form.value.description;
+  }
 
-  //   this.letterService
-  //     .updateStatusByUniversityPresident(
-  //       this.original._id,
-  //       payload.status,
-  //       payload.approvalType
-  //     )
-  //     .subscribe(
-  //       () => {
-  //         this.original.status = 'approved';
-  //         this.processing = false;
-  //         this.showPresidentOptions = false;
-  //       },
-  //       (err) => {
-  //         console.error(err);
-  //         this.processing = false;
-  //       }
-  //     );
-  // }
+  // إظهار حقل سبب الرفض
+  showRejectionForm() {
+    this.showRejectionReason = true;
+    this.rejectionReason = '';
+  }
+
+  // إخفاء حقل سبب الرفض
+  cancelRejection() {
+    this.showRejectionReason = false;
+    this.rejectionReason = '';
+  }
+
+  // تأكيد الرفض مع السبب للمراجع
+  confirmRejectionSupervisor() {
+    if (!this.rejectionReason.trim()) {
+      alert('يرجى إدخال سبب الرفض');
+      return;
+    }
+
+    this.processing = true;
+
+    this.letterService
+      .updateStatusBySupervisor(
+        this.original._id,
+        'rejected',
+        this.rejectionReason
+      )
+      .subscribe(
+        (res: any) => {
+          this.original.status = 'rejected';
+          this.original.reasonForRejection = this.rejectionReason;
+          this.showRejectionReason = false;
+          this.rejectionReason = '';
+          this.processing = false;
+        },
+        (err) => {
+          console.error(err);
+          this.processing = false;
+        }
+      );
+  }
+
+  // تأكيد الرفض مع السبب لرئيس الجامعة
+  confirmRejectionPresident() {
+    if (!this.rejectionReason.trim()) {
+      alert('يرجى إدخال سبب الرفض');
+      return;
+    }
+
+    this.processing = true;
+
+    this.letterService
+      .updateStatusByUniversityPresident(
+        this.original._id,
+        'rejected',
+        this.rejectionReason
+      )
+      .subscribe(
+        (res: any) => {
+          this.original.status = 'rejected';
+          this.original.reasonForRejection = this.rejectionReason;
+          this.showRejectionReason = false;
+          this.rejectionReason = '';
+          this.processing = false;
+        },
+        (err) => {
+          console.error(err);
+          this.processing = false;
+        }
+      );
+  }
+
+  // دالة موحدة للرفض
+  confirmRejection() {
+    if (this.currentUserRole === 'supervisor') {
+      this.confirmRejectionSupervisor();
+    } else {
+      this.confirmRejectionPresident();
+    }
+  }
+
+  approveLetter(option?: 'حقيقية' | 'الممسوحة ضوئيا') {
+    if (!this.original?._id) return;
+
+    this.processing = true;
+
+    if (this.currentUserRole === 'supervisor') {
+      // المراجع يوافق ويحدث الحالة فقط
+      this.letterService
+        .updateStatusBySupervisor(this.original._id, 'pending')
+        .subscribe({
+          next: () => {
+            this.original.status = 'pending';
+            this.processing = false;
+          },
+          error: (err) => {
+            console.error(err);
+            this.processing = false;
+          },
+        });
+    } else if (this.currentUserRole === 'UniversityPresident') {
+      if (!option) {
+        // حالة الموافقة العادية بدون توليد PDF
+        this.letterService
+          .updateStatusByUniversityPresident(
+            this.original._id,
+            'approved',
+            'حقيقية'
+          )
+          .subscribe({
+            next: () => {
+              this.original.status = 'approved';
+              this.processing = false;
+            },
+            error: (err) => {
+              console.error(err);
+              this.processing = false;
+            },
+          });
+      } else {
+        // حالة الموافقة مع توليد PDF حسب النوع (تغيير الحالة + توليد PDF)
+        this.letterService
+          .updateStatusByUniversityPresident(
+            this.original._id,
+            'approved',
+            option
+          )
+          .subscribe({
+            next: () => {
+              this.original.status = 'approved';
+              // بعد نجاح تغيير الحالة، نستدعي توليد PDF
+              this.letterService
+                .printLetterByType(this.original._id, option)
+                .subscribe({
+                  next: (letter) => {
+                    this.processing = false;
+                    this.showPresidentOptions = false;
+
+                    if (letter.pdfUrl) {
+                      window.open(letter.pdfUrl, '_blank');
+                    } else {
+                      alert('لم يتم توليد ملف PDF بعد.');
+                    }
+                  },
+                  error: (err) => {
+                    console.error(err);
+                    this.processing = false;
+                    alert('حدث خطأ أثناء توليد PDF.');
+                  },
+                });
+            },
+            error: (err) => {
+              console.error(err);
+              this.processing = false;
+            },
+          });
+      }
+    }
+  }
+
+  // التحقق مما إذا كان يمكن التعديل (لا يمكن التعديل بعد الرفض أو القبول)
+  canEdit(): boolean {
+    return (
+      !['approved', 'rejected'].includes(this.original?.status) &&
+      this.isEditingAllowedByRole()
+    );
+  }
+
+  // التحقق من الصلاحية حسب الدور
+  isEditingAllowedByRole(): boolean {
+    if (this.currentUserRole === 'supervisor') {
+      return this.original?.status === 'in_progress';
+    }
+    return this.original?.status === 'pending';
+  }
 
   getStatusBadgeClass(status: string): string {
     switch (status) {
@@ -225,73 +338,10 @@ export class LetterDetailComponent implements OnInit {
     );
   }
 
-approveLetter(option?: 'حقيقية' | 'الممسوحة ضوئيا') {
-  if (!this.original?._id) return;
-
-  this.processing = true;
-
-  if (this.currentUserRole === 'supervisor') {
-    // المراجع يوافق ويحدث الحالة فقط
-    this.letterService.updateStatusBySupervisor(this.original._id, 'pending')
-      .subscribe({
-        next: () => {
-          this.original.status = 'pending';
-          this.processing = false;
-        },
-        error: (err) => {
-          console.error(err);
-          this.processing = false;
-        }
-      });
-
-  } else if (this.currentUserRole === 'UniversityPresident') {
-  if (!option) {
-    // حالة الموافقة العادية بدون توليد PDF
-    this.letterService.updateStatusByUniversityPresident(this.original._id, 'approved', 'حقيقية')
-      .subscribe({
-        next: () => {
-          this.original.status = 'approved';
-          this.processing = false;
-        },
-        error: (err) => {
-          console.error(err);
-          this.processing = false;
-        }
-      });
-  } else {
-    // حالة الموافقة مع توليد PDF حسب النوع (تغيير الحالة + توليد PDF)
-    this.letterService.updateStatusByUniversityPresident(this.original._id, 'approved', option)
-      .subscribe({
-        next: () => {
-          this.original.status = 'approved';
-          // بعد نجاح تغيير الحالة، نستدعي توليد PDF
-          this.letterService.printLetterByType(this.original._id, option)
-            .subscribe({
-              next: (letter) => {
-                this.processing = false;
-                this.showPresidentOptions = false;
-
-                if (letter.pdfUrl) {
-                  window.open(letter.pdfUrl, "_blank");
-                } else {
-                  alert("لم يتم توليد ملف PDF بعد.");
-                }
-              },
-              error: (err) => {
-                console.error(err);
-                this.processing = false;
-                alert("حدث خطأ أثناء توليد PDF.");
-              }
-            });
-        },
-        error: (err) => {
-          console.error(err);
-          this.processing = false;
-        }
-      });
+  // إظهار سبب الرفض إذا كان موجوداً
+  showRejectionDetails(): boolean {
+    return (
+      this.original?.status === 'rejected' && this.original?.reasonForRejection
+    );
   }
 }
-
-    }
-  }
-

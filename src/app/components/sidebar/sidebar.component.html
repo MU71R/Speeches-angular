@@ -48,6 +48,12 @@
         <i class="fa-solid fa-inbox"></i>
         <span>الخطابات المعلقة</span>
       </a>
+
+      <a *ngIf="user?.role === 'UniversityPresident'" routerLink="/pdf-list"
+        routerLinkActive="active" class="menu-item">
+        <i class="fa-solid fa-inbox"></i>
+        <span>الملفات</span>
+      </a>
     </nav>
 
     <div class="sidebar-footer">

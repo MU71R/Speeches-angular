@@ -1,273 +1,676 @@
-/* letter-detail.component.css */
 :host {
   display: block;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  min-height: 100vh;
 }
 
 /* تحسينات عامة */
+.container-fluid {
+  max-width: 1400px;
+}
+
+/* هيدر الصفحة */
+.page-header {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+  padding: 2.5rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.page-subtitle {
+  color: #6c757d;
+  font-size: 1.2rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* البطاقات العامة */
 .card {
   border: none;
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  margin-bottom: 2rem;
+  overflow: hidden;
+  background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
 }
 
-.card-header.bg-gradient-primary {
-  background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+.card:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  transform: translateY(-8px);
 }
 
-/* مسار المعالجة المحسن */
-.process-track {
+.card-header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-bottom: 2px solid #e9ecef;
+  padding: 1.75rem;
+  border-radius: 1.25rem 1.25rem 0 0 !important;
+}
+
+.card-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.card-body {
+  padding: 2rem;
+}
+
+/* بطاقة المحتوى */
+.content-card {
+  min-height: 500px;
+  border-left: 6px solid #0d6efd;
+}
+
+.letter-content {
+  line-height: 1.9;
+  font-size: 1.15rem;
+  color: #2d3748;
+  min-height: 300px;
+  background: linear-gradient(135deg, #fafbfc 0%, #ffffff 100%);
+  padding: 2rem;
+  border-radius: 1rem;
+  border: 1px solid #e9ecef;
+}
+
+.content-textarea {
+  border: 2px solid #e9ecef;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  font-size: 1.15rem;
+  line-height: 1.8;
+  resize: vertical;
+  min-height: 400px;
+  background: linear-gradient(135deg, #fafbfc 0%, #ffffff 100%);
+  transition: all 0.3s ease;
+}
+
+.content-textarea:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.3rem rgba(13, 110, 253, 0.15);
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+}
+
+/* بطاقة المبررات */
+.rationale-card {
+  border-left: 6px solid #17a2b8;
+}
+
+.rationale-content {
+  line-height: 1.8;
+  color: #2d3748;
+  font-size: 1.1rem;
+  background: linear-gradient(135deg, #f0f8ff 0%, #f8f9fa 100%);
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid #e9ecef;
+  min-height: 120px;
+}
+
+.rationale-textarea {
+  border: 2px solid #e9ecef;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  resize: vertical;
+  min-height: 150px;
+  background: linear-gradient(135deg, #fafbfc 0%, #ffffff 100%);
+  transition: all 0.3s ease;
+}
+
+.rationale-textarea:focus {
+  border-color: #17a2b8;
+  box-shadow: 0 0 0 0.3rem rgba(23, 162, 184, 0.15);
+}
+
+/* بطاقات المعلومات */
+.details-card {
+  border-left: 6px solid #198754;
+}
+
+.detail-grid {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 1rem;
+  border: 1px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.detail-item:hover {
+  transform: translateX(-5px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.detail-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.detail-icon i {
+  color: white;
+  font-size: 1.25rem;
+}
+
+.detail-content {
+  flex: 1;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+.detail-value {
+  font-weight: 700;
+  color: #2d3748;
+  font-size: 1.05rem;
+}
+
+.detail-value.highlight {
+  color: #0d6efd;
+  background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.detail-value.code {
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  background: #f8f9fa;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  color: #6c757d;
+  border: 1px solid #e9ecef;
+}
+
+/* التايم لاين */
+.timeline-card {
+  border-left: 6px solid #ffc107;
+}
+
+.timeline {
   position: relative;
   padding: 1rem 0;
 }
 
-.process-track::before {
+.timeline::before {
   content: '';
   position: absolute;
-  left: 2rem;
+  right: 2rem;
   top: 0;
   bottom: 0;
-  width: 2px;
+  width: 3px;
   background: linear-gradient(to bottom, #e9ecef, #e9ecef);
-  z-index: 1;
+  border-radius: 2px;
 }
 
-.process-step {
+.timeline-item {
   display: flex;
-  align-items: flex-start;
-  gap: 1rem;
+  align-items: center;
+  margin-bottom: 2rem;
   position: relative;
-  z-index: 2;
-  transition: all 0.3s ease;
 }
 
-.step-indicator {
+.timeline-item:last-child {
+  margin-bottom: 0;
+}
+
+.timeline-icon {
   width: 4rem;
   height: 4rem;
-  border-radius: 50%;
+  border-radius: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f8f9fa;
-  border: 3px solid #dee2e6;
-  transition: all 0.3s ease;
+  margin-left: 1.5rem;
   flex-shrink: 0;
+  z-index: 2;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-.step-indicator i {
-  font-size: 1.25rem;
-  color: #6c757d;
-}
-
-.process-step.active .step-indicator {
+.timeline-icon.primary {
   background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
-  border-color: #0d6efd;
-  transform: scale(1.1);
-  box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
 }
 
-.process-step.active .step-indicator i {
-  color: white;
-}
-
-.process-step.completed .step-indicator {
+.timeline-icon.success {
   background: linear-gradient(135deg, #198754 0%, #146c43 100%);
+}
+
+.timeline-icon.info {
+  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+}
+
+.timeline-icon.warning {
+  background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+}
+
+.timeline-icon.secondary {
+  background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+}
+
+.timeline-icon i {
+  color: white;
+  font-size: 1.25rem;
+}
+
+.timeline-content {
+  flex: 1;
+}
+
+.timeline-title {
+  font-weight: 600;
+  color: #6c757d;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.timeline-date {
+  font-weight: 700;
+  color: #2d3748;
+  font-size: 1.1rem;
+}
+
+/* مسار التقدم */
+.progress-track {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1rem 0;
+}
+
+.progress-step {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  transition: all 0.4s ease;
+  position: relative;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 2px solid transparent;
+}
+
+.progress-step.active {
+  background: linear-gradient(135deg, #f0f4ff 0%, #e6f0ff 100%);
+  border-color: #0d6efd;
+  transform: scale(1.02);
+  box-shadow: 0 6px 25px rgba(13, 110, 253, 0.2);
+}
+
+.progress-step.completed {
+  background: linear-gradient(135deg, #f0fff4 0%, #e6ffed 100%);
   border-color: #198754;
 }
 
-.process-step.completed .step-indicator i {
+.step-marker {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 1rem;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.4s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.progress-step.active .step-marker {
+  background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+  transform: scale(1.1);
+}
+
+.progress-step.completed .step-marker {
+  background: linear-gradient(135deg, #198754 0%, #146c43 100%);
+}
+
+.step-marker i {
+  color: #6c757d;
+  font-size: 1.5rem;
+  transition: all 0.4s ease;
+}
+
+.progress-step.active .step-marker i,
+.progress-step.completed .step-marker i {
   color: white;
 }
 
-.step-content {
+.step-info {
   flex: 1;
-  padding-top: 0.5rem;
 }
 
 .step-title {
   font-weight: 700;
-  font-size: 1rem;
   color: #2d3748;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
 }
 
-.step-status {
-  font-size: 0.875rem;
+.step-desc {
+  font-size: 0.9rem;
   color: #6c757d;
-  font-weight: 500;
+  margin-bottom: 0.75rem;
 }
 
-.process-step.active .step-title {
+.step-progress .progress {
+  height: 6px;
+  border-radius: 3px;
+  background: #e9ecef;
+}
+
+.step-progress .progress-bar {
+  border-radius: 3px;
+}
+
+.progress-step.active .step-title {
   color: #0d6efd;
 }
 
-.process-step.active .step-status {
-  color: #0d6efd;
-  font-weight: 600;
-}
-
-.process-step.completed .step-title {
+.progress-step.completed .step-title {
   color: #198754;
 }
 
-.process-step.completed .step-status {
-  color: #198754;
+/* حالة الخطاب */
+.status-badge-container {
+  text-align: center;
+  margin-bottom: 1.5rem;
 }
 
-/* تحسينات Badges */
-.badge {
-  font-size: 0.8rem;
-  padding: 0.5rem 1rem;
-  border-radius: 1rem;
-  font-weight: 600;
+.status-badge {
+  font-size: 1rem;
+  padding: 1rem 2rem;
+  border-radius: 2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: inline-flex;
+  align-items: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  border: 3px solid transparent;
 }
 
-.badge.bg-success {
+.status-badge.bg-success {
   background: linear-gradient(135deg, #198754 0%, #146c43 100%) !important;
+  border-color: rgba(25, 135, 84, 0.3);
 }
 
-.badge.bg-warning {
+.status-badge.bg-warning {
   background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%) !important;
   color: #000 !important;
+  border-color: rgba(255, 193, 7, 0.3);
 }
 
-.badge.bg-danger {
+.status-badge.bg-danger {
   background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+  border-color: rgba(220, 53, 69, 0.3);
 }
 
-.badge.bg-info {
+.status-badge.bg-info {
   background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important;
   color: #fff !important;
+  border-color: rgba(23, 162, 184, 0.3);
 }
 
-/* تحسينات الأزرار */
+/* الأزرار */
 .btn {
   font-weight: 600;
-  transition: all 0.3s ease;
-  border: none;
+  border-radius: 1rem;
+  padding: 1rem 2rem;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 2px solid transparent;
+  font-size: 1.05rem;
   position: relative;
   overflow: hidden;
 }
 
 .btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
 .btn:active {
-  transform: translateY(0);
-}
-
-.btn-lg {
-  padding: 0.875rem 2rem;
-  font-size: 1rem;
-}
-
-.btn-success {
-  background: linear-gradient(135deg, #198754 0%, #146c43 100%);
-}
-
-.btn-success:hover {
-  background: linear-gradient(135deg, #146c43 0%, #0f5132 100%);
-}
-
-.btn-danger {
-  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-}
-
-.btn-danger:hover {
-  background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+  transform: translateY(-1px);
 }
 
 .btn-primary {
   background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+  border-color: #0d6efd;
 }
 
-.btn-primary:hover {
-  background: linear-gradient(135deg, #0a58ca 0%, #084298 100%);
+.btn-success {
+  background: linear-gradient(135deg, #198754 0%, #146c43 100%);
+  border-color: #198754;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  border-color: #dc3545;
+}
+
+.action-buttons-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.action-buttons-vertical .btn {
+  width: 100%;
+}
+
+/* إجراءات المراجعة */
+.actions-card {
+  background: white;
+  border-left: 6px solid #6f42c1;
+}
+
+.rejection-section {
+  background: linear-gradient(135deg, #fff5f5 0%, #ffe6e6 100%);
+  border: 2px solid #fed7d7;
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+.approval-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.btn-option {
+  width: 100%;
+}
+
+/* سجل الموافقات */
+.approvals-card {
+  border-left: 6px solid #e83e8c;
+}
+
+.approvals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.approval-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 1rem;
+  border: 1px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.approval-item:hover {
+  transform: translateX(-5px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.approval-avatar {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.approval-avatar i {
+  color: white;
+  font-size: 1.5rem;
+}
+
+.approval-info {
+  flex: 1;
+}
+
+.approval-role {
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 0.25rem;
+}
+
+.approval-date {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.approval-status {
+  font-weight: 700;
+  padding: 0.75rem 1.25rem;
+  border-radius: 1.5rem;
+  font-size: 0.9rem;
+  min-width: 90px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.approval-status.approved {
+  background: linear-gradient(135deg, #d1e7dd 0%, #b8dfc9 100%);
+  color: #0f5132;
+  border: 2px solid #a3cfbb;
+}
+
+.approval-status.rejected {
+  background: linear-gradient(135deg, #f8d7da 0%, #f1b0b7 100%);
+  color: #721c24;
+  border: 2px solid #f1aeb5;
+}
+
+/* سبب الرفض */
+.rejection-card {
+  border-left: 6px solid #dc3545;
+  background: linear-gradient(135deg, #fff5f5 0%, #ffe6e6 100%);
+}
+
+.rejection-content {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid #f8d7da;
+  font-style: italic;
+  color: #721c24;
+  line-height: 1.7;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.rejection-content i {
+  color: #dc3545;
+  font-size: 1.25rem;
+  margin-top: 0.25rem;
+}
+
+/* التحميل */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 2rem;
+  margin: 2rem;
+}
+
+.loading-spinner {
+  margin-bottom: 2rem;
+}
+
+.loading-text {
+  color: #6c757d;
+  font-size: 1.3rem;
+  font-weight: 600;
 }
 
 /* تحسينات النماذج */
 .form-control {
   border: 2px solid #e9ecef;
-  border-radius: 0.75rem;
-  padding: 0.875rem 1rem;
-  font-size: 0.95rem;
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+  font-size: 1.05rem;
   transition: all 0.3s ease;
+  background: linear-gradient(135deg, #fafbfc 0%, #ffffff 100%);
 }
 
 .form-control:focus {
   border-color: #0d6efd;
-  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.1);
+  box-shadow: 0 0 0 0.3rem rgba(13, 110, 253, 0.15);
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
 }
 
-/* تحسينات التخطيط */
-.min-h-200 {
-  min-height: 200px;
+.form-text {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-top: 0.75rem;
+  font-style: italic;
 }
 
-.min-vh-50 {
-  min-height: 50vh;
-}
-
-.border-end-lg {
-  border-right: 1px solid #e9ecef;
-}
-
-/* تحسينات النص */
-.text-muted {
-  color: #6c757d !important;
-}
-
-.fw-semibold {
-  font-weight: 600;
-}
-
-/* تحسينات الاستجابة */
-@media (max-width: 991.98px) {
-  .border-end-lg {
-    border-right: none;
-    border-bottom: 1px solid #e9ecef;
-    padding-bottom: 2rem;
-    margin-bottom: 2rem;
-  }
-
-  .process-track::before {
-    left: 1.5rem;
-  }
-
-  .step-indicator {
-    width: 3rem;
-    height: 3rem;
-  }
-
-  .step-indicator i {
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 767.98px) {
-  .card-body {
-    padding: 1.5rem;
-  }
-
-  .btn-lg {
-    padding: 0.75rem 1.5rem;
-    font-size: 0.9rem;
-  }
-
-  .process-step {
-    gap: 0.75rem;
-  }
-}
-
-/* تحسينات الرسوم المتحركة */
-@keyframes fadeIn {
+/* تأثيرات الرسوم المتحركة */
+@keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(40px);
   }
 
   to {
@@ -277,28 +680,142 @@
 }
 
 .card {
-  animation: fadeIn 0.5s ease-out;
+  animation: fadeInUp 0.8s ease-out;
 }
 
-/* تحسينات محتوى الخطاب */
-[innerHTML] {
-  line-height: 1.8;
+/* تخصيصات إضافية */
+.highlight {
+  color: #0d6efd;
+  font-weight: 700;
 }
 
-[innerHTML] h1, [innerHTML] h2, [innerHTML] h3, [innerHTML] h4, [innerHTML] h5, [innerHTML] h6 {
-  color: #2d3748;
-  margin-bottom: 1rem;
+.code {
+  font-family: 'Courier New', monospace;
+  background: #f8f9fa;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  border: 1px solid #e9ecef;
 }
 
-[innerHTML] p {
-  margin-bottom: 1rem;
+.flex-fill {
+  flex: 1;
 }
 
-[innerHTML] ul, [innerHTML] ol {
-  padding-right: 1.5rem;
+/* Badges إضافية */
+.badge {
+  font-size: 0.8rem;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  font-weight: 600;
 }
 
-/* تحسينات التحميل */
-.spinner-border {
-  border-width: 0.3em;
+/* تحسينات الاستجابة */
+@media (max-width: 1199.98px) {
+  .page-title {
+    font-size: 2rem;
+  }
+
+  .card-body {
+    padding: 1.75rem;
+  }
+
+  .timeline-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .page-header {
+    padding: 2rem 1.5rem;
+  }
+
+  .page-title {
+    font-size: 1.75rem;
+  }
+
+  .action-buttons {
+    width: 100%;
+    margin-top: 1.5rem;
+  }
+
+  .edit-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .edit-actions .btn {
+    width: 100%;
+  }
+
+  .detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    text-align: right;
+  }
+
+  .timeline::before {
+    right: 1.75rem;
+  }
+
+  .timeline-icon {
+    width: 3rem;
+    height: 3rem;
+    margin-left: 1rem;
+  }
+
+  .step-marker {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+}
+
+/* تأثيرات خاصة للبطاقات */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(135deg, #0d6efd, #6f42c1);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+/* تدرجات ألوان للبطاقات المختلفة */
+.content-card::before {
+  background: linear-gradient(135deg, #0d6efd, #0a58ca);
+}
+
+.rationale-card::before {
+  background: linear-gradient(135deg, #17a2b8, #138496);
+}
+
+.status-card::before {
+  background: linear-gradient(135deg, #198754, #146c43);
+}
+
+.details-card::before {
+  background: linear-gradient(135deg, #ffc107, #e0a800);
+}
+
+.timeline-card::before {
+  background: linear-gradient(135deg, #6c757d, #5a6268);
+}
+
+.actions-card::before {
+  background: linear-gradient(135deg, #6f42c1, #5a2d95);
+}
+
+.approvals-card::before {
+  background: linear-gradient(135deg, #e83e8c, #d91a72);
 }
