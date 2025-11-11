@@ -15,10 +15,8 @@ import { PdfListComponent } from './components/pdf-list/pdf-list.component';
 
 
 const routes: Routes = [
-  // صفحة تسجيل الدخول مستقلة
   { path: 'login', component: LoginComponent },
 
-  // الصفحات الداخلية كلها داخل الـ Layout
   {
     path: '',
     component: LayoutComponent,
@@ -34,12 +32,10 @@ const routes: Routes = [
       { path: 'archive', component: ArchiveComponent },
       { path: 'archive-detail', component: ArchiveDetailComponent },
       {path: 'pdf-list', component: PdfListComponent},
-      // الصفحة الرئيسية داخل النظام
       { path: '', redirectTo: 'home', pathMatch: 'full' },
     ],
   },
 
-  // أي رابط مش معروف يرجع للصفحة الرئيسية
   { path: '**', redirectTo: '' },
 ];
 

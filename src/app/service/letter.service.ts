@@ -4,8 +4,6 @@ import { Observable } from 'rxjs';
 import { Letter } from '../model/Letter';
 import { map } from 'rxjs/operators';
 import { LetterDetail } from '../model/letter-detail';
-
-// نموذج لملف PDF
 export interface PDFFile {
   _id: string;
   pdfurl: string;
@@ -55,7 +53,6 @@ export class LetterService {
       .pipe(map((res) => res.data));
   }
 
-  // تحديث حالة الخطاب بواسطة المشرف
   updateStatusBySupervisor(
     id: string,
     status: string,
@@ -74,7 +71,6 @@ export class LetterService {
       .pipe(map((r) => r.data));
   }
 
-  // تحديث حالة الخطاب بواسطة رئيس الجامعة
   updateStatusByUniversityPresident(
     id: string,
     status: string,
@@ -93,7 +89,6 @@ export class LetterService {
       .pipe(map((r) => r.data));
   }
 
-  // الحصول على الخطابات المؤرشفة للمستخدم الحالي
   getUserArchivedLetters(): Observable<LetterDetail[]> {
     return this.http
       .get<{ success: boolean; data: LetterDetail[] }>(
@@ -102,7 +97,6 @@ export class LetterService {
       .pipe(map((r) => r.data));
   }
 
-  // الحصول على جميع الخطابات المؤرشفة (ما عدا المستخدم الحالي)
   getAllArchivedLetters(): Observable<LetterDetail[]> {
     return this.http
       .get<{ success: boolean; data: LetterDetail[] }>(
@@ -111,7 +105,6 @@ export class LetterService {
       .pipe(map((r) => r.data));
   }
 
-  // الحصول على خطابات المشرف (الحالة in_progress)
   getSupervisorLetters(): Observable<LetterDetail[]> {
     return this.http
       .get<{ success: boolean; data: LetterDetail[] }>(
@@ -120,7 +113,6 @@ export class LetterService {
       .pipe(map((r) => r.data));
   }
 
-  // الحصول على خطابات رئيس الجامعة (الحالة pending)
   getUniversityPresidentLetters(): Observable<LetterDetail[]> {
     return this.http
       .get<{ success: boolean; data: LetterDetail[] }>(
@@ -129,7 +121,6 @@ export class LetterService {
       .pipe(map((r) => r.data));
   }
 
-  // الحصول على الأرشيف الخاص بالمراجع
   getReviewerArchives(): Observable<LetterDetail[]> {
     return this.http
       .get<{ success: boolean; data: LetterDetail[] }>(
@@ -138,7 +129,6 @@ export class LetterService {
       .pipe(map((r) => r.data));
   }
 
-  // إضافة خطاب مؤرشف عام
   addArchiveGeneralLetter(formData: FormData): Observable<LetterDetail> {
     return this.http
       .post<{ success: boolean; data: LetterDetail }>(
@@ -148,7 +138,6 @@ export class LetterService {
       .pipe(map((r) => r.data));
   }
 
-  // الحصول على الخطابات المؤرشفة حسب النوع
   getArchivedLettersByType(type: string): Observable<LetterDetail[]> {
     return this.http
       .get<{ success: boolean; data: LetterDetail[] }>(
@@ -157,7 +146,6 @@ export class LetterService {
       .pipe(map((r) => r.data));
   }
 
-  // توليد ملف PDF للخطاب
   generateOfficialLetterPDF(id: string): Observable<{ pdfUrl: string }> {
     return this.http
       .get<{ success: boolean; data: { pdfUrl: string } }>(
@@ -166,7 +154,6 @@ export class LetterService {
       .pipe(map((r) => r.data));
   }
 
-  // طباعة الخطاب حسب النوع
   printLetterByType(
     id: string,
     signatureType: string
@@ -179,21 +166,18 @@ export class LetterService {
       .pipe(map((r) => r.data));
   }
 
-  // عرض ملف PDF (الدوال الجديدة المضافة)
   viewPDF(filename: string): Observable<Blob> {
     return this.http.get(`${this.baseUrl}/view-pdf/${filename}`, {
       responseType: 'blob',
     });
   }
 
-  // الحصول على جميع ملفات PDF
   getAllPDFs(): Observable<{ success: boolean; pdfFiles: PDFFile[] }> {
     return this.http.get<{ success: boolean; pdfFiles: PDFFile[] }>(
       `${this.baseUrl}/all-pdfs`
     );
   }
 
-  // دالة مساعدة لتحميل ملف PDF
   downloadPDF(filename: string, downloadName?: string): void {
     this.viewPDF(filename).subscribe((blob: Blob) => {
       const url = window.URL.createObjectURL(blob);
@@ -207,7 +191,6 @@ export class LetterService {
     });
   }
 
-  // دالة مساعدة لفتح ملف PDF في نافذة جديدة
   openPDFInNewWindow(filename: string): void {
     this.viewPDF(filename).subscribe((blob: Blob) => {
       const url = window.URL.createObjectURL(blob);
@@ -215,7 +198,6 @@ export class LetterService {
     });
   }
 
-  // دالة مساعدة للتحقق من الصلاحيات
   canUpdateStatus(userRole: string, currentStatus: string): boolean {
     const statusPermissions = {
       supervisor: ['in_progress'],
@@ -229,7 +211,6 @@ export class LetterService {
     );
   }
 
-  // دالة للحصول على حالة الخطاب بالعربية
   getStatusArabic(status: string): string {
     const statusMap: { [key: string]: string } = {
       pending: 'قيد الانتظار',
@@ -240,7 +221,6 @@ export class LetterService {
     return statusMap[status] || status;
   }
 
-  // دالة للحصول على نوع التوقيع بالعربية
   getSignatureTypeArabic(signatureType: string): string {
     const signatureMap: { [key: string]: string } = {
       'الممسوحة ضوئيا': 'الممسوحة ضوئياً',

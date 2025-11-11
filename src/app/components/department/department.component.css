@@ -1,4 +1,3 @@
-/* ===================== MODAL CENTERING STYLES ===================== */
 .modal-backdrop-custom {
   position: fixed;
   top: 0;
@@ -80,7 +79,6 @@
   }
 }
 
-/* ===================== PASSWORD INPUT STYLES ===================== */
 .password-input-group {
   position: relative;
   width: 100%;
@@ -116,7 +114,6 @@
   outline-offset: 2px;
 }
 
-/* تحسينات للشاشات الصغيرة */
 @media (max-width: 768px) {
   .modal-backdrop-custom {
     padding: 0.5rem;
@@ -154,7 +151,6 @@
   }
 }
 
-/* تحسينات للشاشات الكبيرة */
 @media (min-width: 1200px) {
   .modal-dialog.modal-sm {
     max-width: 400px;
@@ -169,12 +165,10 @@
   }
 }
 
-/* منع التمرير عند فتح المودال */
 body.modal-open {
   overflow: hidden;
 }
 
-/* تحسينات إضافية للمحتوى داخل المودال */
 .modal-header-custom {
   background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
   color: white;
@@ -202,7 +196,6 @@ body.modal-open {
   flex-shrink: 0;
 }
 
-/* تحسينات للعناوين */
 .modal-header-custom .modal-title {
   font-weight: 600;
   font-size: 1.25rem;
@@ -237,7 +230,6 @@ body.modal-open {
   transform: translateY(-50%) rotate(90deg);
 }
 
-/* تحسينات للاستجابة */
 @media (max-width: 768px) {
   .modal-header-custom {
     padding: 1.25rem;
@@ -294,7 +286,6 @@ body.modal-open {
   }
 }
 
-/* تحسينات للارتفاعات المختلفة */
 @media (max-height: 700px) {
   .custom-modal {
     max-height: 95vh;
@@ -319,7 +310,6 @@ body.modal-open {
   }
 }
 
-/* تحسينات للوضع الأفقي على الهواتف */
 @media (max-width: 767px) and (orientation: landscape) {
   .custom-modal {
     max-height: 85vh;
@@ -331,7 +321,6 @@ body.modal-open {
   }
 }
 
-/* دعم للأجهزة التي تعمل باللمس */
 @media (hover: none) and (pointer: coarse) {
   .btn-close-custom {
     min-width: 44px;
@@ -349,7 +338,6 @@ body.modal-open {
   }
 }
 
-/* تأثيرات التركيز للوصول */
 .btn-close-custom:focus {
   outline: 2px solid white;
   outline-offset: 2px;
@@ -362,14 +350,12 @@ body.modal-open {
   outline-offset: 2px;
 }
 
-/* ===================== BASE STYLES ===================== */
 .page-container {
   padding: 1rem;
   min-height: 100vh;
   background-color: #f8fafc;
 }
 
-/* ===================== RESPONSIVE TABS ===================== */
 .responsive-tabs {
   background: white;
   border-radius: 12px;
@@ -408,7 +394,6 @@ body.modal-open {
   color: #374151;
 }
 
-/* ===================== SECTION HEADER ===================== */
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -437,7 +422,6 @@ body.modal-open {
   gap: 0.5rem;
 }
 
-/* ===================== FILTERS SECTION ===================== */
 .filters-section {
   display: flex;
   gap: 1rem;
@@ -487,7 +471,6 @@ body.modal-open {
   white-space: nowrap;
 }
 
-/* ===================== TABLE STYLES ===================== */
 .table-container {
   background: white;
   border-radius: 12px;
@@ -527,7 +510,6 @@ body.modal-open {
   background-color: #f8fafc;
 }
 
-/* ===================== BADGES ===================== */
 .role-badge,
 .status-badge {
   padding: 0.5rem 0.75rem;
@@ -538,7 +520,6 @@ body.modal-open {
   display: inline-block;
 }
 
-/* ===================== ACTIONS ===================== */
 .actions-cell {
   white-space: nowrap;
 }
@@ -560,7 +541,6 @@ body.modal-open {
   padding: 0;
 }
 
-/* ===================== EMPTY STATE ===================== */
 .empty-state {
   text-align: center;
   padding: 3rem 1rem;
@@ -578,7 +558,6 @@ body.modal-open {
   margin: 0;
 }
 
-/* ===================== CUSTOM SELECT STYLES ===================== */
 .custom-select-wrapper {
   position: relative;
   width: 100%;
@@ -618,16 +597,13 @@ body.modal-open {
   color: #374151;
 }
 
-/* ===================== RESPONSIVE BREAKPOINTS ===================== */
 
-/* Large devices (desktops, 1200px and up) */
 @media (min-width: 1200px) {
   .page-container {
     padding: 2rem;
   }
 }
 
-/* Medium devices (tablets, 768px to 1199px) */
 @media (max-width: 1199px) {
   .section-header {
     flex-direction: column;
@@ -644,7 +620,6 @@ body.modal-open {
   }
 }
 
-/* Small devices (landscape phones, 576px to 767px) */
 @media (max-width: 767px) {
   .page-container {
     padding: 0.5rem;
@@ -677,7 +652,6 @@ body.modal-open {
   }
 }
 
-/* Extra small devices (portrait phones, less than 576px) */
 @media (max-width: 575px) {
   .page-container {
     padding: 0.25rem;
@@ -747,7 +721,6 @@ body.modal-open {
   }
 }
 
-/* Very small devices (less than 400px) */
 @media (max-width: 400px) {
   .page-container {
     padding: 0.125rem;
@@ -776,7 +749,6 @@ body.modal-open {
   }
 }
 
-/* Touch device improvements */
 @media (hover: none) and (pointer: coarse) {
   .action-btn {
     min-width: 44px;
@@ -798,7 +770,6 @@ body.modal-open {
   }
 }
 
-/* High contrast mode support */
 @media (prefers-contrast: high) {
   .table-row:hover {
     background-color: #e5e7eb;
@@ -810,7 +781,6 @@ body.modal-open {
   }
 }
 
-/* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;

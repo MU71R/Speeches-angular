@@ -105,13 +105,12 @@ export class AuthService {
     return roles.includes(this.currentUserValue?.role || '');
   }
 
-  // ✅ التحديث المهم: الأدمن لا يعتبر مشرف أو رئيس جامعة في النظام الحالي
   isSupervisor(): boolean {
-    return this.hasRole('supervisor'); // الأدمن لا يعتبر مشرف
+    return this.hasRole('supervisor'); 
   }
 
   isUniversityPresident(): boolean {
-    return this.hasRole('UniversityPresident'); // الأدمن لا يعتبر رئيس جامعة
+    return this.hasRole('UniversityPresident');
   }
 
   isAdmin(): boolean {
@@ -134,20 +133,17 @@ export class AuthService {
     const user = this.currentUserValue;
     if (!user) return false;
 
-    // الأدمن يمكنه التعديل دائماً
     if (this.isAdmin()) return true;
 
-    // صاحب الخطاب يمكنه التعديل
     return user._id === letterUserId;
   }
 
-  // ✅ تحديث دوال الصلاحيات لتتناسب مع الـ Backend
   canUpdateStatusBySupervisor(): boolean {
-    return this.isSupervisor(); // فقط المشرف
+    return this.isSupervisor(); 
   }
 
   canUpdateStatusByPresident(): boolean {
-    return this.isUniversityPresident(); // فقط رئيس الجامعة
+    return this.isUniversityPresident(); 
   }
 
   canReviewLetter(letterStatus: string): boolean {
@@ -156,9 +152,9 @@ export class AuthService {
 
     switch (letterStatus) {
       case 'pending':
-        return this.isSupervisor(); // فقط المشرف
+        return this.isSupervisor(); 
       case 'in_progress':
-        return this.isUniversityPresident(); // فقط رئيس الجامعة
+        return this.isUniversityPresident(); 
       default:
         return false;
     }

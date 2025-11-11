@@ -1,5 +1,5 @@
 export interface Decision {
-  _id?: string;              // ← أضف هذا السطر
+  _id?: string;         
   title: string;
   description?: string;
   sector?: any;

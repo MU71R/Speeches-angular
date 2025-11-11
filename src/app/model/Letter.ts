@@ -1,4 +1,3 @@
-// src/app/models/achievement.model.ts
 export interface User {
   id: string;
   role: 'admin' | 'user' | string;
@@ -9,10 +8,10 @@ export interface Letter {
   title: string;
   description: string;
   Rationale: string;
-  decision: string; // ObjectId
+  decision: string; 
   date: string | Date;
   status?: 'pending' | 'approved' | 'rejected' | 'in_progress';
-  user?: string; // ObjectId
+  user?: string;
 }
 
 export interface addLetter {

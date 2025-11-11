@@ -1,4 +1,3 @@
-// src/app/service/home.service.ts
 import { Injectable } from '@angular/core';
 import { Observable, forkJoin, map } from 'rxjs';
 import { AdministrationService } from './user.service';
@@ -47,11 +46,8 @@ export class DashboardService {
         console.log('Raw Users Data:', users);
         console.log('Raw Letters Data:', letters);
         console.log('Raw Decisions Data:', decisions);
-
-        // معالجة بيانات المستخدمين
         const userStats = users.data || users;
 
-        // معالجة بيانات الخطابات
         let lettersData = letters;
         if (letters && (letters as any).data) {
           lettersData = (letters as any).data;
@@ -85,7 +81,6 @@ export class DashboardService {
           });
         }
 
-        // معالجة بيانات القرارات
         let decisionsData = decisions;
         if (decisions && (decisions as any).data) {
           decisionsData = (decisions as any).data;
@@ -130,7 +125,6 @@ export class DashboardService {
         const activities = lettersData
           .slice(0, 8)
           .map((letter: any) => {
-            // التعامل مع المستخدم إذا كان null
             let userName = 'مستخدم غير معروف';
             if (letter.user) {
               if (typeof letter.user === 'object') {

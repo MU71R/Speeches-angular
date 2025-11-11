@@ -37,26 +37,22 @@ export class AddadecisionComponent implements OnInit {
     this.loadDecisionTypes();
   }
 
-  /** فتح الفورم */
   openFormModal() {
     this.resetForm();
     this.showFormModal = true;
   }
 
-  /** إغلاق الفورم */
   closeFormModal() {
     this.showFormModal = false;
     this.resetForm();
   }
 
-  /** تحميل القطاعات */
   loadSectors() {
     this.userservice.getAllSectors().subscribe((res: any) => {
       this.sectors = res?.data || [];
     });
   }
 
-  /** عند اختيار قطاع - تحميل المراجعين المرتبطين به */
   onSectorChange(event: any) {
     const sectorId = event.target.value;
     if (sectorId) {
@@ -68,7 +64,6 @@ export class AddadecisionComponent implements OnInit {
     }
   }
 
-  /** تحميل جميع أنواع القرارات */
   loadDecisionTypes() {
     this.loading = true;
     this.decisionService.getDecisionTypes().subscribe(
@@ -88,7 +83,6 @@ export class AddadecisionComponent implements OnInit {
     );
   }
 
-  /** إضافة أو تعديل نوع القرار */
   saveDecisionType() {
     if (!this.form.title || !this.form.sector) {
       Swal.fire({
@@ -106,7 +100,7 @@ export class AddadecisionComponent implements OnInit {
         () => {
           Swal.fire({
             icon: 'success',
-            title: 'تم تعديل نوع القرار بنجاح ✅',
+            title: 'تم تعديل نوع القرار بنجاح',
             timer: 2000,
             showConfirmButton: false,
           });
@@ -126,7 +120,7 @@ export class AddadecisionComponent implements OnInit {
         () => {
           Swal.fire({
             icon: 'success',
-            title: 'تم إضافة نوع القرار بنجاح ✅',
+            title: 'تم إضافة نوع القرار بنجاح',
             timer: 2000,
             showConfirmButton: false,
           });
@@ -145,11 +139,10 @@ export class AddadecisionComponent implements OnInit {
   }
   
 
-  /** فتح الفورم للتعديل */
   editDecisionType(decision: any) {
     this.form = {
       title: decision.title,
-      sector: decision.sector?._id || decision.sector, // مهم
+      sector: decision.sector?._id || decision.sector, 
       supervisor: decision.supervisor?._id || decision.supervisor,
       isPresidentDecision: decision.isPresidentDecision
     };
@@ -158,8 +151,6 @@ export class AddadecisionComponent implements OnInit {
     this.showFormModal = true;
   }
   
-
-  /** حذف قرار */
   deleteDecisionType(id: string) {
     Swal.fire({
       title: 'هل أنت متأكد من الحذف؟',
@@ -175,7 +166,7 @@ export class AddadecisionComponent implements OnInit {
           () => {
             Swal.fire({
               icon: 'success',
-              title: 'تم الحذف ✅',
+              title: 'تم الحذف',
               timer: 2000,
               showConfirmButton: false,
             });
@@ -193,7 +184,6 @@ export class AddadecisionComponent implements OnInit {
     });
   }
 
-  /** إعادة تعيين الفورم */
   resetForm() {
     this.form = {
       title: '',
@@ -205,7 +195,6 @@ export class AddadecisionComponent implements OnInit {
     this.reviewers = [];
   }
 
-  /** تحميل مراجعين عند تعديل قرار */
   loadReviewers(sectorId: string) {
     if (sectorId) {
       this.userservice.getusersbyrole(sectorId).subscribe((res: any) => {

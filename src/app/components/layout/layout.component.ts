@@ -7,7 +7,7 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
   styleUrls: ['./layout.component.css'],
 })
 export class LayoutComponent implements OnInit, OnDestroy {
-  isSidebarOpen = true; // افتراضي مفتوح على الشاشات الكبيرة
+  isSidebarOpen = true; 
 
   ngOnInit(): void {
     this.checkScreenSize();
@@ -24,10 +24,8 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
   private checkScreenSize(): void {
     if (window.innerWidth >= 993) {
-      // على الشاشات الكبيرة، الشريط مفتوح افتراضياً
       this.isSidebarOpen = true;
     } else {
-      // على الجوال، الشريط مغلق افتراضياً
       this.isSidebarOpen = false;
     }
   }

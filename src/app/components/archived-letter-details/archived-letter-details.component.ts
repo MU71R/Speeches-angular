@@ -43,7 +43,6 @@ export class LetterDetailsComponent implements OnInit {
     });
   }
 
-  // دوال مساعدة محسنة
   getStatusText(status: string): string {
     const statusMap: { [key: string]: string } = {
       approved: 'معتمد',
@@ -136,7 +135,6 @@ export class LetterDetailsComponent implements OnInit {
   }
 
   getSectorName(sectorId: string): string {
-    // يمكنك استبدال هذا بمنطق جلب أسماء الأقسام من خدمة
     const sectorMap: { [key: string]: string } = {
       '68ff54614859681125c5455f': 'الإدارة العامة للشئون القانونية',
       '68ff54844859681125c54563': 'إدارة الوحدات ذات الطابع الخاص',
@@ -145,7 +143,6 @@ export class LetterDetailsComponent implements OnInit {
   }
 
   getSupervisorName(supervisorId: string): string {
-    // يمكنك استبدال هذا بمنطق جلب أسماء المشرفين من خدمة
     const supervisorMap: { [key: string]: string } = {
       '68ff62b4936b0f8ca0412182': 'الإدارة العامة للشئون القانونية',
       '68ffaf5984b59cbf1298c3d2': 'إدارة الوحدات ذات الطابع الخاص',
@@ -154,7 +151,6 @@ export class LetterDetailsComponent implements OnInit {
   }
 
   getUserName(userId: string): string {
-    // يمكنك استبدال هذا بمنطق جلب أسماء المستخدمين من خدمة
     const userMap: { [key: string]: string } = {
       '690dccb25b4f51cf531fd3b9': 'د/كتور احمد',
       '68ffaf5984b59cbf1298c3d2': 'إدارة الوحدات ذات الطابع الخاص',
@@ -189,8 +185,7 @@ export class LetterDetailsComponent implements OnInit {
   }
 
   getFileSize(filePath: string): string {
-    // هذه دالة افتراضية - يمكنك استبدالها بالمنطق الفعلي لحساب حجم الملف
-    return ''; // مثال: '2.5 MB'
+    return ''; 
   }
 
   getAttachmentUrl(fileName: string): string {
@@ -221,7 +216,7 @@ export class LetterDetailsComponent implements OnInit {
   }
 
   hasMultipleSections(): boolean {
-    let count = 1; // قسم المعلومات الإضافية موجود دائماً
+    let count = 1; 
     if (this.letter?.description || this.letter?.breeif) count++;
     if (this.letter?.Rationale) count++;
     if (this.letter?.decision) count++;

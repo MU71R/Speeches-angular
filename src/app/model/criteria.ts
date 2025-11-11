@@ -1,10 +1,8 @@
-// src/app/models/criteria.model.ts
 
 export interface User {
   _id: string;
   fullname: string;
   username: string;
-  // أضف أي حقول أخرى للمستخدم تحتاجها
 }
 
 export interface Sector {
@@ -15,8 +13,8 @@ export interface Sector {
 export interface SubCriteria {
   _id: string;
   name: string;
-  mainCriteria: string; // ObjectId of MainCriteria
-  userId: User; // populated user
+  mainCriteria: string;
+  userId: User;
 }
 export type Level = 'ALL' | 'SECTOR' | 'DEPARTMENT';
 
@@ -26,24 +24,20 @@ export interface MainCriterion {
   level: Level;
   sector?: string;
   departmentUser?: string;
-
-  // لتفادي أخطاء Angular في القالب
   sectorName?: string;
   departmentName?: string;
 }
 
-
-// واجهات لبيانات الإدخال (Payloads)
 export interface AddMainCriteriaPayload {
   name: string;
   level: 'ALL' | 'SECTOR' | 'DEPARTMENT';
-  sector?: string; // ObjectId of Sector, required if level is SECTOR
-  departmentUser?: string; // ObjectId of User, required if level is DEPARTMENT
+  sector?: string; 
+  departmentUser?: string; 
 }
 
 export interface AddSubCriteriaPayload {
   name: string;
-  mainCriteria: string; // ObjectId of MainCriteria
+  mainCriteria: string; 
 }
 
 export interface UpdateMainCriteriaRequest {

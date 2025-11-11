@@ -15,10 +15,8 @@ export class ArchiveComponent {
 
   user = this.authService.currentUserValue;
 
-  // 📂 عند الضغط على أي نوع أرشيف
   getArchivedLettersByType(type: string) {
     this.loading = true;
-    // ننتقل إلى صفحة التفاصيل مع النوع المطلوب
     this.router
       .navigate(['/archive-detail'], { queryParams: { type } })
       .then(() => {
@@ -26,7 +24,6 @@ export class ArchiveComponent {
       });
   }
 
-  // 👤 للأرشيف الشخصي فقط
   openPersonalArchive() {
     this.loading = true;
     this.router

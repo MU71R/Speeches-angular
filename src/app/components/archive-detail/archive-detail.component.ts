@@ -46,12 +46,10 @@ export class ArchiveDetailComponent implements OnInit {
     });
   }
 
-  // دالة لتتبع العناصر في ngFor
   trackByLetterId(index: number, letter: any): string {
     return letter._id;
   }
 
-  // الدوال الأساسية لجلب البيانات
   getPersonalArchive(): void {
     this.loading = true;
     this.archiveService.getPersonalArchive().subscribe({
@@ -97,12 +95,10 @@ export class ArchiveDetailComponent implements OnInit {
     });
   }
 
-  // دالة جديدة لفتح صفحة تفاصيل الخطاب
   viewLetterDetails(letterId: string): void {
     this.router.navigate(['/letter-detail', letterId]);
   }
 
-  // الدوال المستخدمة في الـ HTML
   getArchiveTitle(): string {
     const titles: { [key: string]: string } = {
       شخصي: 'الأرشيف الشخصي',

@@ -1,4 +1,3 @@
-// src/app/components/home/home.component.ts
 import { Component, OnInit } from '@angular/core';
 import {
   DashboardService,
@@ -74,12 +73,9 @@ export class HomeComponent implements OnInit {
   filteredActivities: RecentActivity[] = [];
   loading = true;
   currentDate = new Date();
-
-  // معلومات المستخدم الحالي
   currentUser: User | null = null;
   currentUserRole: string = '';
   currentUserSector: string = '';
-
   quickStats: any[] = [];
   quickActions: QuickAction[] = [];
   miniStats: MiniStat[] = [];
@@ -107,7 +103,7 @@ export class HomeComponent implements OnInit {
 
     this.dashboardService.getDashboardStats().subscribe({
       next: (stats) => {
-        console.log('✅ Stats loaded successfully:', stats);
+        console.log('Stats loaded successfully:', stats);
         this.stats = stats;
         this.loadUserPersonalStats();
         this.updateQuickStats();
@@ -116,7 +112,7 @@ export class HomeComponent implements OnInit {
         this.loading = false;
       },
       error: (error) => {
-        console.error('❌ Error loading dashboard:', error);
+        console.error('Error loading dashboard:', error);
         this.useDefaultData();
         this.loading = false;
       },
@@ -124,19 +120,18 @@ export class HomeComponent implements OnInit {
 
     this.dashboardService.getRecentActivities().subscribe({
       next: (activities) => {
-        console.log('✅ Activities loaded successfully:', activities);
+        console.log('Activities loaded successfully:', activities);
         this.recentActivities = activities;
         this.filteredActivities = this.filterActivitiesByRole(activities);
       },
       error: (error) => {
-        console.error('❌ Error loading activities:', error);
+        console.error('Error loading activities:', error);
         this.useDefaultActivities();
       },
     });
   }
 
   loadUserPersonalStats(): void {
-    // محاكاة بيانات شخصية حسب الدور والقطاع
     switch (this.currentUserRole) {
       case 'preparer':
         this.userPersonalStats = {
@@ -200,7 +195,6 @@ export class HomeComponent implements OnInit {
   }
 
   getSectorLettersCount(): number {
-    // محاكاة عدد الخطابات في قطاع المستخدم
     const sectorMultipliers: { [key: string]: number } = {
       'الإدارة العامة للشئون القانونية': 8,
       'مكتب المدير التنفيذي للمستشفيات الجامعية': 6,
@@ -215,10 +209,9 @@ export class HomeComponent implements OnInit {
 
   filterActivitiesByRole(activities: RecentActivity[]): RecentActivity[] {
     if (this.currentUserRole === 'admin') {
-      return activities; // المدير يرى كل النشاطات
+      return activities; 
     }
 
-    // المستخدمين العاديين يرون فقط النشاطات المرتبطة بقطاعهم أو نشاطاتهم
     return activities.filter((activity) => {
       if (this.currentUserRole === 'preparer') {
         return activity.user === this.currentUser?.fullname;
@@ -495,7 +488,6 @@ export class HomeComponent implements OnInit {
     return values[type]?.[this.currentUserRole]?.toString() || '0';
   }
 
-  // الدوال المساعدة
   getWelcomeMessage(): string {
     const messages: { [key: string]: string } = {
       preparer: `مرحباً ${this.currentUser?.fullname}`,

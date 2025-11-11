@@ -15,19 +15,14 @@ export class DepartmentComponent implements OnInit {
   filteredList: User[] = [];
   loading = false;
   activeTab: 'users' | 'sectors' = 'users';
-
   searchTerm = '';
   selectedSector = '';
-
-  // ====== MODALS CONTROL ======
   showAddDepartmentModal = false;
   showEditUserModal = false;
   showSectorForm = false;
   showPassword = false;
   showEditPassword = false;
   showNewPassword = false;
-
-  // ====== DATA MODELS ======
   newDepartment: Partial<User> & { _id?: string } = {
     fullname: '',
     username: '',
@@ -38,8 +33,6 @@ export class DepartmentComponent implements OnInit {
 
   selectedUser: Partial<User> & { _id?: string } = {};
   newSector: Sector = { _id: '', sector: '' };
-
-  // ====== PASSWORD FIELDS ======
   editPasswordData = {
     newPassword: '',
     confirmPassword: '',
@@ -52,7 +45,6 @@ export class DepartmentComponent implements OnInit {
     this.loadUsers();
   }
 
-  // =================== USERS ===================
   loadUsers(): void {
     this.loading = true;
     this.adminService.getAllUsers().subscribe({
@@ -137,7 +129,6 @@ export class DepartmentComponent implements OnInit {
     this.showEditUserModal = false;
   }
 
-  // ====== PASSWORD MANAGEMENT ======
   togglePassword(field: 'add' | 'edit' | 'new'): void {
     if (field === 'add') {
       this.showPassword = !this.showPassword;
@@ -188,7 +179,6 @@ export class DepartmentComponent implements OnInit {
 
     if (!this.selectedUser._id) return;
 
-    // استخدام updateUser بدلاً من changePassword
     this.adminService
       .updateUser(this.selectedUser._id, {
         password: newPassword,
@@ -308,7 +298,6 @@ export class DepartmentComponent implements OnInit {
     this.applyFilters();
   }
 
-  // =================== SECTORS ===================
   loadSectors(): void {
     this.adminService.getAllSectors().subscribe({
       next: (res) => {
@@ -403,7 +392,6 @@ export class DepartmentComponent implements OnInit {
     });
   }
 
-  // =================== DEPARTMENTS/USERS ===================
   saveDepartment(): void {
     const { fullname, username, password, role, sector } = this.newDepartment;
     if (!fullname?.trim()) {

@@ -1,5 +1,4 @@
 <div class="container-fluid rtl" dir="rtl">
-  <!-- الهيدر المحسن -->
   <div class="page-header">
     <div class="row align-items-center">
       <div class="col-12 col-md-8 col-lg-9">
@@ -20,7 +19,6 @@
     </div>
   </div>
 
-  <!-- حالة التحميل -->
   <div *ngIf="loading" class="loading-state">
     <div class="spinner-container">
       <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
@@ -33,7 +31,6 @@
     </div>
   </div>
 
-  <!-- حالة عدم وجود بيانات -->
   <div *ngIf="!loading && letters.length === 0" class="empty-state">
     <div class="empty-icon">
       <i class="fa fa-inbox"></i>
@@ -45,7 +42,6 @@
     </button>
   </div>
 
-  <!-- جدول الخطابات -->
   <div *ngIf="!loading && letters.length > 0" class="letters-table-container">
     <div class="table-responsive">
       <table class="table table-hover table-striped letters-table">
@@ -100,7 +96,6 @@
   </div>
 </div>
 
-<!-- المودال المحسن -->
 <div *ngIf="showUploadModal" class="modal-overlay" (click)="closeUploadModal()" dir="rtl">
   <div class="modal-container" (click)="$event.stopPropagation()">
     <div class="modal-content">

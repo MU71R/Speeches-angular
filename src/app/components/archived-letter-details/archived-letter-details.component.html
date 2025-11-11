@@ -1,5 +1,4 @@
 <div class="container py-4 rtl">
-    <!-- زر الرجوع -->
     <div class="mb-4">
         <button class="btn btn-back" (click)="goBack()">
             <i class="fa fa-arrow-right me-2"></i>
@@ -7,7 +6,6 @@
         </button>
     </div>
 
-    <!-- حالة التحميل -->
     <div *ngIf="loading" class="loading-state">
         <div class="spinner-container">
             <div class="spinner-wrapper">
@@ -22,7 +20,6 @@
         </div>
     </div>
 
-    <!-- حالة عدم وجود بيانات -->
     <div *ngIf="!loading && !letter" class="empty-state">
         <div class="empty-icon">
             <i class="fa fa-file-search"></i>
@@ -34,9 +31,7 @@
         </button>
     </div>
 
-    <!-- تفاصيل الخطاب -->
     <div *ngIf="!loading && letter" class="letter-detail">
-        <!-- الهيدر -->
         <div class="detail-header">
             <div class="header-badges">
                 <div class="letter-type-badge" [ngClass]="getTypeBadgeClass(letter.letterType)">
@@ -92,9 +87,7 @@
             </div>
         </div>
 
-        <!-- المحتوى الرئيسي -->
         <div class="detail-content">
-            <!-- التنقل السريع -->
             <div class="content-nav" *ngIf="hasMultipleSections()">
                 <div class="nav-title">التنقل السريع:</div>
                 <div class="nav-links">
@@ -102,7 +95,7 @@
                         <i class="fa fa-file-alt me-1"></i>الوصف
                     </a>
                     <a *ngIf="letter.Rationale" href="#rationale" class="nav-link">
-                        <i class="fa fa-lightbulb me-1"></i>المبررات
+                        <i class="fa fa-lightbulb me-1"></i>الحيثيات
                     </a>
                     <a *ngIf="letter.decision" href="#decision" class="nav-link">
                         <i class="fa fa-file-contract me-1"></i>القرار
@@ -122,7 +115,6 @@
                 </div>
             </div>
 
-            <!-- الوصف الكامل -->
             <div class="content-section" *ngIf="letter.description || letter.breeif" id="description">
                 <h3 class="section-title">
                     <i class="fa fa-file-alt me-2"></i>
@@ -132,7 +124,6 @@
                     [innerHTML]="formatDescription(letter.description || letter.breeif)"></div>
             </div>
 
-            <!-- المبررات -->
             <div class="content-section" *ngIf="letter.Rationale" id="rationale">
                 <h3 class="section-title">
                     <i class="fa fa-lightbulb me-2"></i>المبررات
@@ -144,7 +135,6 @@
                 </div>
             </div>
 
-            <!-- معلومات القرار -->
             <div class="content-section" *ngIf="letter.decision" id="decision">
                 <h3 class="section-title">
                     <i class="fa fa-file-contract me-2"></i>معلومات القرار
@@ -166,8 +156,7 @@
                             </div>
                             <div class="info-content">
                                 <span class="info-label">نوع القرار:</span>
-                                <span class="info-value">{{ letter.decision.isPresidentDecision ? 'قرار رئاسي' : 'قرار
-                                    تنفيذي' }}</span>
+                                <span class="info-value">{{ letter.decision.isPresidentDecision ? 'قرار رئاسي' : 'قرار تنفيذي' }}</span>
                             </div>
                         </div>
                         <div class="info-item" *ngIf="letter.decision.sector">
@@ -201,7 +190,6 @@
                 </div>
             </div>
 
-            <!-- الموافقات -->
             <div class="content-section" *ngIf="letter.approvals && letter.approvals.length > 0" id="approvals">
                 <h3 class="section-title">
                     <i class="fa fa-check-circle me-2"></i>سجل الموافقات
@@ -243,7 +231,6 @@
                 </div>
             </div>
 
-            <!-- المرفقات -->
             <div class="content-section" *ngIf="letter.attachment" id="attachments">
                 <h3 class="section-title">
                     <i class="fa fa-paperclip me-2"></i>المرفقات
@@ -277,7 +264,6 @@
                 </div>
             </div>
 
-            <!-- الجدول الزمني -->
             <div class="content-section" *ngIf="letter.StartDate || letter.EndDate" id="timeline">
                 <h3 class="section-title">
                     <i class="fa fa-calendar-alt me-2"></i>الجدول الزمني
@@ -316,7 +302,6 @@
                 </div>
             </div>
 
-            <!-- معلومات إضافية -->
             <div class="content-section" id="additional">
                 <h3 class="section-title">
                     <i class="fa fa-info-circle me-2"></i>معلومات إضافية

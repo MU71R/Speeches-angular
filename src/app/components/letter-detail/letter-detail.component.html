@@ -1,5 +1,4 @@
 <div class="container-fluid py-4" *ngIf="!loading; else loadTpl" dir="rtl">
-  <!-- الهيدر الرئيسي -->
   <div class="page-header mb-4">
     <div class="d-flex justify-content-between align-items-center">
       <div>
@@ -23,9 +22,7 @@
   </div>
 
   <div class="row g-4">
-    <!-- العمود الأيسر - المحتوى الرئيسي -->
     <div class="col-xl-8">
-      <!-- بطاقة محتوى الخطاب -->
       <div class="card content-card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
           <h3 class="card-title">
@@ -44,7 +41,6 @@
         </div>
       </div>
 
-      <!-- المبررات -->
       <div class="card rationale-card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
           <h3 class="card-title">
@@ -65,9 +61,7 @@
         </div>
       </div>
 
-      <!-- معلومات إضافية -->
       <div class="row g-4">
-        <!-- سبب الرفض -->
         <div class="col-12" *ngIf="showRejectionDetails()">
           <div class="card rejection-card">
             <div class="card-header">
@@ -87,9 +81,7 @@
       </div>
     </div>
 
-    <!-- العمود الأيمن - المعلومات الجانبية -->
     <div class="col-xl-4">
-      <!-- بطاقة الحالة والإجراءات -->
       <div class="card status-card mb-4">
         <div class="card-header">
           <h3 class="card-title">
@@ -105,7 +97,6 @@
             </span>
           </div>
 
-          <!-- مسار التقدم -->
           <div class="progress-track mt-4">
             <div class="progress-step" [class.active]="getStepClass(1) === 'active'"
               [class.completed]="getStepClass(1) === 'completed'">
@@ -158,7 +149,6 @@
         </div>
       </div>
 
-      <!-- بطاقة المعلومات الأساسية -->
       <div class="card details-card mb-4">
         <div class="card-header">
           <h3 class="card-title">
@@ -208,7 +198,6 @@
         </div>
       </div>
 
-      <!-- بطاقة التوقيتات -->
       <div class="card timeline-card mb-4">
         <div class="card-header">
           <h3 class="card-title">
@@ -267,7 +256,6 @@
         </div>
       </div>
 
-      <!-- إجراءات المراجعة -->
       <div *ngIf="showReviewActions()" class="card actions-card">
         <div class="card-header">
           <h3 class="card-title">
@@ -276,7 +264,6 @@
           </h3>
         </div>
         <div class="card-body">
-          <!-- نموذج سبب الرفض -->
           <div *ngIf="showRejectionReason" class="rejection-section mb-4">
             <label class="form-label fw-semibold">سبب الرفض <span class="text-danger">*</span></label>
             <textarea class="form-control" rows="3" [(ngModel)]="rejectionReason"
@@ -292,7 +279,6 @@
             </div>
           </div>
 
-          <!-- أزرار المراجع -->
           <div *ngIf="currentUserRole === 'supervisor' && original?.status === 'in_progress' && !showRejectionReason"
             class="action-buttons-vertical">
             <button class="btn btn-success btn-approve" (click)="approveLetter()" [disabled]="processing">
@@ -303,7 +289,6 @@
             </button>
           </div>
 
-          <!-- أزرار رئيس الجامعة -->
           <div
             *ngIf="currentUserRole === 'UniversityPresident' && original?.status === 'pending' && !showRejectionReason">
             <div *ngIf="!showPresidentOptions" class="action-buttons-vertical">
@@ -315,7 +300,6 @@
               </button>
             </div>
 
-            <!-- خيارات الموافقة -->
             <div *ngIf="showPresidentOptions" class="approval-options">
               <button class="btn btn-success btn-option" (click)="approveLetter('حقيقية')" [disabled]="processing">
                 <i class="bi bi-qr-code-scan me-2"></i> Real Scan
@@ -332,7 +316,6 @@
         </div>
       </div>
 
-      <!-- سجل الموافقات -->
       <div class="card approvals-card mt-4" *ngIf="original?.approvals && original.approvals.length > 0">
         <div class="card-header">
           <h3 class="card-title">

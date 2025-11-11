@@ -1,10 +1,8 @@
-/* ===== الصفحة ===== */
 .container-fluid {
   padding-top: 20px;
   padding-bottom: 20px;
 }
 
-/* رأس الصفحة */
 .page-header {
   flex-wrap: wrap;
   gap: 15px;
@@ -19,7 +17,6 @@
   min-width: 160px;
 }
 
-/* ===== Background for the modal ===== */
 .modal-backdrop-custom {
   position: fixed;
   top: 0;
@@ -30,7 +27,6 @@
   z-index: 1040;
 }
 
-/* ===== مودال ===== */
 .responsive-modal {
   max-width: 500px;
   margin: 50px auto;
@@ -48,7 +44,6 @@
   transition: all 0.3s ease-in-out;
 }
 
-/* ===== هيدر المودال ===== */
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -73,14 +68,12 @@
   margin-right: auto;
 }
 
-/* ===== بودي المودال ===== */
 .modal-body {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
-/* ===== الحقول ===== */
 .modal-body input.form-control,
 .modal-body select.form-select {
   padding: 10px 12px;
@@ -91,7 +84,6 @@
   text-align: right;
 }
 
-/* تعديل أسهم الـ dropdown لتكون على اليسار */
 .modal-body select.form-select {
   background-position: left 0.75rem center;
   padding-left: 2.25rem;
@@ -105,14 +97,12 @@
   outline: none;
 }
 
-/* ===== checkbox ===== */
 .form-check-input {
   width: 18px;
   height: 18px;
   cursor: pointer;
 }
 
-/* ===== فوتر المودال ===== */
 .modal-footer {
   display: flex;
   justify-content: flex-end;
@@ -146,7 +136,6 @@
   background-color: #4b5563;
 }
 
-/* ===== تأثير الفتح والإغلاق ===== */
 .modal-content.open {
   transform: translateY(0);
   opacity: 1;
@@ -157,14 +146,11 @@
   opacity: 0;
 }
 
-/* ===== الجدول ===== */
 .decisions-table {
   margin-top: 20px;
   overflow-x: auto;
 }
 
-/* ===== loading ===== */
-/* Overlay كامل */
 .loading-container {
   position: fixed;
   top: 0;
@@ -178,7 +164,6 @@
   align-items: center;
 }
 
-/* Spinner */
 .loading-spinner {
   width: 80px;
   height: 80px;
@@ -207,7 +192,6 @@
   animation-duration: 0.7s;
 }
 
-/* Spin Animation */
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -218,16 +202,12 @@
   }
 }
 
-/* Blur content when loading */
 .blur-content {
   filter: blur(2px);
   pointer-events: none;
   user-select: none;
 }
 
-/* ========== وسائط الاستعلام للشاشات المختلفة ========== */
-
-/* شاشات كبيرة (1200px فما فوق) */
 @media (min-width: 1200px) {
   .container-fluid {
     max-width: 1140px;
@@ -235,7 +215,6 @@
   }
 }
 
-/* شاشات متوسطة (992px - 1199px) */
 @media (max-width: 1199px) {
   .container-fluid {
     padding-left: 15px;
@@ -243,7 +222,6 @@
   }
 }
 
-/* شاشات صغيرة (768px - 991px) */
 @media (max-width: 991px) {
   .page-title {
     font-size: 22px;
@@ -266,7 +244,6 @@
   }
 }
 
-/* شاشات صغيرة جداً (576px - 767px) */
 @media (max-width: 767px) {
   .page-header {
     flex-direction: column;
@@ -320,7 +297,6 @@
   }
 }
 
-/* شاشات الهواتف (أقل من 576px) */
 @media (max-width: 575px) {
   .container-fluid {
     padding-top: 15px;
@@ -352,7 +328,6 @@
     padding: 0.3rem;
   }
 
-  /* إخفاء بعض الأعمدة في الجدول للشاشات الصغيرة جداً */
   .sector, .supervisor {
     display: none;
   }
@@ -375,7 +350,6 @@
   }
 }
 
-/* تحسينات إضافية للطباعة */
 @media print {
   .add-btn, .action-buttons, .modal-backdrop-custom {
     display: none !important;

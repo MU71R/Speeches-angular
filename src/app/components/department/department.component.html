@@ -1,4 +1,3 @@
-<!-- Loading Spinner -->
 <div class="loading-container" *ngIf="loading">
   <div class="loading-spinner">
     <div class="loading-spinner-inner">
@@ -7,10 +6,8 @@
   </div>
 </div>
 
-<!-- محتوى الصفحة -->
 <div class="container-fluid page-container" dir="rtl" [class.blur-content]="loading">
 
-  <!-- Tabs -->
   <ul class="nav nav-tabs responsive-tabs">
     <li class="nav-item">
       <a class="nav-link" [class.active]="activeTab === 'users'" (click)="activeTab = 'users'">
@@ -26,10 +23,8 @@
     </li>
   </ul>
 
-  <!-- Users Tab -->
   <div *ngIf="activeTab === 'users'" class="tab-content-wrapper">
 
-    <!-- Header -->
     <div class="section-header">
       <h2 class="section-title">
         <i class="fas fa-users me-2"></i>
@@ -42,7 +37,6 @@
       </button>
     </div>
 
-    <!-- Filters -->
     <div class="filters-section">
       <div class="search-box">
         <i class="fas fa-search search-icon"></i>
@@ -66,7 +60,6 @@
       </button>
     </div>
 
-    <!-- Users Table -->
     <div class="table-container">
       <div class="table-responsive">
         <table class="table table-hover">
@@ -125,7 +118,6 @@
     </div>
   </div>
 
-  <!-- Sectors Tab -->
   <div *ngIf="activeTab === 'sectors'" class="tab-content-wrapper">
     <div class="section-header">
       <h2 class="section-title">
@@ -172,9 +164,6 @@
     </div>
   </div>
 
-  <!-- ============== Modals ============== -->
-
-  <!-- Add User -->
   <div *ngIf="showAddDepartmentModal" class="modal-backdrop-custom">
     <div class="modal-center-container">
       <div class="modal-dialog modal-dialog-centered modal-md">
@@ -265,7 +254,6 @@
     </div>
   </div>
 
-  <!-- Add/Edit Sector -->
   <div *ngIf="showSectorForm" class="modal-backdrop-custom">
     <div class="modal-center-container">
       <div class="modal-dialog modal-dialog-centered modal-sm">
@@ -299,7 +287,6 @@
     </div>
   </div>
 
-  <!-- Edit User Modal -->
   <div *ngIf="showEditUserModal" class="modal-backdrop-custom">
     <div class="modal-center-container">
       <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -314,7 +301,6 @@
             </button>
           </div>
           <div class="modal-body">
-            <!-- تغيير كلمة المرور -->
             <div class="card password-card mb-4">
               <div class="card-header password-card-header" (click)="showEditPassword = !showEditPassword">
                 <h6 class="mb-0 d-flex align-items-center justify-content-between">
@@ -363,7 +349,6 @@
               </div>
             </div>
 
-            <!-- بيانات المستخدم -->
             <h6 class="section-title mb-3">
               <i class="fas fa-user-circle me-2"></i>
               بيانات المستخدم

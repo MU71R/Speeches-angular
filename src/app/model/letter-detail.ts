@@ -25,7 +25,7 @@ export interface LetterDetail {
   notes: string;
   signatureType: string;
   pdfUrl: string;
-  decision: Decision; // كائن كامل
+  decision: Decision; 
   date: string;
   status: 'pending' | 'approved' | 'rejected' | 'in_progress';
   user: User;

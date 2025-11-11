@@ -82,8 +82,6 @@ export class LetterDetailComponent implements OnInit {
 
   saveChanges() {
     this.processing = true;
-
-    // تحديث البيانات مع تضمين المبررات
     const updatedData = {
       ...this.form.value,
       Rationale: this.form.value.rationale,
@@ -111,19 +109,16 @@ export class LetterDetailComponent implements OnInit {
     this.previewHtml = this.form.value.description;
   }
 
-  // إظهار حقل سبب الرفض
   showRejectionForm() {
     this.showRejectionReason = true;
     this.rejectionReason = '';
   }
 
-  // إخفاء حقل سبب الرفض
   cancelRejection() {
     this.showRejectionReason = false;
     this.rejectionReason = '';
   }
 
-  // تأكيد الرفض مع السبب للمراجع
   confirmRejectionSupervisor() {
     if (!this.rejectionReason.trim()) {
       alert('يرجى إدخال سبب الرفض');
@@ -153,7 +148,6 @@ export class LetterDetailComponent implements OnInit {
       );
   }
 
-  // تأكيد الرفض مع السبب لرئيس الجامعة
   confirmRejectionPresident() {
     if (!this.rejectionReason.trim()) {
       alert('يرجى إدخال سبب الرفض');
@@ -183,7 +177,6 @@ export class LetterDetailComponent implements OnInit {
       );
   }
 
-  // دالة موحدة للرفض
   confirmRejection() {
     if (this.currentUserRole === 'supervisor') {
       this.confirmRejectionSupervisor();
@@ -198,7 +191,6 @@ export class LetterDetailComponent implements OnInit {
     this.processing = true;
 
     if (this.currentUserRole === 'supervisor') {
-      // المراجع يوافق ويحدث الحالة فقط
       this.letterService
         .updateStatusBySupervisor(this.original._id, 'pending')
         .subscribe({
@@ -213,7 +205,6 @@ export class LetterDetailComponent implements OnInit {
         });
     } else if (this.currentUserRole === 'UniversityPresident') {
       if (!option) {
-        // حالة الموافقة العادية بدون توليد PDF
         this.letterService
           .updateStatusByUniversityPresident(
             this.original._id,
@@ -231,7 +222,6 @@ export class LetterDetailComponent implements OnInit {
             },
           });
       } else {
-        // حالة الموافقة مع توليد PDF حسب النوع (تغيير الحالة + توليد PDF)
         this.letterService
           .updateStatusByUniversityPresident(
             this.original._id,
@@ -241,7 +231,6 @@ export class LetterDetailComponent implements OnInit {
           .subscribe({
             next: () => {
               this.original.status = 'approved';
-              // بعد نجاح تغيير الحالة، نستدعي توليد PDF
               this.letterService
                 .printLetterByType(this.original._id, option)
                 .subscribe({
@@ -271,7 +260,6 @@ export class LetterDetailComponent implements OnInit {
     }
   }
 
-  // التحقق مما إذا كان يمكن التعديل (لا يمكن التعديل بعد الرفض أو القبول)
   canEdit(): boolean {
     return (
       !['approved', 'rejected'].includes(this.original?.status) &&
@@ -279,7 +267,6 @@ export class LetterDetailComponent implements OnInit {
     );
   }
 
-  // التحقق من الصلاحية حسب الدور
   isEditingAllowedByRole(): boolean {
     if (this.currentUserRole === 'supervisor') {
       return this.original?.status === 'in_progress';
@@ -338,7 +325,6 @@ export class LetterDetailComponent implements OnInit {
     );
   }
 
-  // إظهار سبب الرفض إذا كان موجوداً
   showRejectionDetails(): boolean {
     return (
       this.original?.status === 'rejected' && this.original?.reasonForRejection
