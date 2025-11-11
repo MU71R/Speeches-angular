@@ -13,13 +13,16 @@ import { HomeComponent } from './components/home/home.component';
 import { LetterDetailsComponent } from './components/archived-letter-details/archived-letter-details.component';
 import { PdfListComponent } from './components/pdf-list/pdf-list.component';
 
+import { AuthGuard } from './guards/auth.guard';
+import { LoggedInGuard } from './guards/logged-in.guard';
 
 const routes: Routes = [
-  { path: 'login', component: LoginComponent },
+  { path: 'login', component: LoginComponent, canActivate: [LoggedInGuard] },
 
   {
     path: '',
     component: LayoutComponent,
+    canActivate: [AuthGuard],
     children: [
       { path: '', component: HomeComponent },
       { path: 'home', component: HomeComponent },
@@ -31,7 +34,7 @@ const routes: Routes = [
       { path: 'letter-detail/:id', component: LetterDetailsComponent },
       { path: 'archive', component: ArchiveComponent },
       { path: 'archive-detail', component: ArchiveDetailComponent },
-      {path: 'pdf-list', component: PdfListComponent},
+      { path: 'pdf-list', component: PdfListComponent },
       { path: '', redirectTo: 'home', pathMatch: 'full' },
     ],
   },
