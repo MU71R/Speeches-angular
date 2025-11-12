@@ -6,6 +6,8 @@ import {
 } from '../../service/home.service';
 import { LoginService } from 'src/app/service/login.service';
 import { User } from 'src/app/model/user';
+import { AuthService } from 'src/app/service/auth.service';
+import { Router } from '@angular/router';
 
 interface UserPersonalStats {
   createdLetters: number;
@@ -82,13 +84,17 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private dashboardService: DashboardService,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.loadCurrentUserInfo();
     this.loadDashboardData();
   }
+
+  user = this.authService.currentUserValue;
 
   loadCurrentUserInfo(): void {
     this.currentUser = this.loginService.getUserFromLocalStorage();

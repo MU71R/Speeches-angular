@@ -188,15 +188,21 @@ export class LetterDetailsComponent implements OnInit {
     return ''; 
   }
 
-  getAttachmentUrl(fileName: string): string {
-    if (!fileName) return '';
-    let cleanPath = fileName;
-    if (fileName.includes('\\')) {
-      const parts = fileName.split('\\');
-      cleanPath = parts[parts.length - 1];
+    getAttachmentUrl(fileName: string): string {
+      if (!fileName) return '';
+
+      const cleanPath = fileName.replace(/^.*[\\\/]/, '');
+      const baseUrl = 'http://localhost:3000/uploads';
+      return `${baseUrl}/${encodeURIComponent(cleanPath)}`;
     }
-    return `http://localhost:5000/${cleanPath}`;
-  }
+
+getDownloadUrl(fileName: string): string {
+  if (!fileName) return '';
+  const cleanPath = fileName.replace(/^.*[\\\/]/, '');
+  return `http://localhost:3000/letters/download/${encodeURIComponent(cleanPath)}`;
+}
+
+
 
   formatDescription(description: string): string {
     if (!description) return '';

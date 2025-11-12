@@ -22,7 +22,7 @@
       <div class="col-md-4 text-left">
         <div class="action-buttons d-flex gap-2 justify-content-md-end">
           <!-- زر عرض PDF -->
-          <button *ngIf="showPdfButton()" class="btn btn-danger" (click)="openPdf()">
+          <button *ngIf="showPdfButton()" class="btn btn-danger" (click)="openPdf(original?.pdfUrl)">
             <i class="bi bi-file-pdf me-2"></i> عرض PDF
           </button>
 
@@ -55,16 +55,16 @@
       <div class="section-body">
         <div class="pdf-actions">
           <div class="alert alert-info d-flex align-items-center">
-            <i class="bi bi-info-circle me-2"></i>
+            <i class="fa fa-info-circle me-2"></i>
             <span>تم إنشاء نسخة PDF من الخطاب بنجاح</span>
           </div>
 
           <div class="action-buttons d-flex gap-2 flex-wrap">
-            <button class="btn btn-primary" (click)="openPdf()">
-              <i class="bi bi-eye me-2"></i> عرض PDF
-            </button>
+          <button class="btn btn-primary" (click)="openPdf(original?.pdfFilename)">
+            <i class="fa fa-eye me-2"></i> عرض PDF
+          </button>
             <button class="btn btn-outline-primary" (click)="downloadPdf()">
-              <i class="bi bi-download me-2"></i> تنزيل PDF
+              <i class="fa fa-download me-2"></i> تنزيل PDF
             </button>
           </div>
         </div>
@@ -75,7 +75,7 @@
     <div class="card-section status-section">
       <div class="section-header">
         <h3 class="section-title">
-          <i class="bi bi-activity me-2"></i>
+          <i class="fa fa-activity me-2"></i>
           حالة الخطاب ومستوى التقدم
         </h3>
       </div>
@@ -112,9 +112,9 @@
                 <div class="step-indicator"></div>
                 <div class="step-content">
                   <div class="step-header">
-                    <i class="bi bi-building step-icon"></i>
+                    <i class="fa fa-building step-icon"></i>
                     <div class="step-info">
-                      <div class="step-title">الإدارة العامة</div>
+                      <div class="step-title">{{ original?.decision?.supervisor?.fullname || '---' }}</div>
                       <div class="step-desc">مرحلة المراجعة الأولية</div>
                     </div>
                   </div>
@@ -131,7 +131,7 @@
                 <div class="step-indicator"></div>
                 <div class="step-content">
                   <div class="step-header">
-                    <i class="bi bi-person-badge step-icon"></i>
+                    <i class="fa fa-user"></i>
                     <div class="step-info">
                       <div class="step-title">رئيس الجامعة</div>
                       <div class="step-desc">مرحلة الموافقة النهائية</div>
@@ -150,7 +150,7 @@
                 <div class="step-indicator"></div>
                 <div class="step-content">
                   <div class="step-header">
-                    <i class="bi bi-archive step-icon"></i>
+                    <i class="fa fa-archive step-icon"></i>
                     <div class="step-info">
                       <div class="step-title">الأرشيف</div>
                       <div class="step-desc">مرحلة الحفظ النهائي</div>
@@ -176,7 +176,7 @@
           <div class="content-block">
             <div class="block-header">
               <h4 class="block-title">
-                <i class="bi bi-file-text me-2"></i>
+                <i class="fa fa-file-text me-2"></i>
                 محتوى الخطاب
               </h4>
             </div>
@@ -194,8 +194,8 @@
           <div class="rationale-block">
             <div class="block-header">
               <h4 class="block-title">
-                <i class="bi bi-journal-text me-2"></i>
-                المبررات
+                <i class="fa fa-journal-text me-2"></i>
+                الحيثيات
               </h4>
             </div>
             <div class="block-body">
@@ -214,7 +214,7 @@
           <div class="timeline-block mt-4">
             <div class="block-header">
               <h4 class="block-title">
-                <i class="bi bi-clock me-2"></i>
+                <i class="fa fa-clock me-2"></i>
                 الجدول الزمني
               </h4>
             </div>
@@ -263,7 +263,7 @@
           <div class="actions-block">
             <div class="block-header">
               <h4 class="block-title">
-                <i class="bi bi-gear me-2"></i>
+                <i class="fa fa-gear me-2"></i>
                 إجراءات المراجعة
               </h4>
             </div>
@@ -275,10 +275,10 @@
                 <div class="action-buttons mt-3">
                   <button class="btn btn-danger btn-confirm" (click)="confirmRejection()"
                     [disabled]="processing || !rejectionReason.trim()">
-                    <i class="bi bi-check-circle me-2"></i> تأكيد الرفض
+                    <i class="fa fa-check-circle me-2"></i> تأكيد الرفض
                   </button>
                   <button class="btn btn-outline-secondary" (click)="cancelRejection()">
-                    <i class="bi bi-x-circle me-2"></i> إلغاء
+                    <i class="fa fa-x-circle me-2"></i> إلغاء
                   </button>
                 </div>
               </div>
@@ -287,10 +287,10 @@
                 *ngIf="currentUserRole === 'supervisor' && original?.status === 'in_progress' && !showRejectionReason"
                 class="action-buttons-grid">
                 <button class="btn btn-success" (click)="approveLetter()" [disabled]="processing">
-                  <i class="bi bi-check-circle me-2"></i> موافقة وارسال للرئيس
+                  <i class="fa fa-check-circle me-2"></i> موافقة وارسال للرئيس
                 </button>
                 <button class="btn btn-danger" (click)="showRejectionForm()" [disabled]="processing">
-                  <i class="bi bi-x-circle me-2"></i> رفض الخطاب
+                  <i class="fa fa-x-circle me-2"></i> رفض الخطاب
                 </button>
               </div>
 
@@ -298,23 +298,23 @@
                 *ngIf="currentUserRole === 'UniversityPresident' && original?.status === 'pending' && !showRejectionReason">
                 <div *ngIf="!showPresidentOptions" class="action-buttons-grid">
                   <button class="btn btn-success" (click)="showPresidentOptions = true" [disabled]="processing">
-                    <i class="bi bi-check-circle me-2"></i> موافقة على الخطاب
+                    <i class="fa fa-check-circle me-2"></i> موافقة على الخطاب
                   </button>
                   <button class="btn btn-danger" (click)="showRejectionForm()" [disabled]="processing">
-                    <i class="bi bi-x-circle me-2"></i> رفض الخطاب
+                    <i class="fa fa-x-circle me-2"></i> رفض الخطاب
                   </button>
                 </div>
 
                 <div *ngIf="showPresidentOptions" class="approval-options">
                   <button class="btn btn-success" (click)="approveLetter('حقيقية')" [disabled]="processing">
-                    <i class="bi bi-qr-code-scan me-2"></i> Real Scan
+                    <i class="fa fa-qr-code-scan me-2"></i> Real Scan
                   </button>
                   <button class="btn btn-outline-primary" (click)="approveLetter('الممسوحة ضوئيا')"
                     [disabled]="processing">
-                    <i class="bi bi-pen-fill me-2"></i> توقيع إلكتروني
+                    <i class="fa fa-pen-fill me-2"></i> توقيع إلكتروني
                   </button>
                   <button class="btn btn-outline-secondary" (click)="showPresidentOptions = false">
-                    <i class="bi bi-arrow-right me-2"></i> رجوع
+                    <i class="fa fa-arrow-right me-2"></i> رجوع
                   </button>
                 </div>
               </div>
@@ -327,7 +327,7 @@
           <div class="approvals-block">
             <div class="block-header">
               <h4 class="block-title">
-                <i class="bi bi-list-check me-2"></i>
+                <i class="fa fa-list-check me-2"></i>
                 سجل الموافقات
               </h4>
             </div>
@@ -335,10 +335,11 @@
               <div class="approvals-list-compact">
                 <div *ngFor="let approval of original.approvals" class="approval-item-compact">
                   <div class="approval-avatar">
-                    <i class="bi bi-person-circle"></i>
+                    <i class="fa fa-person-circle"></i>
                   </div>
                   <div class="approval-details">
                     <div class="approval-meta">
+                      <div class="step-title">{{ original?.decision?.supervisor?.fullname || '---' }}</div>
                       <span class="approval-role">{{ approval.role === 'supervisor' ? 'المراجع' : 'رئيس الجامعة'
                         }}</span>
                       <span class="approval-date">{{ approval.date | date: 'd/M/y - h:mm a' }}</span>
@@ -358,13 +359,13 @@
           <div class="rejection-block">
             <div class="block-header">
               <h4 class="block-title text-danger">
-                <i class="bi bi-exclamation-triangle me-2"></i>
+                <i class="fa fa-exclamation-triangle me-2"></i>
                 سبب الرفض
               </h4>
             </div>
             <div class="block-body">
               <div class="rejection-content">
-                <i class="bi bi-chat-left-quote me-2"></i>
+                <i class="fa fa-chat-left-quote me-2"></i>
                 {{ original?.reasonForRejection }}
               </div>
             </div>

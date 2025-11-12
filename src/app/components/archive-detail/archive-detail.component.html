@@ -10,7 +10,7 @@
         </div>
       </div>
       <div class="col-12 col-md-4 col-lg-3">
-        <button class="btn btn-light btn-add" (click)="openUploadModal()" [disabled]="loading">
+        <button class="btn btn-light btn-add" *ngIf="user?.role === 'UniversityPresident'" (click)="openUploadModal()" [disabled]="loading">
           <i class="fa fa-plus-circle me-2"></i>
           <span class="d-none d-sm-inline">إضافة مستند جديد</span>
           <span class="d-inline d-sm-none">إضافة</span>
@@ -100,7 +100,11 @@
     <p class="empty-text">
       {{ letters.length === 0 ? 'لم يتم العثور على أي خطابات في هذا الأرشيف.' : 'لمطابقة معايير البحث المحددة.' }}
     </p>
-    <button *ngIf="isSpecialArchive() && letters.length === 0" class="btn btn-primary" (click)="openUploadModal()">
+    <button
+      *ngIf="isSpecialArchive() || letters.length === 0"
+      class="btn btn-primary"
+      (click)="openUploadModal()"
+    >
       <i class="fa fa-plus me-2"></i>إضافة أول خطاب
     </button>
     <button *ngIf="letters.length > 0" class="btn btn-outline-primary" (click)="resetFilters()">

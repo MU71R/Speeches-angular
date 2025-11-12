@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { ArchiveService } from 'src/app/service/archive.service';
 import { LoginService } from 'src/app/service/login.service';
 import { LetterService } from 'src/app/service/letter.service';
+import { Letter } from 'src/app/model/Letter';
 
 @Component({
   selector: 'app-letter-detail',
@@ -390,22 +391,13 @@ export class LetterDetailComponent implements OnInit {
   }
 
   // دالة لفتح PDF في نافذة جديدة باستخدام service
-  openPdf() {
-    if (this.pdfFilename) {
-      console.log('فتح PDF باسم:', this.pdfFilename);
-      this.letterService.openPDFInNewWindow(this.pdfFilename);
-    } else if (this.pdfUrl) {
-      // إذا كان رابط مباشر
-      console.log('فتح PDF بالرابط:', this.pdfUrl);
-      window.open(this.pdfUrl, '_blank');
-    } else if (this.original?.pdfUrl) {
-      const filename = this.extractFilenameFromUrl(this.original.pdfUrl);
-      console.log('فتح PDF من البيانات الأصلية:', filename);
-      this.letterService.openPDFInNewWindow(filename);
-    } else {
-      alert('لا يوجد ملف PDF متاح للعرض');
-    }
-  }
+ openPdf(fileName: string): void {
+  if (!fileName) return;
+  const baseUrl = 'http://localhost:3000/generated-files';
+  const pdfUrl = `${baseUrl}/${encodeURIComponent(fileName)}`;
+  window.open(pdfUrl, '_blank');
+}
+
 
   // دالة لتنزيل PDF باستخدام service
   downloadPdf() {

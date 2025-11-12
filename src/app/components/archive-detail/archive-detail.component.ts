@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ArchiveService } from 'src/app/service/archive.service';
+import { AuthService } from 'src/app/service/auth.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -43,8 +44,10 @@ export class ArchiveDetailComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private archiveService: ArchiveService
+    private archiveService: ArchiveService,
+    private authService: AuthService
   ) {}
+  user = this.authService.currentUserValue;
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -62,6 +65,7 @@ export class ArchiveDetailComponent implements OnInit {
       }
     });
   }
+  
 
   trackByLetterId(index: number, letter: any): string {
     return letter._id;
@@ -287,7 +291,7 @@ export class ArchiveDetailComponent implements OnInit {
       subtitles[this.type] || 'قائمة الخطابات والأوامر المعتمدة ضمن هذا التصنيف'
     );
   }
-
+  
   getFileSize(bytes: number): string {
     if (!bytes || bytes === 0) return '0 Bytes';
     const k = 1024;
