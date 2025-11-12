@@ -12,6 +12,7 @@ export class PdfListComponent implements OnInit {
   loading: boolean = false;
   error: string = '';
   searchTerm: string = '';
+  searchDate: string = '';
 
   constructor(private letterService: LetterService) {}
 
@@ -42,18 +43,37 @@ export class PdfListComponent implements OnInit {
   }
 
   filterPDFs() {
-    if (!this.searchTerm) {
+    if (!this.searchTerm && !this.searchDate) {
       this.filteredPDFs = [...this.pdfFiles];
       return;
     }
 
     const term = this.searchTerm.toLowerCase();
-    this.filteredPDFs = this.pdfFiles.filter(
-      (pdf) =>
+    const searchDate = this.searchDate;
+
+    this.filteredPDFs = this.pdfFiles.filter((pdf) => {
+      const textMatch =
+        !term ||
         this.getFileName(pdf.pdfurl).toLowerCase().includes(term) ||
         (pdf.userId?.fullname || '').toLowerCase().includes(term) ||
         (pdf.userId?.name || '').toLowerCase().includes(term) ||
-        this.getUserRoleArabic(pdf.userId?.role).toLowerCase().includes(term)
+        this.getUserRoleArabic(pdf.userId?.role).toLowerCase().includes(term);
+
+        const dateMatch =
+        !searchDate || this.isSameDate(pdf.createdAt, searchDate);
+
+      return textMatch && dateMatch;
+    });
+  }
+
+  isSameDate(dateString: string, searchDate: string): boolean {
+    const fileDate = new Date(dateString);
+    const search = new Date(searchDate);
+
+    return (
+      fileDate.getFullYear() === search.getFullYear() &&
+      fileDate.getMonth() === search.getMonth() &&
+      fileDate.getDate() === search.getDate()
     );
   }
 
@@ -126,6 +146,12 @@ export class PdfListComponent implements OnInit {
 
   clearSearch() {
     this.searchTerm = '';
+    this.searchDate = '';
+    this.filterPDFs();
+  }
+
+  clearDateFilter() {
+    this.searchDate = '';
     this.filterPDFs();
   }
 }

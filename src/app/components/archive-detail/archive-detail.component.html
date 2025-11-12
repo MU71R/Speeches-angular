@@ -19,6 +19,65 @@
     </div>
   </div>
 
+  <div *ngIf="!loading && letters.length > 0" class="filters-section mb-4">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <div class="row g-3 align-items-end">
+          <div class="col-12 col-md-4">
+            <label class="form-label fw-semibold">بحث في الخطابات</label>
+            <div class="search-input-group">
+              <input type="text" class="form-control" placeholder="ابحث في العناوين، الجهات ..."
+                [(ngModel)]="searchTerm" (input)="applyFilters()" />
+              <i class="fa fa-search search-icon"></i>
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-6 col-md-2">
+            <label class="form-label fw-semibold">من تاريخ</label>
+            <input type="date" class="form-control" [(ngModel)]="filters.fromDate" (change)="applyFilters()" />
+          </div>
+
+          <div class="col-12 col-sm-6 col-md-2">
+            <label class="form-label fw-semibold">إلى تاريخ</label>
+            <input type="date" class="form-control" [(ngModel)]="filters.toDate" (change)="applyFilters()" />
+          </div>
+
+          <div class="col-12 col-sm-6 col-md-2">
+            <label class="form-label fw-semibold">الجهه</label>
+            <select class="form-select" [(ngModel)]="filters.sender" (change)="applyFilters()">
+              <option value="">جميع الجهات</option>
+              <option *ngFor="let sender of uniqueSenders" [value]="sender">{{ sender }}</option>
+            </select>
+          </div>
+
+          <div class="col-12 col-sm-6 col-md-2">
+            <div class="d-flex gap-2">
+              <button class="btn btn-outline-secondary w-100" (click)="resetFilters()" title="إعادة تعيين الفلاتر">
+                <i class="fa fa-refresh"></i>
+                <span class="d-none d-md-inline ms-1">إعادة تعيين</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-3" *ngIf="filteredLetters.length !== letters.length">
+          <div class="col-12">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="results-info">
+                <span class="badge bg-primary">
+                  عرض {{ filteredLetters.length }} من أصل {{ letters.length }}
+                </span>
+              </div>
+              <button class="btn btn-sm btn-outline-secondary" (click)="resetFilters()">
+                إظهار الكل
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div *ngIf="loading" class="loading-state">
     <div class="spinner-container">
       <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
@@ -31,41 +90,68 @@
     </div>
   </div>
 
-  <div *ngIf="!loading && letters.length === 0" class="empty-state">
+  <div *ngIf="!loading && filteredLetters.length === 0" class="empty-state">
     <div class="empty-icon">
-      <i class="fa fa-inbox"></i>
+      <i class="fa" [class.fa-inbox]="letters.length === 0" [class.fa-search]="letters.length > 0"></i>
     </div>
-    <h3 class="empty-title">لا توجد خطابات</h3>
-    <p class="empty-text">لم يتم العثور على أي خطابات في هذا الأرشيف.</p>
-    <button *ngIf="isSpecialArchive()" class="btn btn-primary" (click)="openUploadModal()">
+    <h3 class="empty-title">
+      {{ letters.length === 0 ? 'لا توجد خطابات' : 'لم يتم العثور على نتائج' }}
+    </h3>
+    <p class="empty-text">
+      {{ letters.length === 0 ? 'لم يتم العثور على أي خطابات في هذا الأرشيف.' : 'لمطابقة معايير البحث المحددة.' }}
+    </p>
+    <button *ngIf="isSpecialArchive() && letters.length === 0" class="btn btn-primary" (click)="openUploadModal()">
       <i class="fa fa-plus me-2"></i>إضافة أول خطاب
+    </button>
+    <button *ngIf="letters.length > 0" class="btn btn-outline-primary" (click)="resetFilters()">
+      <i class="fa fa-refresh me-2"></i>عرض جميع الخطابات
     </button>
   </div>
 
-  <div *ngIf="!loading && letters.length > 0" class="letters-table-container">
+  <div *ngIf="!loading && filteredLetters.length > 0" class="letters-table-container">
     <div class="table-responsive">
       <table class="table table-hover table-striped letters-table">
         <thead class="table-primary">
           <tr>
             <th scope="col" width="5%">#</th>
-            <th scope="col" width="25%">عنوان الخطاب</th>
-            <th scope="col" width="20%">المرسل</th>
-            <th scope="col" width="15%">تاريخ الإنشاء</th>
+            <th scope="col" width="25%">
+              <div class="d-flex align-items-center cursor-pointer" (click)="sortBy('title')">
+                عنوان الخطاب
+              </div>
+            </th>
+            <th scope="col" width="20%">
+              <div class="d-flex align-items-center cursor-pointer" (click)="sortBy('user.fullname')">
+                الجهه
+              </div>
+            </th>
+            <th scope="col" width="15%">
+              <div class="d-flex align-items-center cursor-pointer" (click)="sortBy('createdAt')">
+                تاريخ الإنشاء
+                <i class="fa ms-1" [class.fa-sort]="sortField !== 'createdAt'"
+                  [class.fa-sort-up]="sortField === 'createdAt' && sortDirection === 'asc'"
+                  [class.fa-sort-down]="sortField === 'createdAt' && sortDirection === 'desc'"></i>
+              </div>
+            </th>
             <th scope="col" width="10%">الإجراءات</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let letter of letters; let i = index; trackBy: trackByLetterId" class="letter-row">
+          <tr *ngFor="let letter of filteredLetters; let i = index; trackBy: trackByLetterId" class="letter-row">
             <td data-label="#">
-              <span class="badge bg-primary">{{ i + 1 }}</span>
+              <span class="badge bg-primary">{{ (currentPage - 1) * pageSize + i + 1 }}</span>
             </td>
             <td data-label="عنوان الخطاب">
               <div class="letter-title-cell">
                 <i class="fa fa-envelope text-primary me-2"></i>
-                <span class="letter-title-text text-truncate d-block" [title]="letter.title" data-bs-toggle="tooltip"
-                  data-bs-placement="top">
-                  {{ letter.title }}
-                </span>
+                <div class="letter-content">
+                  <span class="letter-title-text text-truncate d-block" [title]="letter.title" data-bs-toggle="tooltip"
+                    data-bs-placement="top">
+                    {{ letter.title }}
+                  </span>
+                  <small class="text-muted text-truncate d-block" *ngIf="letter.breeif" [title]="letter.breeif">
+                    {{ letter.breeif }}
+                  </small>
+                </div>
               </div>
             </td>
             <td data-label="المرسل">
@@ -93,8 +179,6 @@
         </tbody>
       </table>
     </div>
-  </div>
-</div>
 
 <div *ngIf="showUploadModal" class="modal-overlay" (click)="closeUploadModal()" dir="rtl">
   <div class="modal-container" (click)="$event.stopPropagation()">

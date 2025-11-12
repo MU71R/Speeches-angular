@@ -11,20 +11,20 @@
       <div class="logo-box">
         <i class="fa-solid fa-graduation-cap"></i>
       </div>
-      <h5 class="fw-bold mb-1">خطاب</h5>
-      <span class="badge bg-primary">نظام الخطابات الجامعية</span>
+      <h5 class="fw-bold mb-1">قرار</h5>
+      <span class="badge bg-primary">نظام القرارات الجامعية</span>
     </div>
 
     <nav class="menu">
       <a routerLink="/dashboard" routerLinkActive="active" class="menu-item" aria-current="page">
         <i class="fa-solid fa-border-all"></i>
-        <span>الرئيسية</span>
+        <span>الصفحه الرئيسية</span>
       </a>
 
       <a *ngIf="user?.role === 'supervisor' || user?.role === 'UniversityPresident' || user?.role === 'preparer'"
         routerLink="/declaration" routerLinkActive="active" class="menu-item">
         <i class="fa-solid fa-paper-plane"></i>
-        <span>إنشاء خطاب جديد</span>
+        <span>إنشاء قرار جديد</span>
       </a>
 
       <a *ngIf="user?.role === 'admin'" routerLink="/department" routerLinkActive="active" class="menu-item">
@@ -40,13 +40,13 @@
 
       <a *ngIf="user?.role === 'admin'" routerLink="/add-decision" routerLinkActive="active" class="menu-item">
         <i class="fa-solid fa-file-circle-plus"></i>
-        <span>إضافة خطاب جديد</span>
+        <span>إضافة قرار جديد</span>
       </a>
 
       <a *ngIf="user?.role === 'supervisor' || user?.role === 'UniversityPresident'" routerLink="/pending-reviews"
         routerLinkActive="active" class="menu-item">
         <i class="fa-solid fa-inbox"></i>
-        <span>الخطابات المعلقة</span>
+        <span>القرارات المعلقة</span>
       </a>
 
       <a *ngIf="user?.role === 'UniversityPresident'" routerLink="/pdf-list"

@@ -11,9 +11,26 @@ import Swal from 'sweetalert2';
 export class ArchiveDetailComponent implements OnInit {
   type = '';
   letters: any[] = [];
+  filteredLetters: any[] = [];
   loading = true;
   showUploadModal = false;
   uploading = false;
+
+  searchTerm = '';
+  filters = {
+    fromDate: '',
+    toDate: '',
+    sender: '',
+  };
+
+  currentPage = 1;
+  pageSize = 10;
+  totalPages = 1;
+
+  sortField = 'createdAt';
+  sortDirection = 'desc';
+
+  uniqueSenders: string[] = [];
 
   newArchive = {
     title: '',
@@ -55,6 +72,7 @@ export class ArchiveDetailComponent implements OnInit {
     this.archiveService.getPersonalArchive().subscribe({
       next: (res: any) => {
         this.letters = res?.data || [];
+        this.initializeFilters();
         this.loading = false;
       },
       error: (err: any) => {
@@ -70,6 +88,7 @@ export class ArchiveDetailComponent implements OnInit {
     this.archiveService.getArchivedsupervisor().subscribe({
       next: (res: any) => {
         this.letters = res?.data || [];
+        this.initializeFilters();
         this.loading = false;
       },
       error: (err: any) => {
@@ -85,6 +104,7 @@ export class ArchiveDetailComponent implements OnInit {
     this.archiveService.getArchivedLettersByType(type).subscribe({
       next: (res: any) => {
         this.letters = res?.data || [];
+        this.initializeFilters();
         this.loading = false;
       },
       error: (err: any) => {
@@ -93,6 +113,149 @@ export class ArchiveDetailComponent implements OnInit {
         this.showError('حدث خطأ أثناء جلب الأرشيف');
       },
     });
+  }
+
+  initializeFilters(): void {
+    this.extractUniqueSenders();
+    this.applyFilters();
+  }
+
+  extractUniqueSenders(): void {
+    const senders = this.letters
+      .map((letter) => letter.user?.fullname)
+      .filter((name) => name && name.trim() !== '');
+
+    this.uniqueSenders = [...new Set(senders)].sort();
+  }
+
+  applyFilters(): void {
+    let filtered = [...this.letters];
+
+    if (this.searchTerm) {
+      const term = this.searchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (letter) =>
+          letter.title?.toLowerCase().includes(term) ||
+          letter.user?.fullname?.toLowerCase().includes(term) ||
+          letter.breeif?.toLowerCase().includes(term)
+      );
+    }
+
+    if (this.filters.fromDate) {
+      filtered = filtered.filter(
+        (letter) =>
+          new Date(letter.createdAt) >= new Date(this.filters.fromDate)
+      );
+    }
+
+    if (this.filters.toDate) {
+      filtered = filtered.filter(
+        (letter) => new Date(letter.createdAt) <= new Date(this.filters.toDate)
+      );
+    }
+
+    if (this.filters.sender) {
+      filtered = filtered.filter(
+        (letter) => letter.user?.fullname === this.filters.sender
+      );
+    }
+
+    filtered = this.sortLetters(filtered);
+
+    this.filteredLetters = filtered;
+    this.currentPage = 1;
+    this.calculateTotalPages();
+  }
+
+  sortLetters(letters: any[]): any[] {
+    return letters.sort((a, b) => {
+      let valueA, valueB;
+
+      switch (this.sortField) {
+        case 'title':
+          valueA = a.title?.toLowerCase() || '';
+          valueB = b.title?.toLowerCase() || '';
+          break;
+        case 'user.fullname':
+          valueA = a.user?.fullname?.toLowerCase() || '';
+          valueB = b.user?.fullname?.toLowerCase() || '';
+          break;
+        case 'createdAt':
+          valueA = new Date(a.createdAt);
+          valueB = new Date(b.createdAt);
+          break;
+        default:
+          valueA = a[this.sortField];
+          valueB = b[this.sortField];
+      }
+
+      if (valueA < valueB) {
+        return this.sortDirection === 'asc' ? -1 : 1;
+      }
+      if (valueA > valueB) {
+        return this.sortDirection === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+  }
+
+  sortBy(field: string): void {
+    if (this.sortField === field) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortField = field;
+      this.sortDirection = 'asc';
+    }
+    this.applyFilters();
+  }
+
+  resetFilters(): void {
+    this.searchTerm = '';
+    this.filters = {
+      fromDate: '',
+      toDate: '',
+      sender: '',
+    };
+    this.sortField = 'createdAt';
+    this.sortDirection = 'desc';
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  calculateTotalPages(): void {
+    this.totalPages = Math.ceil(this.filteredLetters.length / this.pageSize);
+  }
+
+  getPages(): number[] {
+    const pages = [];
+    const maxVisiblePages = 5;
+
+    let startPage = Math.max(
+      1,
+      this.currentPage - Math.floor(maxVisiblePages / 2)
+    );
+    let endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+
+    return pages;
+  }
+
+  changePage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  get paginatedLetters(): any[] {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    return this.filteredLetters.slice(startIndex, startIndex + this.pageSize);
   }
 
   viewLetterDetails(letterId: string): void {

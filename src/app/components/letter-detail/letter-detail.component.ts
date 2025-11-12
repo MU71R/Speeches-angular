@@ -22,6 +22,8 @@ export class LetterDetailComponent implements OnInit {
   showPresidentOptions = false;
   showRejectionReason = false;
   rejectionReason = '';
+  pdfUrl: string | null = null;
+  pdfFilename: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -57,6 +59,12 @@ export class LetterDetailComponent implements OnInit {
           rationale: this.original?.Rationale || '',
         });
         this.previewHtml = this.original?.description || '';
+
+        console.log('بيانات الخطاب:', this.original);
+
+        // البحث عن PDF بطرق مختلفة
+        this.findAndSetPdfUrl();
+
         this.loading = false;
       },
       (err) => {
@@ -64,6 +72,86 @@ export class LetterDetailComponent implements OnInit {
         this.loading = false;
       }
     );
+  }
+
+  // البحث عن رابط PDF بطرق مختلفة
+  private findAndSetPdfUrl() {
+    // الطريقة 1: البحث في البيانات المحلية أولاً
+    if (this.pdfUrl) {
+      this.pdfFilename = this.extractFilenameFromUrl(this.pdfUrl);
+      console.log('تم العثور على PDF محلي:', this.pdfUrl);
+      return;
+    }
+
+    // الطريقة 2: البحث في حقل pdfUrl في البيانات الأصلية
+    if (this.original?.pdfUrl) {
+      this.pdfUrl = this.original.pdfUrl;
+      this.pdfFilename = this.extractFilenameFromUrl(this.original.pdfUrl);
+      console.log('تم العثور على PDF في البيانات الأصلية:', this.pdfUrl);
+      return;
+    }
+
+    // الطريقة 3: البحث في الـ approvals
+    if (this.original?.approvals && this.original.approvals.length > 0) {
+      const presidentApproval = this.original.approvals.find(
+        (approval: any) =>
+          approval.role === 'UniversityPresident' && approval.approved === true
+      );
+
+      if (presidentApproval) {
+        // إذا كان هناك موافقة من الرئيس، نفترض أن هناك PDF
+        this.generatePdfFilenameFromLetterData();
+        console.log('تم العثور على موافقة رئيس - نفترض وجود PDF');
+        return;
+      }
+    }
+
+    // الطريقة 4: إذا كان الخطاب معتمداً، نبحث عن PDF في الخادم
+    if (this.original?.status === 'approved') {
+      this.checkForPdfInServer();
+    }
+
+    console.log('لم يتم العثور على PDF');
+  }
+
+  // توليد اسم ملف PDF من بيانات الخطاب
+  private generatePdfFilenameFromLetterData() {
+    if (!this.original) return;
+
+    const letterId = this.original._id;
+    const title = this.original.title
+      ? this.original.title.replace(/[^\w\u0600-\u06FF]/g, '_')
+      : 'خطاب';
+
+    this.pdfFilename = `letter_${letterId}_${title}.pdf`;
+    console.log('تم توليد اسم PDF:', this.pdfFilename);
+  }
+
+  // التحقق من وجود PDF في الخادم
+  private checkForPdfInServer() {
+    if (!this.original?._id) return;
+
+    // هنا يمكنك إضافة استدعاء للخادم للتحقق من وجود PDF
+    // مؤقتاً سنفترض أن الخطاب المعتمد له PDF
+    this.generatePdfFilenameFromLetterData();
+  }
+
+  // استخراج اسم الملف من الرابط
+  private extractFilenameFromUrl(url: string): string {
+    if (!url) return '';
+    const parts = url.split('/');
+    return parts[parts.length - 1];
+  }
+
+  // توليد اسم ملف للتنزيل
+  private generateDownloadName(): string {
+    const title = this.original?.title
+      ? this.original.title.replace(/[^\w\u0600-\u06FF]/g, '_')
+      : 'خطاب';
+    const date = this.original?.date
+      ? new Date(this.original.date).toISOString().split('T')[0]
+      : '';
+    return `خطاب_${title}_${date}.pdf`;
   }
 
   enableEdit() {
@@ -215,6 +303,8 @@ export class LetterDetailComponent implements OnInit {
             next: () => {
               this.original.status = 'approved';
               this.processing = false;
+              // بعد الموافقة، إنشاء PDF تلقائياً
+              this.generateAndSavePdf();
             },
             error: (err) => {
               console.error(err);
@@ -239,7 +329,13 @@ export class LetterDetailComponent implements OnInit {
                     this.showPresidentOptions = false;
 
                     if (letter.pdfUrl) {
-                      window.open(letter.pdfUrl, '_blank');
+                      this.pdfUrl = letter.pdfUrl;
+                      this.pdfFilename = this.extractFilenameFromUrl(
+                        letter.pdfUrl
+                      );
+                      // حفظ PDF في قاعدة البيانات
+                      this.savePdfUrlToDatabase(letter.pdfUrl);
+                      console.log('تم إنشاء PDF جديد:', letter.pdfUrl);
                     } else {
                       alert('لم يتم توليد ملف PDF بعد.');
                     }
@@ -258,6 +354,119 @@ export class LetterDetailComponent implements OnInit {
           });
       }
     }
+  }
+
+  // إنشاء وحفظ PDF تلقائياً عند الموافقة
+  private generateAndSavePdf() {
+    this.letterService.generateOfficialLetterPDF(this.original._id).subscribe({
+      next: (result) => {
+        if (result.pdfUrl) {
+          this.pdfUrl = result.pdfUrl;
+          this.pdfFilename = this.extractFilenameFromUrl(result.pdfUrl);
+          // حفظ PDF في قاعدة البيانات
+          this.savePdfUrlToDatabase(result.pdfUrl);
+          console.log('تم إنشاء PDF تلقائياً:', result.pdfUrl);
+        }
+      },
+      error: (err) => {
+        console.error('خطأ في إنشاء PDF تلقائي:', err);
+      },
+    });
+  }
+
+  // حفظ رابط PDF في قاعدة البيانات
+  private savePdfUrlToDatabase(pdfUrl: string) {
+    const updateData = { pdfUrl: pdfUrl };
+    this.letterService.updateLetter(this.original._id, updateData).subscribe({
+      next: () => {
+        console.log('تم حفظ رابط PDF في قاعدة البيانات');
+        // تحديث البيانات المحلية
+        this.original.pdfUrl = pdfUrl;
+      },
+      error: (err) => {
+        console.error('خطأ في حفظ رابط PDF:', err);
+      },
+    });
+  }
+
+  // دالة لفتح PDF في نافذة جديدة باستخدام service
+  openPdf() {
+    if (this.pdfFilename) {
+      console.log('فتح PDF باسم:', this.pdfFilename);
+      this.letterService.openPDFInNewWindow(this.pdfFilename);
+    } else if (this.pdfUrl) {
+      // إذا كان رابط مباشر
+      console.log('فتح PDF بالرابط:', this.pdfUrl);
+      window.open(this.pdfUrl, '_blank');
+    } else if (this.original?.pdfUrl) {
+      const filename = this.extractFilenameFromUrl(this.original.pdfUrl);
+      console.log('فتح PDF من البيانات الأصلية:', filename);
+      this.letterService.openPDFInNewWindow(filename);
+    } else {
+      alert('لا يوجد ملف PDF متاح للعرض');
+    }
+  }
+
+  // دالة لتنزيل PDF باستخدام service
+  downloadPdf() {
+    if (this.pdfFilename) {
+      const downloadName = this.generateDownloadName();
+      console.log('تنزيل PDF باسم:', this.pdfFilename, 'كـ:', downloadName);
+      this.letterService.downloadPDF(this.pdfFilename, downloadName);
+    } else if (this.pdfUrl) {
+      // إذا كان رابط مباشر، استخدام الطريقة القديمة
+      const link = document.createElement('a');
+      link.href = this.pdfUrl;
+      link.download = this.generateDownloadName();
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else if (this.original?.pdfUrl) {
+      const filename = this.extractFilenameFromUrl(this.original.pdfUrl);
+      const downloadName = this.generateDownloadName();
+      console.log(
+        'تنزيل PDF من البيانات الأصلية:',
+        filename,
+        'كـ:',
+        downloadName
+      );
+      this.letterService.downloadPDF(filename, downloadName);
+    } else {
+      alert('لا يوجد ملف PDF متاح للتنزيل');
+    }
+  }
+
+  // التحقق من إمكانية عرض زر PDF - المعدلة
+  showPdfButton(): boolean {
+    // أي خطاب معتمد (approved) يظهر الزر
+    const isApproved = this.original?.status === 'approved';
+    const hasPdfInfo = !!(
+      this.pdfUrl ||
+      this.original?.pdfUrl ||
+      this.pdfFilename
+    );
+
+    console.log('فحص زر PDF:', {
+      status: this.original?.status,
+      isApproved: isApproved,
+      pdfUrl: this.pdfUrl,
+      originalPdfUrl: this.original?.pdfUrl,
+      pdfFilename: this.pdfFilename,
+      hasPdfInfo: hasPdfInfo,
+      showButton: isApproved,
+    });
+
+    // إذا كان الخطاب معتمداً، اعرض الزر بغض النظر عن وجود PDF
+    return isApproved;
+  }
+
+  // التحقق من إمكانية عرض قسم PDF
+  canShowPdf(): boolean {
+    return (
+      this.showPdfButton() &&
+      !!(this.pdfUrl || this.original?.pdfUrl || this.pdfFilename)
+    );
   }
 
   canEdit(): boolean {

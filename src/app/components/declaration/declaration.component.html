@@ -3,8 +3,8 @@
 
     <div class="d-flex justify-content-between align-items-start mb-4">
       <div>
-        <h2 class="fw-bold mb-1" id="h2">إنشاء خطاب جديد</h2>
-        <p class="text-muted small">قم بكتابة نص الخطاب</p>
+        <h2 class="fw-bold mb-1" id="h2">إنشاء قرار جديد</h2>
+        <p class="text-muted small">قم بكتابة نص القرار</p>
       </div>
     </div>
 
@@ -12,27 +12,27 @@
       <form [formGroup]="messageForm" (ngSubmit)="onSubmit()">
 
         <div class="mb-3">
-          <label for="type" class="form-label">نوع الخطاب *</label>
+          <label for="type" class="form-label">نوع القرار *</label>
           <select id="type" formControlName="type" class="form-select" [class.is-invalid]="showFieldError('type')">
-            <option value="">اختر نوع الخطاب...</option>
+            <option value="">اختر نوع القرار...</option>
             <option *ngFor="let t of messageTypes" [value]="t._id">
               {{ t.title }}
             </option>
           </select>
 
           <div *ngIf="showFieldError('type')" class="invalid-feedback">
-            <div *ngIf="f['type'].errors?.['required']">نوع الخطاب مطلوب</div>
+            <div *ngIf="f['type'].errors?.['required']">نوع القرار مطلوب</div>
           </div>
         </div>
 
         <div class="mb-3">
-          <label for="title" class="form-label">عنوان الخطاب *</label>
-          <input id="title" type="text" formControlName="title" placeholder="ادخل عنوان الخطاب ..." class="form-control"
+          <label for="title" class="form-label">عنوان القرار *</label>
+          <input id="title" type="text" formControlName="title" placeholder="ادخل عنوان القرار ..." class="form-control"
             [class.is-invalid]="showFieldError('title')" (keydown)="preventLeadingSpace($event)"
             (blur)="markFieldAsTouched('title')" />
 
           <div *ngIf="showFieldError('title')" class="invalid-feedback">
-            <div *ngIf="f['title'].errors?.['required']">عنوان الخطاب مطلوب</div>
+            <div *ngIf="f['title'].errors?.['required']">عنوان القرار مطلوب</div>
             <div *ngIf="f['title'].errors?.['minlength']">
               العنوان يجب أن يكون على الأقل
               {{ f['title'].errors?.['minlength'].requiredLength }} حروف
@@ -73,14 +73,14 @@
         </div>
 
         <div class="mb-4">
-          <label class="form-label">حيثيات الخطاب *</label>
+          <label class="form-label">حيثيات القرار *</label>
           <textarea class="form-control" formControlName="Rationale" rows="5"
-            placeholder="اكتب حيثيات أو مبررات الخطاب هنا..." [class.is-invalid]="showFieldError('Rationale')"
+            placeholder="اكتب حيثيات أو مبررات القرار هنا..." [class.is-invalid]="showFieldError('Rationale')"
             (input)="onRationaleInput()" (blur)="markFieldAsTouched('Rationale')">
           </textarea>
 
           <div *ngIf="showFieldError('Rationale')" class="invalid-feedback">
-            <div *ngIf="f['Rationale'].errors?.['required']">حيثيات الخطاب مطلوبة</div>
+            <div *ngIf="f['Rationale'].errors?.['required']">حيثيات القرار مطلوبة</div>
             <div *ngIf="f['Rationale'].errors?.['minlength']">
               الحيثيات يجب أن تكون على الأقل
               {{ f['Rationale'].errors?.['minlength'].requiredLength }} حرف
@@ -97,19 +97,19 @@
         </div>
 
         <div class="mb-4">
-          <label class="form-label">نص الخطاب *</label>
-          <textarea class="form-control" formControlName="content" rows="10" placeholder="اكتب نص الخطاب هنا..."
+          <label class="form-label">نص القرار *</label>
+          <textarea class="form-control" formControlName="content" rows="10" placeholder="اكتب نص القرار هنا..."
             [class.is-invalid]="showFieldError('content')" (input)="onContentInput()"
             (blur)="markFieldAsTouched('content')"></textarea>
 
           <div *ngIf="showFieldError('content')" class="invalid-feedback">
-            <div *ngIf="f['content'].errors?.['required']">نص الخطاب مطلوب</div>
+            <div *ngIf="f['content'].errors?.['required']">نص القرار مطلوب</div>
             <div *ngIf="f['content'].errors?.['minlength']">
-              نص الخطاب يجب أن يكون على الأقل
+              نص القرار يجب أن يكون على الأقل
               {{ f['content'].errors?.['minlength'].requiredLength }} حرف
             </div>
             <div *ngIf="f['content'].errors?.['maxlength']">
-              نص الخطاب يجب أن لا يتجاوز
+              نص القرار يجب أن لا يتجاوز
               {{ f['content'].errors?.['maxlength'].requiredLength }} حرف
             </div>
           </div>
@@ -134,7 +134,7 @@
             [disabled]="messageForm.invalid || submitting">
             <ng-container *ngIf="!submitting; else loading">
               <i class="bi bi-send-fill me-1"></i>
-              <span>إرسال الخطاب</span>
+              <span>إرسال القرار</span>
             </ng-container>
 
             <ng-template #loading>
