@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { Letter } from '../model/Letter';
 import { map } from 'rxjs/operators';
 import { LetterDetail } from '../model/letter-detail';
+
 export interface PDFFile {
   _id: string;
   pdfurl: string;
@@ -13,6 +14,7 @@ export interface PDFFile {
     name?: string;
     role: string;
   };
+  letterId: string;
   createdAt: string;
 }
 
@@ -175,6 +177,14 @@ export class LetterService {
   getAllPDFs(): Observable<{ success: boolean; pdfFiles: PDFFile[] }> {
     return this.http.get<{ success: boolean; pdfFiles: PDFFile[] }>(
       `${this.baseUrl}/all-pdfs`
+    );
+  }
+
+  getPDFbyLetterId(
+    letterId: string
+  ): Observable<{ success: boolean; pdfFile: PDFFile }> {
+    return this.http.get<{ success: boolean; pdfFile: PDFFile }>(
+      `${this.baseUrl}/pdf-by-letter/${letterId}`
     );
   }
 

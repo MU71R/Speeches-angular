@@ -1,9 +1,12 @@
+
+/* تنسيقات الجدول */
 .table th {
     text-align: right;
     font-weight: 600;
     border-bottom: 2px solid #e9ecef;
 }
 
+/* ألوان الأدوار */
 .badge-admin {
     background-color: #dc3545;
     color: white;
@@ -24,30 +27,32 @@
     color: white;
 }
 
-.btn-blue-primary {
+/* أزرار متناسقة مع التصميم */
+.btn-primary {
     background-color: #0d6efd;
     border-color: #0d6efd;
     color: white;
 }
 
-.btn-blue-primary:hover {
+.btn-primary:hover {
     background-color: #0b5ed7;
     border-color: #0a58ca;
     color: white;
 }
 
-.btn-blue-success {
+.btn-success {
     background-color: #198754;
     border-color: #198754;
     color: white;
 }
 
-.btn-blue-success:hover {
+.btn-success:hover {
     background-color: #157347;
     border-color: #146c43;
     color: white;
 }
 
+/* تأثيرات الأزرار */
 .action-btn,
 .action-btn-mobile {
     transition: all 0.2s ease-in-out;
@@ -59,6 +64,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* تنسيقات النصوص */
 .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -70,30 +76,66 @@
     min-width: 0;
 }
 
-.bg-blue-50 {
-    background-color: #e3f2fd;
+/* نظام ألوان متناسق */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
 }
 
-.border-blue-200 {
-    border-color: #90caf9 !important;
+.bg-primary-50 {
+    background-color: #e7f1ff !important;
 }
 
-.text-blue-600 {
-    color: #1e88e5;
+.bg-primary-100 {
+    background-color: #d4e5ff !important;
 }
 
-.text-blue-900 {
-    color: #0d47a1;
+.bg-primary-200 {
+    background-color: #b3d4ff !important;
 }
 
-.text-blue-700 {
-    color: #1976d2;
+.bg-primary-300 {
+    background-color: #8bc0ff !important;
 }
 
+.border-primary-200 {
+    border-color: #b3d4ff !important;
+}
+
+.border-primary-300 {
+    border-color: #8bc0ff !important;
+}
+
+.text-primary-600 {
+    color: #0a58ca !important;
+}
+
+.text-primary-700 {
+    color: #084298 !important;
+}
+
+.text-primary-800 {
+    color: #06357a !important;
+}
+
+.bg-white-20 {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.table-primary {
+    background-color: #e7f1ff;
+}
+
+.table-primary th {
+    background-color: #d4e5ff;
+    border-color: #b3d4ff;
+}
+
+/* أيقونات فارغة */
 .empty-icon {
     opacity: 0.6;
 }
 
+/* تنسيقات البحث */
 .search-container {
     position: relative;
 }
@@ -103,7 +145,7 @@
 }
 
 .search-input {
-    border: 2px solid #e3f2fd;
+    border: 2px solid #e7f1ff;
     border-radius: 12px;
     background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
     font-size: 0.9rem;
@@ -114,8 +156,8 @@
 }
 
 .search-input:focus {
-    border-color: #1e88e5;
-    box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.1);
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
     background: #ffffff;
     transform: translateY(-1px);
 }
@@ -131,7 +173,7 @@
 }
 
 .search-input:focus+.search-icon {
-    color: #1e88e5 !important;
+    color: #0d6efd !important;
     transform: translateY(-50%) scale(1.1);
 }
 
@@ -173,6 +215,62 @@
     transform: translateY(-1px);
 }
 
+/* تنسيقات التاريخ */
+.date-search-container .form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.date-search-container {
+    transition: all 0.3s ease;
+}
+
+.date-search-container:focus-within {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15) !important;
+}
+
+.custom-date-input {
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: none !important;
+}
+
+.custom-date-input:focus {
+    box-shadow: none !important;
+    background: #f8f9fa !important;
+}
+
+.custom-date-input::-webkit-calendar-picker-indicator {
+    filter: invert(0.5);
+    opacity: 0.7;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    background: #f8f9fa;
+}
+
+.custom-date-input::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+    background: #e9ecef;
+}
+
+.clear-date-btn {
+    transition: all 0.2s ease;
+    border-radius: 50% !important;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.clear-date-btn:hover {
+    background: #f8f9fa !important;
+    transform: scale(1.1);
+}
+
+/* تنسيقات للشاشات الصغيرة */
 @media (max-width: 767.98px) {
     .pdf-cards-container {
         padding: 1rem !important;
@@ -259,78 +357,12 @@
 }
 
 .search-input:not(:placeholder-shown) {
-    border-color: #90caf9;
+    border-color: #b3d4ff;
     background: #ffffff;
-}
-
-.date-search-container .form-control:focus {
-    border-color: #0d6efd;
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-}
-
-.border-blue-200 {
-    border-color: #9ec5fe !important;
-}
-
-.bg-blue-50 {
-    background-color: #e7f1ff !important;
-}
-
-.text-blue-700 {
-    color: #0a58ca !important;
 }
 
 @media (max-width: 768px) {
     .date-search-container {
         max-width: 100% !important;
     }
-}
-
-.date-search-container {
-    transition: all 0.3s ease;
-}
-
-.date-search-container:focus-within {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15) !important;
-}
-
-.custom-date-input {
-    font-size: 0.9rem;
-    font-weight: 500;
-    border: none !important;
-}
-
-.custom-date-input:focus {
-    box-shadow: none !important;
-    background: #f8f9fa !important;
-}
-
-.custom-date-input::-webkit-calendar-picker-indicator {
-    filter: invert(0.5);
-    opacity: 0.7;
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 4px;
-    background: #f8f9fa;
-}
-
-.custom-date-input::-webkit-calendar-picker-indicator:hover {
-    opacity: 1;
-    background: #e9ecef;
-}
-
-.clear-date-btn {
-    transition: all 0.2s ease;
-    border-radius: 50% !important;
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.clear-date-btn:hover {
-    background: #f8f9fa !important;
-    transform: scale(1.1);
 }

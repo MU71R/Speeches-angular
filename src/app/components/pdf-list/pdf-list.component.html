@@ -2,18 +2,18 @@
     <div class="row">
         <div class="col-12">
             <div class="card shadow border-0 rounded-3">
-                <div class="card-header bg-transparent border-bottom py-3 py-md-4 px-3 px-md-4">
+                <div class="card-header bg-gradient-primary border-bottom py-3 py-md-4 px-3 px-md-4">
                     <div class="row align-items-center g-3">
                         <div class="col-lg-5 col-md-6 col-12">
                             <div class="d-flex align-items-center">
-                                <div class="icon-wrapper rounded-circle d-flex align-items-center justify-content-center me-3 bg-blue-50 flex-shrink-0"
+                                <div class="icon-wrapper rounded-circle d-flex align-items-center justify-content-center me-3 bg-white-20 flex-shrink-0"
                                     style="width: 44px; height: 44px;">
-                                    <i class="fas fa-file-pdf text-blue-600 fs-6"></i>
+                                    <i class="fas fa-file-pdf text-white fs-6"></i>
                                 </div>
                                 <div class="flex-grow-1 min-width-0">
-                                    <h5 class="mb-0 fw-bold text-blue-900 text-truncate fs-5 fs-md-4">إدارة ملفات PDF
+                                    <h5 class="mb-0 fw-bold text-white text-truncate fs-5 fs-md-4">إدارة ملفات PDF
                                     </h5>
-                                    <small class="text-blue-700 opacity-85 d-none d-sm-block">عرض وإدارة جميع ملفات PDF
+                                    <small class="text-white opacity-85 d-none d-sm-block">عرض وإدارة جميع ملفات PDF
                                         في النظام</small>
                                 </div>
                             </div>
@@ -21,26 +21,32 @@
 
                         <div class="col-lg-7 col-md-6 col-12">
                             <div class="d-flex flex-column flex-md-row justify-content-md-end gap-3">
-                            <div class="date-search-container flex-grow-1 flex-md-grow-0 position-relative" style="min-width: 200px;">
-                                <div class="input-group input-group-lg shadow-sm rounded-3 overflow-hidden border border-blue-200">
-                                    <span class="input-group-text bg-blue-50 border-blue-200 text-blue-700 py-3 px-3">
-                                        <i class="fas fa-calendar-alt fs-5"></i>
-                                    </span>
-                                    <input type="date" class="form-control border-blue-200 py-3 ps-3 pe-4 bg-white text-dark custom-date-input"
-                                        [(ngModel)]="searchDate" (change)="filterPDFs()" placeholder="البحث بالتاريخ" />
-                                    <button *ngIf="searchDate"
-                                        class="btn btn-sm btn-link text-blue-600 p-1 border-0 position-absolute start-0 top-50 translate-middle-y ms-3 clear-date-btn"
-                                        (click)="clearDateFilter()" type="button" style="z-index: 5;">
-                                        <i class="fas fa-times fs-6"></i>
-                                    </button>
+                                <div class="date-search-container flex-grow-1 flex-md-grow-0 position-relative"
+                                    style="min-width: 200px;">
+                                    <div
+                                        class="input-group input-group-lg shadow-sm rounded-3 overflow-hidden border border-primary-300">
+                                        <span
+                                            class="input-group-text bg-primary-50 border-primary-300 text-primary-700 py-3 px-3">
+                                            <i class="fas fa-calendar-alt fs-5"></i>
+                                        </span>
+                                        <input type="date"
+                                            class="form-control border-primary-300 py-3 ps-3 pe-4 bg-white text-dark custom-date-input"
+                                            [(ngModel)]="searchDate" (change)="filterPDFs()"
+                                            placeholder="البحث بالتاريخ" />
+                                        <button *ngIf="searchDate"
+                                            class="btn btn-sm btn-link text-primary-600 p-1 border-0 position-absolute start-0 top-50 translate-middle-y ms-3 clear-date-btn"
+                                            (click)="clearDateFilter()" type="button" style="z-index: 5;">
+                                            <i class="fas fa-times fs-6"></i>
+                                        </button>
+                                    </div>
+                                    <div class="filter-status mt-2 text-center" *ngIf="searchDate">
+                                        <span
+                                            class="badge bg-primary-100 text-primary-800 py-2 px-3 rounded-3 fs-7 fw-medium border border-primary-200">
+                                            <i class="fas fa-filter me-2"></i>
+                                            فلتر التاريخ مفعل
+                                        </span>
+                                    </div>
                                 </div>
-                                <div class="filter-status mt-2 text-center" *ngIf="searchDate">
-                                    <span class="badge bg-blue-100 text-blue-800 py-2 px-3 rounded-3 fs-7 fw-medium border border-blue-200">
-                                        <i class="fas fa-filter me-2"></i>
-                                        فلتر التاريخ مفعل
-                                    </span>
-                                </div>
-                            </div>
 
                                 <div class="search-container position-relative flex-grow-1" style="min-width: 280px;">
                                     <div class="search-input-wrapper">
@@ -49,7 +55,7 @@
                                             [(ngModel)]="searchTerm" (input)="filterPDFs()" />
                                         <div
                                             class="search-icon position-absolute start-0 top-50 translate-middle-y ms-3">
-                                            <i class="fas fa-search text-blue-600 opacity-75 fs-6"></i>
+                                            <i class="fas fa-search text-primary-600 opacity-75 fs-6"></i>
                                         </div>
                                         <div
                                             class="search-actions position-absolute end-0 top-50 translate-middle-y me-2">
@@ -103,7 +109,7 @@
                     <div *ngIf="!loading && filteredPDFs.length > 0" class="d-none d-md-block">
                         <div class="table-responsive">
                             <table class="table table-hover mb-0">
-                                <thead class="table-light">
+                                <thead class="table-primary">
                                     <tr>
                                         <th width="60" class="text-center py-3">#</th>
                                         <th class="py-3">اسم الملف</th>
@@ -150,13 +156,13 @@
                                         <td class="py-3">
                                             <div class="d-flex justify-content-center gap-2">
                                                 <button
-                                                    class="btn btn-blue-primary btn-sm action-btn d-flex align-items-center px-3 py-2"
+                                                    class="btn btn-primary btn-sm action-btn d-flex align-items-center px-3 py-2"
                                                     (click)="openPDF(pdf)" title="فتح الملف">
                                                     <i class="fas fa-eye me-1 fs-6"></i>
                                                     <span class="fs-6">فتح</span>
                                                 </button>
                                                 <button
-                                                    class="btn btn-blue-success btn-sm action-btn d-flex align-items-center px-3 py-2"
+                                                    class="btn btn-success btn-sm action-btn d-flex align-items-center px-3 py-2"
                                                     (click)="downloadPDF(pdf)" title="تحميل الملف">
                                                     <i class="fas fa-download me-1 fs-6"></i>
                                                     <span class="fs-6">تحميل</span>
@@ -195,13 +201,13 @@
                                         </div>
                                         <div class="d-flex justify-content-between gap-2 mt-3">
                                             <button
-                                                class="btn btn-blue-primary btn-sm flex-fill action-btn-mobile d-flex align-items-center justify-content-center py-2"
+                                                class="btn btn-primary btn-sm flex-fill action-btn-mobile d-flex align-items-center justify-content-center py-2"
                                                 (click)="openPDF(pdf)" title="فتح الملف">
                                                 <i class="fas fa-eye me-1 fs-6"></i>
                                                 <span class="fs-6">فتح</span>
                                             </button>
                                             <button
-                                                class="btn btn-blue-success btn-sm flex-fill action-btn-mobile d-flex align-items-center justify-content-center py-2"
+                                                class="btn btn-success btn-sm flex-fill action-btn-mobile d-flex align-items-center justify-content-center py-2"
                                                 (click)="downloadPDF(pdf)" title="تحميل الملف">
                                                 <i class="fas fa-download me-1 fs-6"></i>
                                                 <span class="fs-6">تحميل</span>

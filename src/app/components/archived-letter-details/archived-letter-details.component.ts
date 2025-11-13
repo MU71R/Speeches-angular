@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ArchiveService } from 'src/app/service/archive.service';
+import { LetterService } from 'src/app/service/letter.service';
 
 @Component({
   selector: 'app-letter-detail',
@@ -11,13 +12,18 @@ export class LetterDetailsComponent implements OnInit {
   letterId: string = '';
   letter: any = null;
   loading = true;
+  pdfLoading = false;
+  pdfUrl: string | null = null;
+  pdfFilename: string | null = null;
+  pdfFile: any = null;
   private sectorsMap: Map<string, string> = new Map();
   private usersMap: Map<string, any> = new Map();
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private archiveService: ArchiveService
+    private archiveService: ArchiveService,
+    private letterService: LetterService
   ) {}
 
   ngOnInit(): void {
@@ -34,6 +40,12 @@ export class LetterDetailsComponent implements OnInit {
     this.archiveService.getLetterById(this.letterId).subscribe({
       next: (res: any) => {
         this.letter = res?.data || null;
+
+        // البحث عن PDF بعد تحميل بيانات الخطاب
+        if (this.letter) {
+          this.loadPdfByLetterId(this.letterId);
+        }
+
         this.loading = false;
       },
       error: (err) => {
@@ -41,6 +53,98 @@ export class LetterDetailsComponent implements OnInit {
         this.loading = false;
       },
     });
+  }
+
+  // استخدام getPDFbyLetterId للبحث عن PDF
+  private loadPdfByLetterId(letterId: string) {
+    this.pdfLoading = true;
+
+    this.letterService.getPDFbyLetterId(letterId).subscribe({
+      next: (response) => {
+        this.pdfLoading = false;
+        if (response.success && response.pdfFile) {
+          this.pdfFile = response.pdfFile;
+          this.pdfUrl = response.pdfFile.pdfurl;
+          this.pdfFilename = this.extractFilenameFromUrl(
+            response.pdfFile.pdfurl
+          );
+          console.log('تم العثور على PDF:', this.pdfFile);
+        } else {
+          console.log('لم يتم العثور على PDF للخطاب');
+        }
+      },
+      error: (err) => {
+        this.pdfLoading = false;
+        console.error('خطأ في جلب PDF:', err);
+      },
+    });
+  }
+
+  // استخراج اسم الملف من الرابط
+  private extractFilenameFromUrl(url: string): string {
+    if (!url) return '';
+    const parts = url.split('/');
+    return parts[parts.length - 1];
+  }
+
+  // توليد اسم ملف للتنزيل
+  private generateDownloadName(): string {
+    const title = this.letter?.title
+      ? this.letter.title.replace(/[^\w\u0600-\u06FF]/g, '_')
+      : 'خطاب';
+    const date = this.letter?.date
+      ? new Date(this.letter.date).toISOString().split('T')[0]
+      : '';
+    return `خطاب_${title}_${date}.pdf`;
+  }
+
+  // فتح PDF في نافذة جديدة
+  openPdf(): void {
+    if (!this.pdfUrl) return;
+
+    this.pdfLoading = true;
+    if (this.pdfUrl.startsWith('http')) {
+      // إذا كان رابط مباشر
+      window.open(this.pdfUrl, '_blank');
+      this.pdfLoading = false;
+    } else if (this.pdfFilename) {
+      // إذا كان اسم ملف فقط
+      const baseUrl = 'http://localhost:3000/generated-files';
+      const pdfUrl = `${baseUrl}/${encodeURIComponent(this.pdfFilename)}`;
+      window.open(pdfUrl, '_blank');
+      this.pdfLoading = false;
+    } else {
+      this.pdfLoading = false;
+      alert('لا يوجد ملف PDF متاح للعرض');
+    }
+  }
+
+  // تنزيل PDF
+  downloadPdf() {
+    if (this.pdfFilename) {
+      const downloadName = this.generateDownloadName();
+      console.log('تنزيل PDF باسم:', this.pdfFilename, 'كـ:', downloadName);
+      this.letterService.downloadPDF(this.pdfFilename, downloadName);
+    } else if (this.pdfUrl) {
+      // إذا كان رابط مباشر، استخدام الطريقة القديمة
+      const link = document.createElement('a');
+      link.href = this.pdfUrl;
+      link.download = this.generateDownloadName();
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      alert('لا يوجد ملف PDF متاح للتنزيل');
+    }
+  }
+
+  // التحقق من إمكانية عرض زر PDF
+  showPdfButton(): boolean {
+    return (
+      this.letter?.status === 'approved' &&
+      (!!this.pdfUrl || !!this.pdfFilename)
+    );
   }
 
   getStatusText(status: string): string {
@@ -185,24 +289,24 @@ export class LetterDetailsComponent implements OnInit {
   }
 
   getFileSize(filePath: string): string {
-    return ''; 
+    return '';
   }
 
-    getAttachmentUrl(fileName: string): string {
-      if (!fileName) return '';
+  getAttachmentUrl(fileName: string): string {
+    if (!fileName) return '';
 
-      const cleanPath = fileName.replace(/^.*[\\\/]/, '');
-      const baseUrl = 'http://localhost:3000/uploads';
-      return `${baseUrl}/${encodeURIComponent(cleanPath)}`;
-    }
+    const cleanPath = fileName.replace(/^.*[\\\/]/, '');
+    const baseUrl = 'http://localhost:3000/uploads';
+    return `${baseUrl}/${encodeURIComponent(cleanPath)}`;
+  }
 
-getDownloadUrl(fileName: string): string {
-  if (!fileName) return '';
-  const cleanPath = fileName.replace(/^.*[\\\/]/, '');
-  return `http://localhost:3000/letters/download/${encodeURIComponent(cleanPath)}`;
-}
-
-
+  getDownloadUrl(fileName: string): string {
+    if (!fileName) return '';
+    const cleanPath = fileName.replace(/^.*[\\\/]/, '');
+    return `http://localhost:3000/letters/download/${encodeURIComponent(
+      cleanPath
+    )}`;
+  }
 
   formatDescription(description: string): string {
     if (!description) return '';
@@ -222,7 +326,7 @@ getDownloadUrl(fileName: string): string {
   }
 
   hasMultipleSections(): boolean {
-    let count = 1; 
+    let count = 1;
     if (this.letter?.description || this.letter?.breeif) count++;
     if (this.letter?.Rationale) count++;
     if (this.letter?.decision) count++;

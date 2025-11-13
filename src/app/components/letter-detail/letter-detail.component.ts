@@ -25,6 +25,13 @@ export class LetterDetailComponent implements OnInit {
   rejectionReason = '';
   pdfUrl: string | null = null;
   pdfFilename: string | null = null;
+  pdfFile: any = null;
+
+  // إضافة الخصائص الجديدة
+  pdfLoading = false;
+  pdfGenerating = false;
+  pdfSearching = false;
+  pdfSearchAttempted = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -63,8 +70,8 @@ export class LetterDetailComponent implements OnInit {
 
         console.log('بيانات الخطاب:', this.original);
 
-        // البحث عن PDF بطرق مختلفة
-        this.findAndSetPdfUrl();
+        // البحث عن PDF باستخدام getPDFbyLetterId
+        this.loadPdfByLetterId(id);
 
         this.loading = false;
       },
@@ -75,16 +82,41 @@ export class LetterDetailComponent implements OnInit {
     );
   }
 
-  // البحث عن رابط PDF بطرق مختلفة
-  private findAndSetPdfUrl() {
-    // الطريقة 1: البحث في البيانات المحلية أولاً
-    if (this.pdfUrl) {
-      this.pdfFilename = this.extractFilenameFromUrl(this.pdfUrl);
-      console.log('تم العثور على PDF محلي:', this.pdfUrl);
-      return;
-    }
+  // استخدام getPDFbyLetterId للبحث عن PDF
+  private loadPdfByLetterId(letterId: string) {
+    this.pdfSearching = true;
+    this.pdfSearchAttempted = true;
 
-    // الطريقة 2: البحث في حقل pdfUrl في البيانات الأصلية
+    this.letterService.getPDFbyLetterId(letterId).subscribe({
+      next: (response) => {
+        this.pdfSearching = false;
+        if (response.success && response.pdfFile) {
+          this.pdfFile = response.pdfFile;
+          this.pdfUrl = response.pdfFile.pdfurl;
+          this.pdfFilename = this.extractFilenameFromUrl(
+            response.pdfFile.pdfurl
+          );
+          console.log(
+            'تم العثور على PDF باستخدام getPDFbyLetterId:',
+            this.pdfFile
+          );
+        } else {
+          // إذا لم يتم العثور على PDF، البحث بطرق أخرى
+          this.findAndSetPdfUrl();
+        }
+      },
+      error: (err) => {
+        this.pdfSearching = false;
+        console.error('خطأ في جلب PDF:', err);
+        // في حالة الخطأ، البحث بطرق أخرى
+        this.findAndSetPdfUrl();
+      },
+    });
+  }
+
+  // البحث عن رابط PDF بطرق مختلفة (كبديل)
+  private findAndSetPdfUrl() {
+    // الطريقة 1: البحث في حقل pdfUrl في البيانات الأصلية
     if (this.original?.pdfUrl) {
       this.pdfUrl = this.original.pdfUrl;
       this.pdfFilename = this.extractFilenameFromUrl(this.original.pdfUrl);
@@ -92,7 +124,7 @@ export class LetterDetailComponent implements OnInit {
       return;
     }
 
-    // الطريقة 3: البحث في الـ approvals
+    // الطريقة 2: البحث في الـ approvals
     if (this.original?.approvals && this.original.approvals.length > 0) {
       const presidentApproval = this.original.approvals.find(
         (approval: any) =>
@@ -100,14 +132,13 @@ export class LetterDetailComponent implements OnInit {
       );
 
       if (presidentApproval) {
-        // إذا كان هناك موافقة من الرئيس، نفترض أن هناك PDF
         this.generatePdfFilenameFromLetterData();
         console.log('تم العثور على موافقة رئيس - نفترض وجود PDF');
         return;
       }
     }
 
-    // الطريقة 4: إذا كان الخطاب معتمداً، نبحث عن PDF في الخادم
+    // الطريقة 3: إذا كان الخطاب معتمداً، نبحث عن PDF في الخادم
     if (this.original?.status === 'approved') {
       this.checkForPdfInServer();
     }
@@ -131,9 +162,6 @@ export class LetterDetailComponent implements OnInit {
   // التحقق من وجود PDF في الخادم
   private checkForPdfInServer() {
     if (!this.original?._id) return;
-
-    // هنا يمكنك إضافة استدعاء للخادم للتحقق من وجود PDF
-    // مؤقتاً سنفترض أن الخطاب المعتمد له PDF
     this.generatePdfFilenameFromLetterData();
   }
 
@@ -153,6 +181,147 @@ export class LetterDetailComponent implements OnInit {
       ? new Date(this.original.date).toISOString().split('T')[0]
       : '';
     return `خطاب_${title}_${date}.pdf`;
+  }
+
+  // الدوال الجديدة للتعامل مع PDF
+  handlePdfAction(): void {
+    if (this.pdfUrl) {
+      this.openPdf();
+    } else {
+      this.generatePdf();
+    }
+  }
+
+  getPdfButtonIcon(): string {
+    if (this.pdfLoading || this.pdfGenerating || this.pdfSearching) {
+      return 'bi-arrow-clockwise spin';
+    }
+    return this.pdfUrl ? 'bi-file-pdf' : 'bi-file-earmark-plus';
+  }
+
+  getPdfButtonText(): string {
+    if (this.pdfLoading) return 'جاري التحميل...';
+    if (this.pdfGenerating) return 'جاري الإنشاء...';
+    if (this.pdfSearching) return 'جاري البحث...';
+    return this.pdfUrl ? 'عرض PDF' : 'إنشاء PDF';
+  }
+
+  getViewButtonIcon(): string {
+    return this.pdfLoading ? 'bi-arrow-clockwise spin' : 'bi-eye';
+  }
+
+  getViewButtonText(): string {
+    return this.pdfLoading ? 'جاري التحميل...' : 'عرض PDF';
+  }
+
+  generatePdf(): void {
+    if (!this.original?._id) return;
+
+    this.pdfGenerating = true;
+    this.letterService.generateOfficialLetterPDF(this.original._id).subscribe({
+      next: (result) => {
+        this.pdfGenerating = false;
+        if (result.pdfUrl) {
+          this.pdfUrl = result.pdfUrl;
+          this.pdfFilename = this.extractFilenameFromUrl(result.pdfUrl);
+          this.savePdfUrlToDatabase(result.pdfUrl);
+          console.log('تم إنشاء PDF جديد:', result.pdfUrl);
+
+          // إعادة تحميل معلومات PDF
+          this.loadPdfByLetterId(this.original._id);
+        }
+      },
+      error: (err) => {
+        this.pdfGenerating = false;
+        console.error('خطأ في إنشاء PDF:', err);
+        alert('حدث خطأ أثناء إنشاء PDF');
+      },
+    });
+  }
+
+  regeneratePdf(): void {
+    if (!this.original?._id) return;
+
+    this.pdfGenerating = true;
+    this.letterService.generateOfficialLetterPDF(this.original._id).subscribe({
+      next: (result) => {
+        this.pdfGenerating = false;
+        if (result.pdfUrl) {
+          this.pdfUrl = result.pdfUrl;
+          this.pdfFilename = this.extractFilenameFromUrl(result.pdfUrl);
+          this.savePdfUrlToDatabase(result.pdfUrl);
+          console.log('تم إعادة إنشاء PDF:', result.pdfUrl);
+
+          // إعادة تحميل معلومات PDF
+          this.loadPdfByLetterId(this.original._id);
+        }
+      },
+      error: (err) => {
+        this.pdfGenerating = false;
+        console.error('خطأ في إعادة إنشاء PDF:', err);
+        alert('حدث خطأ أثناء إعادة إنشاء PDF');
+      },
+    });
+  }
+
+  // دالة لفتح PDF في نافذة جديدة
+  openPdf(): void {
+    if (!this.pdfUrl) return;
+
+    this.pdfLoading = true;
+    if (this.pdfUrl.startsWith('http')) {
+      // إذا كان رابط مباشر
+      window.open(this.pdfUrl, '_blank');
+      this.pdfLoading = false;
+    } else if (this.pdfFilename) {
+      // إذا كان اسم ملف فقط
+      const baseUrl = 'http://localhost:3000/generated-files';
+      const pdfUrl = `${baseUrl}/${encodeURIComponent(this.pdfFilename)}`;
+      window.open(pdfUrl, '_blank');
+      this.pdfLoading = false;
+    } else {
+      this.pdfLoading = false;
+      alert('لا يوجد ملف PDF متاح للعرض');
+    }
+  }
+
+  // دالة لتنزيل PDF باستخدام service
+  downloadPdf() {
+    if (this.pdfFilename) {
+      const downloadName = this.generateDownloadName();
+      console.log('تنزيل PDF باسم:', this.pdfFilename, 'كـ:', downloadName);
+      this.letterService.downloadPDF(this.pdfFilename, downloadName);
+    } else if (this.pdfUrl) {
+      // إذا كان رابط مباشر، استخدام الطريقة القديمة
+      const link = document.createElement('a');
+      link.href = this.pdfUrl;
+      link.download = this.generateDownloadName();
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      alert('لا يوجد ملف PDF متاح للتنزيل');
+    }
+  }
+
+  // دوال الموافقات
+  getApprovalUserName(approval: any): string {
+    if (approval.user?.fullname) return approval.user.fullname;
+    if (approval.user?.name) return approval.user.name;
+    if (approval.role === 'supervisor') {
+      return this.original?.decision?.supervisor?.fullname || 'المشرف';
+    }
+    return approval.role === 'UniversityPresident' ? 'رئيس الجامعة' : 'مستخدم';
+  }
+
+  getApprovalRoleText(role: string): string {
+    const roleMap: { [key: string]: string } = {
+      supervisor: 'المراجع',
+      UniversityPresident: 'رئيس الجامعة',
+      user: 'المستخدم',
+    };
+    return roleMap[role] || role;
   }
 
   enableEdit() {
@@ -367,6 +536,9 @@ export class LetterDetailComponent implements OnInit {
           // حفظ PDF في قاعدة البيانات
           this.savePdfUrlToDatabase(result.pdfUrl);
           console.log('تم إنشاء PDF تلقائياً:', result.pdfUrl);
+
+          // إعادة تحميل معلومات PDF
+          this.loadPdfByLetterId(this.original._id);
         }
       },
       error: (err) => {
@@ -390,75 +562,17 @@ export class LetterDetailComponent implements OnInit {
     });
   }
 
-  // دالة لفتح PDF في نافذة جديدة باستخدام service
- openPdf(fileName: string): void {
-  if (!fileName) return;
-  const baseUrl = 'http://localhost:3000/generated-files';
-  const pdfUrl = `${baseUrl}/${encodeURIComponent(fileName)}`;
-  window.open(pdfUrl, '_blank');
-}
-
-
-  // دالة لتنزيل PDF باستخدام service
-  downloadPdf() {
-    if (this.pdfFilename) {
-      const downloadName = this.generateDownloadName();
-      console.log('تنزيل PDF باسم:', this.pdfFilename, 'كـ:', downloadName);
-      this.letterService.downloadPDF(this.pdfFilename, downloadName);
-    } else if (this.pdfUrl) {
-      // إذا كان رابط مباشر، استخدام الطريقة القديمة
-      const link = document.createElement('a');
-      link.href = this.pdfUrl;
-      link.download = this.generateDownloadName();
-      link.target = '_blank';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else if (this.original?.pdfUrl) {
-      const filename = this.extractFilenameFromUrl(this.original.pdfUrl);
-      const downloadName = this.generateDownloadName();
-      console.log(
-        'تنزيل PDF من البيانات الأصلية:',
-        filename,
-        'كـ:',
-        downloadName
-      );
-      this.letterService.downloadPDF(filename, downloadName);
-    } else {
-      alert('لا يوجد ملف PDF متاح للتنزيل');
-    }
-  }
-
-  // التحقق من إمكانية عرض زر PDF - المعدلة
+  // التحقق من إمكانية عرض زر PDF
   showPdfButton(): boolean {
-    // أي خطاب معتمد (approved) يظهر الزر
-    const isApproved = this.original?.status === 'approved';
-    const hasPdfInfo = !!(
-      this.pdfUrl ||
-      this.original?.pdfUrl ||
-      this.pdfFilename
-    );
-
-    console.log('فحص زر PDF:', {
-      status: this.original?.status,
-      isApproved: isApproved,
-      pdfUrl: this.pdfUrl,
-      originalPdfUrl: this.original?.pdfUrl,
-      pdfFilename: this.pdfFilename,
-      hasPdfInfo: hasPdfInfo,
-      showButton: isApproved,
-    });
-
-    // إذا كان الخطاب معتمداً، اعرض الزر بغض النظر عن وجود PDF
-    return isApproved;
+    return this.original?.status === 'approved';
   }
 
   // التحقق من إمكانية عرض قسم PDF
   canShowPdf(): boolean {
-    return (
+    const canShow =
       this.showPdfButton() &&
-      !!(this.pdfUrl || this.original?.pdfUrl || this.pdfFilename)
-    );
+      (this.pdfSearchAttempted || !!this.pdfUrl || !!this.pdfFilename);
+    return canShow;
   }
 
   canEdit(): boolean {

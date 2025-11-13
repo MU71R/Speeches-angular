@@ -34,6 +34,12 @@
     <div *ngIf="!loading && letter" class="letter-detail">
         <div class="detail-header">
             <div class="header-badges">
+                <!-- زر PDF -->
+                <button *ngIf="showPdfButton()" class="btn btn-pdf" (click)="openPdf()" [disabled]="pdfLoading">
+                    <i class="fa" [ngClass]="pdfLoading ? 'fa-spinner fa-spin' : 'fa-file-pdf'"></i>
+                    {{ pdfLoading ? 'جاري التحميل...' : 'عرض PDF' }}
+                </button>
+
                 <div class="letter-type-badge" [ngClass]="getTypeBadgeClass(letter.letterType)">
                     <i class="fa" [ngClass]="getTypeIcon(letter.letterType)"></i>
                     {{ letter.letterType || 'عامة' }}
@@ -87,10 +93,53 @@
             </div>
         </div>
 
+        <!-- قسم PDF -->
+        <div class="content-section pdf-section" *ngIf="showPdfButton()">
+            <h3 class="section-title">
+                <i class="fa fa-file-pdf me-2"></i>
+                نسخة الخطاب النهائية
+            </h3>
+            <div class="section-content">
+                <div class="pdf-actions">
+                    <div class="alert alert-info d-flex align-items-center">
+                        <i class="fa fa-info-circle me-2"></i>
+                        <span>تم إنشاء نسخة PDF من الخطاب بنجاح</span>
+                    </div>
+
+                    <div class="action-buttons d-flex gap-2 flex-wrap">
+                        <button class="btn btn-primary" (click)="openPdf()" [disabled]="pdfLoading">
+                            <i class="fa" [ngClass]="pdfLoading ? 'fa-spinner fa-spin' : 'fa-eye'"></i>
+                            {{ pdfLoading ? 'جاري التحميل...' : 'عرض PDF' }}
+                        </button>
+
+                        <button class="btn btn-outline-primary" (click)="downloadPdf()" [disabled]="pdfLoading">
+                            <i class="fa fa-download me-2"></i>
+                            تنزيل PDF
+                        </button>
+                    </div>
+
+                    <!-- معلومات الملف -->
+                    <div *ngIf="pdfFile" class="pdf-file-info mt-3">
+                        <div class="file-details">
+                            <small class="text-muted">
+                                <i class="fa fa-info-circle me-1"></i>
+                                تم إنشاء الملف بواسطة: {{ pdfFile.userId?.fullname || pdfFile.userId?.name || 'غير
+                                معروف' }}
+                                في {{ pdfFile.createdAt | date: 'd/M/yyyy h:mm a' }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="detail-content">
             <div class="content-nav" *ngIf="hasMultipleSections()">
                 <div class="nav-title">التنقل السريع:</div>
                 <div class="nav-links">
+                    <a *ngIf="showPdfButton()" href="#pdf-section" class="nav-link">
+                        <i class="fa fa-file-pdf me-1"></i>PDF
+                    </a>
                     <a *ngIf="letter.description || letter.breeif" href="#description" class="nav-link">
                         <i class="fa fa-file-alt me-1"></i>الوصف
                     </a>
@@ -156,7 +205,8 @@
                             </div>
                             <div class="info-content">
                                 <span class="info-label">نوع القرار:</span>
-                                <span class="info-value">{{ letter.decision.isPresidentDecision ? 'قرار رئاسي' : 'قرار تنفيذي' }}</span>
+                                <span class="info-value">{{ letter.decision.isPresidentDecision ? 'قرار رئاسي' : 'قرار
+                                    تنفيذي' }}</span>
                             </div>
                         </div>
                         <div class="info-item" *ngIf="letter.decision.sector">
