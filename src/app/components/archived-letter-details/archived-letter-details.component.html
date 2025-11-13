@@ -7,7 +7,7 @@
                 </div>
             </div>
             <div class="loading-text">
-                <h5>جارٍ تحميل تفاصيل الخطاب...</h5>
+                <h5>جارٍ تحميل تفاصيل القرار...</h5>
                 <p class="text-muted">قد تستغرق العملية بضع ثوانٍ</p>
             </div>
         </div>
@@ -17,30 +17,13 @@
         <div class="empty-icon">
             <i class="fa fa-file-search"></i>
         </div>
-        <h4 class="empty-title">الخطاب غير موجود</h4>
-        <p class="empty-text text-muted">تعذر العثور على الخطاب المطلوب في الأرشيف</p>
-        <button class="btn btn-primary mt-3" (click)="goBack()">
-            <i class="fa fa-arrow-right me-2"></i>العودة للأرشيف
-        </button>
+        <h4 class="empty-title">القرار غير موجود</h4>
+        <p class="empty-text text-muted">تعذر العثور على القرار المطلوب في الأرشيف</p>
     </div>
 
     <div *ngIf="!loading && letter" class="letter-detail">
         <div class="detail-header">
             <div class="header-badges">
-                <!-- زر PDF -->
-                <button *ngIf="showPdfButton()" class="btn btn-pdf" (click)="openPdf()" [disabled]="pdfLoading">
-                    <i class="fa" [ngClass]="pdfLoading ? 'fa-spinner fa-spin' : 'fa-file-pdf'"></i>
-                    {{ pdfLoading ? 'جاري التحميل...' : 'عرض PDF' }}
-                </button>
-
-                <div class="letter-type-badge" [ngClass]="getTypeBadgeClass(letter.letterType)">
-                    <i class="fa" [ngClass]="getTypeIcon(letter.letterType)"></i>
-                    {{ letter.letterType || 'عامة' }}
-                </div>
-                <div class="letter-status" [ngClass]="getStatusClass(letter.status)">
-                    <i class="fa fa-circle me-1"></i>
-                    {{ getStatusText(letter.status) }}
-                </div>
                 <div class="letter-priority" *ngIf="letter.priority" [ngClass]="getPriorityClass(letter.priority)">
                     <i class="fa" [ngClass]="getPriorityIcon(letter.priority)"></i>
                     {{ getPriorityText(letter.priority) }}
@@ -49,126 +32,21 @@
                     <i class="fa fa-hashtag me-1"></i>
                     رقم المعاملة: {{ letter.transactionNumber }}
                 </div>
+                <button *ngIf="showPdfButton()" class="btn btn-pdf" (click)="openPdf()" [disabled]="pdfLoading">
+                    <i class="fa" [ngClass]="pdfLoading ? 'fa-spinner fa-spin' : 'fa-file-pdf'"></i>
+                    {{ pdfLoading ? 'جاري التحميل...' : 'عرض PDF' }}
+                </button>
             </div>
 
             <div class="header-content">
                 <h1 class="letter-title">{{ letter.title }}</h1>
-                <div class="letter-meta">
-                    <div class="meta-group">
-                        <span class="meta-item">
-                            <i class="fa fa-calendar me-2"></i>
-                            تاريخ الخطاب: {{ letter.date | date: 'dd/MM/yyyy' }}
-                        </span>
-                        <span class="meta-item">
-                            <i class="fa fa-user me-2"></i>
-                            المرسل: {{ letter.user?.fullname || 'غير محدد' }}
-                        </span>
-                        <span class="meta-item" *ngIf="letter.user?.role">
-                            <i class="fa fa-user-tag me-2"></i>
-                            دور المرسل: {{ getRoleText(letter.user.role) }}
-                        </span>
-                    </div>
-                    <div class="meta-group">
-                        <span class="meta-item">
-                            <i class="fa fa-id-card me-2"></i>
-                            المعرف: {{ letter._id | slice:0:8 }}
-                        </span>
-                        <span class="meta-item" *ngIf="letter.user?.sector">
-                            <i class="fa fa-building me-2"></i>
-                            القسم: {{ getSectorName(letter.user.sector) }}
-                        </span>
-                        <span class="meta-item" *ngIf="letter.durationDays">
-                            <i class="fa fa-clock me-2"></i>
-                            مدة المعالجة: {{ letter.durationDays }} يوم
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- قسم PDF -->
-        <div class="content-section pdf-section" *ngIf="showPdfButton()">
-            <h3 class="section-title">
-                <i class="fa fa-file-pdf me-2"></i>
-                نسخة الخطاب النهائية
-            </h3>
-            <div class="section-content">
-                <div class="pdf-actions">
-                    <div class="alert alert-info d-flex align-items-center">
-                        <i class="fa fa-info-circle me-2"></i>
-                        <span>تم إنشاء نسخة PDF من الخطاب بنجاح</span>
-                    </div>
-
-                    <div class="action-buttons d-flex gap-2 flex-wrap">
-                        <button class="btn btn-primary" (click)="openPdf()" [disabled]="pdfLoading">
-                            <i class="fa" [ngClass]="pdfLoading ? 'fa-spinner fa-spin' : 'fa-eye'"></i>
-                            {{ pdfLoading ? 'جاري التحميل...' : 'عرض PDF' }}
-                        </button>
-
-                        <button class="btn btn-outline-primary" (click)="downloadPdf()" [disabled]="pdfLoading">
-                            <i class="fa fa-download me-2"></i>
-                            تنزيل PDF
-                        </button>
-                    </div>
-
-                    <!-- معلومات الملف -->
-                    <div *ngIf="pdfFile" class="pdf-file-info mt-3">
-                        <div class="file-details">
-                            <small class="text-muted">
-                                <i class="fa fa-info-circle me-1"></i>
-                                تم إنشاء الملف بواسطة: {{ pdfFile.userId?.fullname || pdfFile.userId?.name || 'غير
-                                معروف' }}
-                                في {{ pdfFile.createdAt | date: 'd/M/yyyy h:mm a' }}
-                            </small>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 
         <div class="detail-content">
-            <div class="content-nav" *ngIf="hasMultipleSections()">
-                <div class="nav-title">التنقل السريع:</div>
-                <div class="nav-links">
-                    <a *ngIf="showPdfButton()" href="#pdf-section" class="nav-link">
-                        <i class="fa fa-file-pdf me-1"></i>PDF
-                    </a>
-                    <a *ngIf="letter.description || letter.breeif" href="#description" class="nav-link">
-                        <i class="fa fa-file-alt me-1"></i>الوصف
-                    </a>
-                    <a *ngIf="letter.Rationale" href="#rationale" class="nav-link">
-                        <i class="fa fa-lightbulb me-1"></i>الحيثيات
-                    </a>
-                    <a *ngIf="letter.decision" href="#decision" class="nav-link">
-                        <i class="fa fa-file-contract me-1"></i>القرار
-                    </a>
-                    <a *ngIf="letter.approvals && letter.approvals.length > 0" href="#approvals" class="nav-link">
-                        <i class="fa fa-check-circle me-1"></i>الموافقات
-                    </a>
-                    <a *ngIf="letter.attachment" href="#attachments" class="nav-link">
-                        <i class="fa fa-paperclip me-1"></i>المرفقات
-                    </a>
-                    <a *ngIf="letter.StartDate || letter.EndDate" href="#timeline" class="nav-link">
-                        <i class="fa fa-calendar-alt me-1"></i>الجدول الزمني
-                    </a>
-                    <a href="#additional" class="nav-link">
-                        <i class="fa fa-info-circle me-1"></i>معلومات إضافية
-                    </a>
-                </div>
-            </div>
-
-            <div class="content-section" *ngIf="letter.description || letter.breeif" id="description">
-                <h3 class="section-title">
-                    <i class="fa fa-file-alt me-2"></i>
-                    {{ letter.breeif ? 'الوصف المختصر' : 'وصف الخطاب' }}
-                </h3>
-                <div class="section-content description-content"
-                    [innerHTML]="formatDescription(letter.description || letter.breeif)"></div>
-            </div>
-
             <div class="content-section" *ngIf="letter.Rationale" id="rationale">
                 <h3 class="section-title">
-                    <i class="fa fa-lightbulb me-2"></i>المبررات
+                    <i class="fa fa-lightbulb me-2"></i>الحيثيات
                 </h3>
                 <div class="section-content">
                     <div class="rationale-content">
@@ -176,6 +54,16 @@
                     </div>
                 </div>
             </div>
+
+            <div class="content-section" *ngIf="letter.description || letter.breeif" id="description">
+                <h3 class="section-title">
+                    <i class="fa fa-file-alt me-2"></i>
+                    {{ letter.breeif ? 'الوصف المختصر' : 'وصف القرار' }}
+                </h3>
+                <div class="section-content description-content"
+                    [innerHTML]="formatDescription(letter.description || letter.breeif)"></div>
+            </div>
+
 
             <div class="content-section" *ngIf="letter.decision" id="decision">
                 <h3 class="section-title">
@@ -188,18 +76,8 @@
                                 <i class="fa fa-heading"></i>
                             </div>
                             <div class="info-content">
-                                <span class="info-label">عنوان القرار:</span>
-                                <span class="info-value">{{ letter.decision.title }}</span>
-                            </div>
-                        </div>
-                        <div class="info-item" *ngIf="letter.decision.isPresidentDecision !== undefined">
-                            <div class="info-icon">
-                                <i class="fa fa-tag"></i>
-                            </div>
-                            <div class="info-content">
                                 <span class="info-label">نوع القرار:</span>
-                                <span class="info-value">{{ letter.decision.isPresidentDecision ? 'قرار رئاسي' : 'قرار
-                                    تنفيذي' }}</span>
+                                <span class="info-value">{{ letter.decision.title }}</span>
                             </div>
                         </div>
                         <div class="info-item" *ngIf="letter.decision.sector">
@@ -207,72 +85,25 @@
                                 <i class="fa fa-building"></i>
                             </div>
                             <div class="info-content">
-                                <span class="info-label">القسم:</span>
+                                <span class="info-label">الجهه:</span>
                                 <span class="info-value">{{ getSectorName(letter.decision.sector) }}</span>
                             </div>
                         </div>
+
                         <div class="info-item" *ngIf="letter.decision.supervisor">
                             <div class="info-icon">
                                 <i class="fa fa-user-shield"></i>
                             </div>
                             <div class="info-content">
-                                <span class="info-label">المشرف:</span>
-                                <span class="info-value">{{ getSupervisorName(letter.decision.supervisor) }}</span>
-                            </div>
-                        </div>
-                        <div class="info-item" *ngIf="letter.decision.createdAt">
-                            <div class="info-icon">
-                                <i class="fa fa-calendar-plus"></i>
-                            </div>
-                            <div class="info-content">
-                                <span class="info-label">تاريخ إنشاء القرار:</span>
-                                <span class="info-value">{{ letter.decision.createdAt | date: 'dd/MM/yyyy' }}</span>
+                                <span class="info-label">الجهه المراجعه:</span>
+                                <span class="info-value">{{ getSupervisorName(letter.decision.supervisor.fullname) }}</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="content-section" *ngIf="letter.approvals && letter.approvals.length > 0" id="approvals">
-                <h3 class="section-title">
-                    <i class="fa fa-check-circle me-2"></i>سجل الموافقات
-                    <span class="approvals-count">{{ letter.approvals.length }}</span>
-                </h3>
-                <div class="section-content">
-                    <div class="approvals-timeline">
-                        <div class="timeline-line"></div>
-                        <div class="approval-item" *ngFor="let approval of letter.approvals; let i = index"
-                            [ngClass]="{'first-item': i === 0, 'last-item': i === letter.approvals.length - 1}">
-                            <div class="approval-badge" [ngClass]="approval.approved ? 'approved' : 'rejected'">
-                                <i class="fa" [ngClass]="approval.approved ? 'fa-check' : 'fa-times'"></i>
-                            </div>
-                            <div class="approval-content">
-                                <div class="approval-header">
-                                    <div class="approval-role-container">
-                                        <span class="approval-role">{{ getRoleText(approval.role) }}</span>
-                                        <span class="approval-step">الخطوة {{ i + 1 }}</span>
-                                    </div>
-                                    <span class="approval-date">{{ approval.date | date: 'dd/MM/yyyy - hh:mm a'
-                                        }}</span>
-                                </div>
-                                <div class="approval-status"
-                                    [ngClass]="approval.approved ? 'status-approved' : 'status-rejected'">
-                                    <i class="fa me-1"
-                                        [ngClass]="approval.approved ? 'fa-check-circle' : 'fa-times-circle'"></i>
-                                    {{ approval.approved ? 'تمت الموافقة' : 'تم الرفض' }}
-                                </div>
-                                <div class="approval-user" *ngIf="approval.userId">
-                                    <i class="fa fa-user me-1"></i>
-                                    {{ getUserName(approval.userId) }}
-                                </div>
-                                <div class="approval-notes" *ngIf="approval.notes">
-                                    <strong>ملاحظات:</strong> {{ approval.notes }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
 
             <div class="content-section" *ngIf="letter.attachment" id="attachments">
                 <h3 class="section-title">
@@ -313,6 +144,15 @@
                 </h3>
                 <div class="section-content">
                     <div class="timeline-info">
+                        <div class="info-item" *ngIf="letter.decision.createdAt">
+                            <div class="info-icon">
+                                <i class="fa fa-calendar-plus"></i>
+                            </div>
+                            <div class="info-content">
+                                <span class="info-label">تاريخ إنشاء القرار:</span>
+                                <span class="info-value">{{ letter.decision.createdAt | date: 'dd/MM/yyyy' }}</span>
+                            </div>
+                        </div>
                         <div class="info-item" *ngIf="letter.StartDate">
                             <div class="info-icon">
                                 <i class="fa fa-play-circle"></i>
@@ -336,7 +176,7 @@
                                 <i class="fa fa-clock"></i>
                             </div>
                             <div class="info-content">
-                                <span class="info-label">المدة:</span>
+                                <span class="info-label">مده سريان القرار:</span>
                                 <span class="info-value">{{ calculateDuration(letter.StartDate, letter.EndDate)
                                     }}</span>
                             </div>
@@ -345,82 +185,39 @@
                 </div>
             </div>
 
-            <div class="content-section" id="additional">
+            <div class="content-section" *ngIf="letter.approvals && letter.approvals.length > 0" id="approvals">
                 <h3 class="section-title">
-                    <i class="fa fa-info-circle me-2"></i>معلومات إضافية
+                    <i class="fa fa-check-circle me-2"></i>مسار القرار 
+                    <span class="approvals-count">{{ letter.approvals.length }}</span>
                 </h3>
                 <div class="section-content">
-                    <div class="additional-info">
-                        <div class="info-item">
-                            <div class="info-icon">
-                                <i class="fa fa-calendar-plus"></i>
+                    <div class="approvals-timeline">
+                        <div class="timeline-line"></div>
+                        <div class="approval-item" *ngFor="let approval of letter.approvals; let i = index"
+                            [ngClass]="{'first-item': i === 0, 'last-item': i === letter.approvals.length - 1}">
+                            <div class="approval-badge" [ngClass]="approval.approved ? 'approved' : 'rejected'">
+                                <i class="fa" [ngClass]="approval.approved ? 'fa-check' : 'fa-times'"></i>
                             </div>
-                            <div class="info-content">
-                                <span class="info-label">تاريخ الإنشاء:</span>
-                                <span class="info-value">{{ letter.createdAt | date: 'dd/MM/yyyy - hh:mm a' }}</span>
-                            </div>
-                        </div>
-                        <div class="info-item" *ngIf="letter.updatedAt">
-                            <div class="info-icon">
-                                <i class="fa fa-edit"></i>
-                            </div>
-                            <div class="info-content">
-                                <span class="info-label">آخر تحديث:</span>
-                                <span class="info-value">{{ letter.updatedAt | date: 'dd/MM/yyyy - hh:mm a' }}</span>
-                            </div>
-                        </div>
-                        <div class="info-item" *ngIf="letter.approvedAt">
-                            <div class="info-icon">
-                                <i class="fa fa-check-double"></i>
-                            </div>
-                            <div class="info-content">
-                                <span class="info-label">تاريخ الموافقة:</span>
-                                <span class="info-value">{{ letter.approvedAt | date: 'dd/MM/yyyy - hh:mm a' }}</span>
-                            </div>
-                        </div>
-                        <div class="info-item" *ngIf="letter.printedAt">
-                            <div class="info-icon">
-                                <i class="fa fa-print"></i>
-                            </div>
-                            <div class="info-content">
-                                <span class="info-label">تاريخ الطباعة:</span>
-                                <span class="info-value">{{ letter.printedAt | date: 'dd/MM/yyyy - hh:mm a' }}</span>
-                            </div>
-                        </div>
-                        <div class="info-item" *ngIf="letter.signatureType">
-                            <div class="info-icon">
-                                <i class="fa fa-signature"></i>
-                            </div>
-                            <div class="info-content">
-                                <span class="info-label">نوع التوقيع:</span>
-                                <span class="info-value">{{ letter.signatureType }}</span>
-                            </div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-icon">
-                                <i class="fa fa-fingerprint"></i>
-                            </div>
-                            <div class="info-content">
-                                <span class="info-label">معرف الخطاب:</span>
-                                <span class="info-value">{{ letter._id }}</span>
-                            </div>
-                        </div>
-                        <div class="info-item" *ngIf="letter.transactionNumber">
-                            <div class="info-icon">
-                                <i class="fa fa-list-ol"></i>
-                            </div>
-                            <div class="info-content">
-                                <span class="info-label">رقم المعاملة:</span>
-                                <span class="info-value">{{ letter.transactionNumber }}</span>
-                            </div>
-                        </div>
-                        <div class="info-item" *ngIf="letter.durationDays">
-                            <div class="info-icon">
-                                <i class="fa fa-business-time"></i>
-                            </div>
-                            <div class="info-content">
-                                <span class="info-label">مدة المعالجة:</span>
-                                <span class="info-value">{{ letter.durationDays }} يوم</span>
+                            <div class="approval-content">
+                                <div class="approval-header">
+                                    <div class="approval-role-container">
+                                        <span class="approval-role">{{ getRoleText(approval.role) }}</span>
+                                        <span class="approval-step">الخطوة {{ i + 1 }}</span>
+                                    </div>
+                                    <span class="approval-date">{{ approval.date | date: 'dd/MM/yyyy - hh:mm a'
+                                        }}</span>
+                                </div>
+                                <div class="approval-status" [ngClass]="approval.approved ? 'status-approved' : 'status-rejected'">
+                                    <i class="fa me-1" [ngClass]="approval.approved ? 'fa-check-circle' : 'fa-times-circle'"></i>
+                                    {{ approval.approved ? 'تمت الموافقة' : 'تم الرفض' }}
+                                </div>
+                                <div class="approval-user" *ngIf="approval.userId">
+                                    <i class="fa fa-user me-1"></i>
+                                    {{ getUserName(approval.userId) }}
+                                </div>
+                                <div class="approval-notes" *ngIf="approval.notes">
+                                    <strong>ملاحظات:</strong> {{ approval.notes }}
+                                </div>
                             </div>
                         </div>
                     </div>

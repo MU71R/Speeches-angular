@@ -24,27 +24,16 @@
                                 <div class="date-search-container flex-grow-1 flex-md-grow-0 position-relative"
                                     style="min-width: 200px;">
                                     <div
-                                        class="input-group input-group-lg shadow-sm rounded-3 overflow-hidden border border-primary-300">
-                                        <span
-                                            class="input-group-text bg-primary-50 border-primary-300 text-primary-700 py-3 px-3">
-                                            <i class="fas fa-calendar-alt fs-5"></i>
-                                        </span>
-                                        <input type="date"
-                                            class="form-control border-primary-300 py-3 ps-3 pe-4 bg-white text-dark custom-date-input"
-                                            [(ngModel)]="searchDate" (change)="filterPDFs()"
+                                        class="input-group input-group-lg shadow-sm rounded-3 overflow-hidden border border-primary-300 date-input-group">
+                                        <input type="date" class="form-control date-input shadow-none border-0"
+                                            id="searchDate" [(ngModel)]="searchDate" (change)="onDateChange($event)"
                                             placeholder="البحث بالتاريخ" />
-                                        <button *ngIf="searchDate"
+                                        <button id="clearDateBtn"
                                             class="btn btn-sm btn-link text-primary-600 p-1 border-0 position-absolute start-0 top-50 translate-middle-y ms-3 clear-date-btn"
-                                            (click)="clearDateFilter()" type="button" style="z-index: 5;">
+                                            [class.d-none]="!searchDate" type="button" style="z-index: 5;"
+                                            (click)="clearDateFilter()">
                                             <i class="fas fa-times fs-6"></i>
                                         </button>
-                                    </div>
-                                    <div class="filter-status mt-2 text-center" *ngIf="searchDate">
-                                        <span
-                                            class="badge bg-primary-100 text-primary-800 py-2 px-3 rounded-3 fs-7 fw-medium border border-primary-200">
-                                            <i class="fas fa-filter me-2"></i>
-                                            فلتر التاريخ مفعل
-                                        </span>
                                     </div>
                                 </div>
 
@@ -136,6 +125,9 @@
                                                         style="max-width: 280px;">
                                                         {{ getFileName(pdf.pdfurl) }}
                                                     </h6>
+                                                    <small class="text-muted">
+                                                        {{ pdf.userId?.fullname || pdf.userId?.name || 'غير معروف' }}
+                                                    </small>
                                                 </div>
                                             </div>
                                         </td>
@@ -150,7 +142,6 @@
                                             <div class="date-info">
                                                 <div class="fw-bold small text-dark">{{ formatDate(pdf.createdAt) }}
                                                 </div>
-                                                <small class="text-muted">{{ formatTime(pdf.createdAt) }}</small>
                                             </div>
                                         </td>
                                         <td class="py-3">
@@ -197,6 +188,9 @@
                                                     </span>
                                                     <small class="text-muted">{{ formatDate(pdf.createdAt) }}</small>
                                                 </div>
+                                                <small class="text-muted mt-1">
+                                                    {{ pdf.userId?.fullname || pdf.userId?.name || 'غير معروف' }}
+                                                </small>
                                             </div>
                                         </div>
                                         <div class="d-flex justify-content-between gap-2 mt-3">

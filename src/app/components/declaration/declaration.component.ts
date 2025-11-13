@@ -73,7 +73,9 @@ export function validMessageTypeValidator(
     }
 
     const selectedTypeId = control.value;
-    const isValidType = messageTypes.some(type => type._id === selectedTypeId);
+    const isValidType = messageTypes.some(
+      (type) => type._id === selectedTypeId
+    );
 
     if (!isValidType) {
       return { invalidType: true };
@@ -130,6 +132,17 @@ export class DeclarationComponent implements OnInit {
     );
   }
 
+  toggleDropdown(): void {
+    this.showDropdown = !this.showDropdown;
+    if (this.showDropdown) {
+      if (this.searchTerm) {
+        this.filterMessageTypes(this.searchTerm);
+      } else {
+        this.filteredMessageTypes = [...this.messageTypes];
+      }
+    }
+  }
+
   private loadMessageTypes(): void {
     this.declService.getDecisionTypes().subscribe({
       next: (types: Decision[]) => {
@@ -138,7 +151,7 @@ export class DeclarationComponent implements OnInit {
           title: t.title || '',
         }));
         this.filteredMessageTypes = [];
-        
+
         this.updateTypeValidator();
       },
       error: (err) => {
@@ -153,7 +166,7 @@ export class DeclarationComponent implements OnInit {
     if (typeControl) {
       typeControl.setValidators([
         Validators.required,
-        validMessageTypeValidator(this.messageTypes)
+        validMessageTypeValidator(this.messageTypes),
       ]);
       typeControl.updateValueAndValidity();
     }
@@ -163,39 +176,21 @@ export class DeclarationComponent implements OnInit {
     this.searchTerm = searchTerm;
 
     if (!searchTerm || searchTerm.trim() === '') {
-      this.filteredMessageTypes = [];
-      this.showDropdown = false;
-      this.clearTypeSelection();
+      this.filteredMessageTypes = [...this.messageTypes];
     } else {
-      const filtered = this.messageTypes.filter((type) =>
+      this.filteredMessageTypes = this.messageTypes.filter((type) =>
         type.title.toLowerCase().includes(searchTerm.toLowerCase())
       );
-      this.filteredMessageTypes = filtered;
-      this.showDropdown = filtered.length > 0;
-      
-      const exactMatch = this.messageTypes.find(type => 
-        type.title === searchTerm
-      );
-      if (!exactMatch) {
-        this.clearTypeSelection();
-      }
     }
   }
 
   selectMessageType(typeId: string, typeTitle: string): void {
     this.f['type'].setValue(typeId);
-    this.searchTerm = typeTitle;
     this.selectedTypeTitle = typeTitle;
+    this.searchTerm = ''; 
     this.filteredMessageTypes = [];
     this.showDropdown = false;
-    
     this.f['type'].setErrors(null);
-    this.f['type'].markAsTouched();
-  }
-
-  private clearTypeSelection(): void {
-    this.f['type'].setValue('');
-    this.selectedTypeTitle = '';
     this.f['type'].markAsTouched();
   }
 
@@ -268,7 +263,7 @@ export class DeclarationComponent implements OnInit {
 
   private resetForm(): void {
     this.messageForm.reset({
-      date: new Date().toISOString().split('T')[0]
+      date: new Date().toISOString().split('T')[0],
     });
     this.submitting = false;
     this.successMsg = '';
@@ -278,7 +273,7 @@ export class DeclarationComponent implements OnInit {
     this.selectedTypeTitle = '';
     this.filteredMessageTypes = [];
     this.showDropdown = false;
-    
+
     Object.keys(this.f).forEach((key) => {
       this.f[key].markAsUntouched();
     });
@@ -287,7 +282,7 @@ export class DeclarationComponent implements OnInit {
   onSubmit() {
     this.formSubmitted = true;
     this.validateSearchInput();
-    
+
     if (this.messageForm.invalid) {
       Object.keys(this.f).forEach((key) => {
         this.f[key].markAsTouched();
@@ -301,15 +296,17 @@ export class DeclarationComponent implements OnInit {
     this.successMsg = '';
     this.errorMsg = '';
 
-    const cleanContent = this.f['content'].value
-      ?.replace(/<[^>]*>/g, '')
-      ?.replace(/\s+/g, ' ')
-      ?.trim() || '';
+    const cleanContent =
+      this.f['content'].value
+        ?.replace(/<[^>]*>/g, '')
+        ?.replace(/\s+/g, ' ')
+        ?.trim() || '';
 
-    const cleanRationale = this.f['Rationale'].value
-      ?.replace(/<[^>]*>/g, '')
-      ?.replace(/\s+/g, ' ')
-      ?.trim() || '';
+    const cleanRationale =
+      this.f['Rationale'].value
+        ?.replace(/<[^>]*>/g, '')
+        ?.replace(/\s+/g, ' ')
+        ?.trim() || '';
 
     const payload = {
       title: this.f['title'].value,

@@ -41,7 +41,6 @@ export class LetterDetailsComponent implements OnInit {
       next: (res: any) => {
         this.letter = res?.data || null;
 
-        // البحث عن PDF بعد تحميل بيانات الخطاب
         if (this.letter) {
           this.loadPdfByLetterId(this.letterId);
         }
@@ -55,7 +54,6 @@ export class LetterDetailsComponent implements OnInit {
     });
   }
 
-  // استخدام getPDFbyLetterId للبحث عن PDF
   private loadPdfByLetterId(letterId: string) {
     this.pdfLoading = true;
 
@@ -80,14 +78,12 @@ export class LetterDetailsComponent implements OnInit {
     });
   }
 
-  // استخراج اسم الملف من الرابط
   private extractFilenameFromUrl(url: string): string {
     if (!url) return '';
     const parts = url.split('/');
     return parts[parts.length - 1];
   }
 
-  // توليد اسم ملف للتنزيل
   private generateDownloadName(): string {
     const title = this.letter?.title
       ? this.letter.title.replace(/[^\w\u0600-\u06FF]/g, '_')
@@ -98,17 +94,14 @@ export class LetterDetailsComponent implements OnInit {
     return `خطاب_${title}_${date}.pdf`;
   }
 
-  // فتح PDF في نافذة جديدة
   openPdf(): void {
     if (!this.pdfUrl) return;
 
     this.pdfLoading = true;
     if (this.pdfUrl.startsWith('http')) {
-      // إذا كان رابط مباشر
       window.open(this.pdfUrl, '_blank');
       this.pdfLoading = false;
     } else if (this.pdfFilename) {
-      // إذا كان اسم ملف فقط
       const baseUrl = 'http://localhost:3000/generated-files';
       const pdfUrl = `${baseUrl}/${encodeURIComponent(this.pdfFilename)}`;
       window.open(pdfUrl, '_blank');
@@ -119,14 +112,12 @@ export class LetterDetailsComponent implements OnInit {
     }
   }
 
-  // تنزيل PDF
   downloadPdf() {
     if (this.pdfFilename) {
       const downloadName = this.generateDownloadName();
       console.log('تنزيل PDF باسم:', this.pdfFilename, 'كـ:', downloadName);
       this.letterService.downloadPDF(this.pdfFilename, downloadName);
     } else if (this.pdfUrl) {
-      // إذا كان رابط مباشر، استخدام الطريقة القديمة
       const link = document.createElement('a');
       link.href = this.pdfUrl;
       link.download = this.generateDownloadName();
@@ -139,7 +130,6 @@ export class LetterDetailsComponent implements OnInit {
     }
   }
 
-  // التحقق من إمكانية عرض زر PDF
   showPdfButton(): boolean {
     return (
       this.letter?.status === 'approved' &&

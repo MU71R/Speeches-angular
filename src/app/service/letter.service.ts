@@ -254,4 +254,5 @@ export class LetterService {
     };
     return signatureMap[signatureType] || signatureType;
   }
+
 }

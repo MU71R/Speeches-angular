@@ -267,3 +267,15 @@
   text-align: right;
   padding-right: 8px;
 }
+
+.max-h-200 {
+  max-height: 200px;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}

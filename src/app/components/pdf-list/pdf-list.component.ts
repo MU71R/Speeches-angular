@@ -67,6 +67,8 @@ export class PdfListComponent implements OnInit {
   }
 
   isSameDate(dateString: string, searchDate: string): boolean {
+    if (!dateString || !searchDate) return false;
+
     const fileDate = new Date(dateString);
     const search = new Date(searchDate);
 
@@ -117,19 +119,16 @@ export class PdfListComponent implements OnInit {
     }
   }
 
-  // الدالة المحسنة لتحويل الدور إلى العربي
   getUserRoleArabic(role: string | undefined): string {
     const roleMap: { [key: string]: string } = {
       admin: 'مدير النظام',
       supervisor: 'مراجع',
       UniversityPresident: 'رئيس الجامعة',
       user: 'مستخدم',
-      // يمكنك إضافة المزيد من الأدوار هنا إذا لزم الأمر
     };
     return roleMap[role || 'user'] || role || 'مستخدم';
   }
 
-  // دالة جديدة للحصول على الدور بالعربي للعرض في القوائم
   getDisplayRole(role: string | undefined): string {
     return this.getUserRoleArabic(role);
   }
@@ -153,12 +152,16 @@ export class PdfListComponent implements OnInit {
 
   clearSearch() {
     this.searchTerm = '';
-    this.searchDate = '';
     this.filterPDFs();
   }
 
   clearDateFilter() {
     this.searchDate = '';
+    this.filterPDFs();
+  }
+
+  onDateChange(event: any) {
+    this.searchDate = event.target.value;
     this.filterPDFs();
   }
 }
