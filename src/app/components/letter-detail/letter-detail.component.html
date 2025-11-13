@@ -6,15 +6,15 @@
         <h1 class="page-title">{{ form.value.title || 'تفاصيل الخطاب' }}</h1>
         <div class="page-meta d-flex flex-wrap gap-3 mt-2">
           <span class="meta-item">
-            <i class="bi bi-hash me-1"></i>
+            <i class="fa fa-hashtag me-1"></i>
             {{ original?._id || '---' }}
           </span>
           <span class="meta-item">
-            <i class="bi bi-calendar me-1"></i>
+            <i class="fa fa-calendar me-1"></i>
             {{ original?.createdAt | date: 'd MMMM y' }}
           </span>
           <span class="meta-item">
-            <i class="bi bi-person me-1"></i>
+            <i class="fa fa-user me-1"></i>
             {{ original?.user?.fullname || '---' }}
           </span>
         </div>
@@ -24,21 +24,21 @@
           <!-- زر PDF الرئيسي -->
           <button *ngIf="showPdfButton()" class="btn btn-danger" (click)="handlePdfAction()"
             [disabled]="pdfLoading || pdfGenerating || pdfSearching">
-            <i class="bi" [class]="getPdfButtonIcon()"></i>
+            <i class="fa" [class]="getPdfButtonIcon()"></i>
             {{ getPdfButtonText() }}
           </button>
 
           <button *ngIf="canEdit() && !isEditing" class="btn btn-primary btn-edit" (click)="enableEdit()">
-            <i class="bi bi-pencil-square me-2"></i> تعديل الخطاب
+            <i class="fa fa-pencil-square me-2"></i> تعديل الخطاب
           </button>
 
           <div *ngIf="isEditing" class="edit-actions d-flex gap-2">
             <button class="btn btn-success btn-save" (click)="saveChanges()" [disabled]="processing">
-              <i class="bi bi-check-lg me-2"></i>
+              <i class="fa fa-check-lg me-2"></i>
               {{ processing ? 'جاري الحفظ...' : 'حفظ' }}
             </button>
             <button class="btn btn-outline-secondary btn-cancel" (click)="cancelEdit()" [disabled]="processing">
-              <i class="bi bi-x-lg me-2"></i> إلغاء
+              <i class="fa fa-x-lg me-2"></i> إلغاء
             </button>
           </div>
         </div>
@@ -50,7 +50,7 @@
   <div class="card-section pdf-section mb-4" *ngIf="canShowPdf()">
     <div class="section-header">
       <h3 class="section-title">
-        <i class="bi bi-file-pdf me-2"></i>
+        <i class="fa fa-file-pdf me-2"></i>
         نسخة الخطاب النهائية
       </h3>
     </div>
@@ -58,20 +58,20 @@
       <div class="pdf-status-container">
         <!-- حالة البحث -->
         <div *ngIf="pdfSearching" class="alert alert-info d-flex align-items-center">
-          <i class="bi bi-search me-2"></i>
+          <i class="fa fa-search me-2"></i>
           <span>جاري البحث عن ملف PDF...</span>
         </div>
 
         <!-- حالة عدم العثور -->
         <div *ngIf="pdfSearchAttempted && !pdfUrl && !pdfSearching"
           class="alert alert-warning d-flex align-items-center">
-          <i class="bi bi-exclamation-triangle me-2"></i>
+          <i class="fa -faexclamation-triangle me-2"></i>
           <span>لم يتم العثور على ملف PDF. يمكنك إنشاء واحد جديد.</span>
         </div>
 
         <!-- حالة العثور -->
         <div *ngIf="pdfUrl && !pdfSearching" class="alert alert-success d-flex align-items-center">
-          <i class="bi bi-check-circle me-2"></i>
+          <i class="fa fa-check-circle me-2"></i>
           <span>تم العثور على ملف PDF بنجاح</span>
         </div>
 
@@ -80,25 +80,25 @@
           <div class="action-buttons d-flex gap-2 flex-wrap">
             <!-- عرض PDF -->
             <button class="btn btn-primary" (click)="openPdf()" [disabled]="!pdfUrl || pdfLoading || pdfGenerating">
-              <i class="bi" [class]="getViewButtonIcon()"></i>
+              <i class="fa" [class]="getViewButtonIcon()"></i>
               {{ getViewButtonText() }}
             </button>
 
             <!-- تنزيل PDF -->
             <button class="btn btn-outline-primary" (click)="downloadPdf()" [disabled]="!pdfUrl || pdfLoading">
-              <i class="bi bi-download me-2"></i>
+              <i class="fa fa-download me-2"></i>
               تنزيل PDF
             </button>
 
             <!-- إنشاء PDF -->
             <button *ngIf="!pdfUrl" class="btn btn-warning" (click)="generatePdf()" [disabled]="pdfGenerating">
-              <i class="bi bi-file-earmark-plus me-2"></i>
+              <i class="fa fa-file-earmark-plus me-2"></i>
               {{ pdfGenerating ? 'جاري الإنشاء...' : 'إنشاء PDF جديد' }}
             </button>
 
             <!-- إعادة إنشاء PDF -->
             <button *ngIf="pdfUrl" class="btn btn-outline-warning" (click)="regeneratePdf()" [disabled]="pdfGenerating">
-              <i class="bi bi-arrow-clockwise me-2"></i>
+              <i class="fa fa-arrow-clockwise me-2"></i>
               إعادة إنشاء
             </button>
           </div>
@@ -107,7 +107,7 @@
           <div *ngIf="pdfFile" class="pdf-file-info mt-3">
             <div class="file-details">
               <small class="text-muted">
-                <i class="bi bi-info-circle me-1"></i>
+                <i class="fa fa-info-circle me-1"></i>
                 تم إنشاء الملف بواسطة: {{ pdfFile.userId.fullname || pdfFile.userId.name || 'غير معروف' }}
                 في {{ pdfFile.createdAt | date: 'd/M/yyyy h:mm a' }}
               </small>
@@ -164,7 +164,7 @@
               <div class="step-indicator"></div>
               <div class="step-content">
                 <div class="step-header">
-                  <i class="bi bi-building step-icon"></i>
+                  <i class="fa fa-building step-icon"></i>
                   <div class="step-info">
                     <div class="step-title">{{ original?.decision?.supervisor?.fullname || '---' }}</div>
                     <div class="step-desc">مرحلة المراجعة الأولية</div>
@@ -204,7 +204,7 @@
               <div class="step-indicator"></div>
               <div class="step-content">
                 <div class="step-header">
-                  <i class="bi bi-archive step-icon"></i>
+                  <i class="fa fa-archive step-icon"></i>
                   <div class="step-info">
                     <div class="step-title">الأرشيف</div>
                     <div class="step-desc">مرحلة الحفظ النهائي</div>
@@ -230,7 +230,7 @@
         <div class="content-block">
           <div class="block-header">
             <h4 class="block-title">
-              <i class="bi bi-file-text me-2"></i>
+              <i class="fa fa-file-text me-2"></i>
               محتوى الخطاب
             </h4>
           </div>
@@ -248,7 +248,7 @@
         <div class="rationale-block">
           <div class="block-header">
             <h4 class="block-title">
-              <i class="bi bi-journal-text me-2"></i>
+              <i class="fa fa-journal-text me-2"></i>
               الحيثيات
             </h4>
           </div>
@@ -268,7 +268,7 @@
         <div class="timeline-block mt-4">
           <div class="block-header">
             <h4 class="block-title">
-              <i class="bi bi-clock me-2"></i>
+              <i class="fa fa-clock me-2"></i>
               الجدول الزمني
             </h4>
           </div>
@@ -317,7 +317,7 @@
         <div class="actions-block">
           <div class="block-header">
             <h4 class="block-title">
-              <i class="bi bi-gear me-2"></i>
+              <i class="fa fa-gear me-2"></i>
               إجراءات المراجعة
             </h4>
           </div>
@@ -329,10 +329,10 @@
               <div class="action-buttons mt-3">
                 <button class="btn btn-danger btn-confirm" (click)="confirmRejection()"
                   [disabled]="processing || !rejectionReason.trim()">
-                  <i class="bi bi-check-circle me-2"></i> تأكيد الرفض
+                  <i class="fa fa-check-circle me-2"></i> تأكيد الرفض
                 </button>
                 <button class="btn btn-outline-secondary" (click)="cancelRejection()">
-                  <i class="bi bi-x-circle me-2"></i> إلغاء
+                  <i class="fa fa-x-circle me-2"></i> إلغاء
                 </button>
               </div>
             </div>
@@ -340,10 +340,10 @@
             <div *ngIf="currentUserRole === 'supervisor' && original?.status === 'in_progress' && !showRejectionReason"
               class="action-buttons-grid">
               <button class="btn btn-success" (click)="approveLetter()" [disabled]="processing">
-                <i class="bi bi-check-circle me-2"></i> موافقة وارسال للرئيس
+                <i class="fa fa-check-circle me-2"></i> موافقة وارسال للرئيس
               </button>
               <button class="btn btn-danger" (click)="showRejectionForm()" [disabled]="processing">
-                <i class="bi bi-x-circle me-2"></i> رفض الخطاب
+                <i class="fa fa-x-circle me-2"></i> رفض الخطاب
               </button>
             </div>
 
@@ -351,23 +351,23 @@
               *ngIf="currentUserRole === 'UniversityPresident' && original?.status === 'pending' && !showRejectionReason">
               <div *ngIf="!showPresidentOptions" class="action-buttons-grid">
                 <button class="btn btn-success" (click)="showPresidentOptions = true" [disabled]="processing">
-                  <i class="bi bi-check-circle me-2"></i> موافقة على الخطاب
+                  <i class="fa fa-check-circle me-2"></i> موافقة على الخطاب
                 </button>
                 <button class="btn btn-danger" (click)="showRejectionForm()" [disabled]="processing">
-                  <i class="bi bi-x-circle me-2"></i> رفض الخطاب
+                  <i class="fa fa-x-circle me-2"></i> رفض الخطاب
                 </button>
               </div>
 
               <div *ngIf="showPresidentOptions" class="approval-options">
                 <button class="btn btn-success" (click)="approveLetter('حقيقية')" [disabled]="processing">
-                  <i class="bi bi-qr-code-scan me-2"></i> Real Scan
+                  <i class="fa fa-qr-code-scan me-2"></i> Real Scan
                 </button>
                 <button class="btn btn-outline-primary" (click)="approveLetter('الممسوحة ضوئيا')"
                   [disabled]="processing">
-                  <i class="bi bi-pen-fill me-2"></i> توقيع إلكتروني
+                  <i class="fa fa-pen-fill me-2"></i> توقيع إلكتروني
                 </button>
                 <button class="btn btn-outline-secondary" (click)="showPresidentOptions = false">
-                  <i class="bi bi-arrow-right me-2"></i> رجوع
+                  <i class="fa fa-arrow-right me-2"></i> رجوع
                 </button>
               </div>
             </div>
@@ -380,7 +380,7 @@
         <div class="approvals-block">
           <div class="block-header">
             <h4 class="block-title">
-              <i class="bi bi-list-check me-2"></i>
+              <i class="fa fa-list-check me-2"></i>
               سجل الموافقات
             </h4>
           </div>
@@ -388,7 +388,7 @@
             <div class="approvals-list-compact">
               <div *ngFor="let approval of original.approvals" class="approval-item-compact">
                 <div class="approval-avatar">
-                  <i class="bi bi-person-circle"></i>
+                  <i class="fa fa-person-circle"></i>
                 </div>
                 <div class="approval-details">
                   <div class="approval-meta">
@@ -411,13 +411,13 @@
         <div class="rejection-block">
           <div class="block-header">
             <h4 class="block-title text-danger">
-              <i class="bi bi-exclamation-triangle me-2"></i>
+              <i class="fa fa-exclamation-triangle me-2"></i>
               سبب الرفض
             </h4>
           </div>
           <div class="block-body">
             <div class="rejection-content">
-              <i class="bi bi-chat-left-quote me-2"></i>
+              <i class="fa fa-chat-left-quote me-2"></i>
               {{ original?.reasonForRejection }}
             </div>
           </div>
