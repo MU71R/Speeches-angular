@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { SidebarComponent } from '../sidebar/sidebar.component';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { AuthService } from 'src/app/service/auth.service';
 
 @Component({
   selector: 'app-layout',
@@ -7,31 +7,33 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
   styleUrls: ['./layout.component.css'],
 })
 export class LayoutComponent implements OnInit, OnDestroy {
-  isSidebarOpen = true; 
+  isSidebarOpen = true;
+
+  constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
     this.checkScreenSize();
-    window.addEventListener('resize', this.handleResize.bind(this));
   }
 
   ngOnDestroy(): void {
-    window.removeEventListener('resize', this.handleResize.bind(this));
+  
   }
 
-  private handleResize(): void {
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event) {
     this.checkScreenSize();
   }
 
   private checkScreenSize(): void {
-    if (window.innerWidth >= 993) {
-      this.isSidebarOpen = true;
-    } else {
-      this.isSidebarOpen = false;
-    }
+    this.isSidebarOpen = window.innerWidth >= 993;
   }
 
   onSidebarToggle(isOpen: boolean): void {
     this.isSidebarOpen = isOpen;
+  }
+
+  isUserLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
   }
 
   getLayoutClass(): string {

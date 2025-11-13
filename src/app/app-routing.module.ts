@@ -31,14 +31,13 @@ const routes: Routes = [
       { path: 'declaration', component: DeclarationComponent },
       { path: 'pending-reviews', component: PendingReviewsComponent },
       { path: 'letter-details/:id', component: LetterDetailComponent },
-      { path: 'letter-detail/:id', component: LetterDetailsComponent },
       { path: 'archive', component: ArchiveComponent },
       { path: 'archive-detail', component: ArchiveDetailComponent },
       { path: 'pdf-list', component: PdfListComponent },
       { path: '', redirectTo: 'home', pathMatch: 'full' },
     ],
   },
-
+  { path: 'letter-detail/:id', component: LetterDetailsComponent },
   { path: '**', redirectTo: '' },
 ];
 
