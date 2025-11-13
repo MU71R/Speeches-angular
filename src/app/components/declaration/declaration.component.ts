@@ -26,37 +26,6 @@ export function noLeadingSpaces(
   return null;
 }
 
-export function contentLengthWithoutSpaces(min: number, max: number) {
-  return (control: AbstractControl): ValidationErrors | null => {
-    if (!control.value) {
-      return min > 0 ? { required: true } : null;
-    }
-
-    const contentWithoutSpaces = control.value.replace(/\s/g, '');
-    const length = contentWithoutSpaces.length;
-
-    if (min && length < min) {
-      return {
-        minlength: {
-          requiredLength: min,
-          actualLength: length,
-        },
-      };
-    }
-
-    if (max && length > max) {
-      return {
-        maxlength: {
-          requiredLength: max,
-          actualLength: length,
-        },
-      };
-    }
-
-    return null;
-  };
-}
-
 export function dateValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     if (!control.value) return null;
@@ -103,12 +72,13 @@ export function endDateAfterStartValidator(
 export class DeclarationComponent implements OnInit {
   messageForm!: FormGroup;
   messageTypes: { _id: string; title: string }[] = [];
+  filteredMessageTypes: { _id: string; title: string }[] = [];
   submitting = false;
   successMsg = '';
   errorMsg = '';
-  contentWithoutSpacesLength = 0;
-  rationaleWithoutSpacesLength = 0;
   formSubmitted = false;
+  searchTerm = '';
+  showDropdown = false;
 
   constructor(
     private fb: FormBuilder,
@@ -125,23 +95,9 @@ export class DeclarationComponent implements OnInit {
     this.messageForm = this.fb.group(
       {
         type: ['', [Validators.required]],
-        title: [
-          '',
-          [
-            Validators.required,
-            Validators.minLength(5),
-            Validators.maxLength(100),
-            noLeadingSpaces,
-          ],
-        ],
-        Rationale: [
-          '',
-          [Validators.required, contentLengthWithoutSpaces(10, 500)],
-        ],
-        content: [
-          '',
-          [Validators.required, contentLengthWithoutSpaces(20, 2000)],
-        ],
+        title: ['', [Validators.required, noLeadingSpaces]],
+        Rationale: ['', [Validators.required]],
+        content: ['', [Validators.required]],
         startDate: ['', [dateValidator()]],
         endDate: ['', [dateValidator()]],
         date: [
@@ -152,17 +108,6 @@ export class DeclarationComponent implements OnInit {
         validators: endDateAfterStartValidator('startDate', 'endDate'),
       }
     );
-
-    this.updateContentLengthWithoutSpaces();
-    this.updateRationaleLengthWithoutSpaces();
-
-    this.messageForm.get('content')?.valueChanges.subscribe(() => {
-      this.updateContentLengthWithoutSpaces();
-    });
-
-    this.messageForm.get('Rationale')?.valueChanges.subscribe(() => {
-      this.updateRationaleLengthWithoutSpaces();
-    });
   }
 
   private loadMessageTypes(): void {
@@ -172,12 +117,51 @@ export class DeclarationComponent implements OnInit {
           _id: t._id || '',
           title: t.title || '',
         }));
+        this.filteredMessageTypes = [];
       },
       error: (err) => {
         console.error('Error loading message types:', err);
         this.showError('حدث خطأ في تحميل أنواع الخطابات');
       },
     });
+  }
+
+  // دالة البحث في أنواع القرارات
+  filterMessageTypes(searchTerm: string): void {
+    this.searchTerm = searchTerm;
+
+    if (!searchTerm || searchTerm.trim() === '') {
+      this.filteredMessageTypes = [];
+      this.showDropdown = false;
+    } else {
+      const filtered = this.messageTypes.filter((type) =>
+        type.title.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      this.filteredMessageTypes = filtered;
+      this.showDropdown = filtered.length > 0;
+    }
+  }
+
+  // دالة لاختيار نوع القرار
+  selectMessageType(typeId: string, typeTitle: string): void {
+    this.f['type'].setValue(typeId);
+    this.searchTerm = typeTitle;
+    this.filteredMessageTypes = [];
+    this.showDropdown = false;
+  }
+
+  // دالة لتفريغ البحث عند فقدان التركيز
+  onSearchBlur(): void {
+    setTimeout(() => {
+      this.showDropdown = false;
+    }, 200);
+  }
+
+  // دالة لإظهار القائمة عند التركيز على حقل البحث
+  onSearchFocus(): void {
+    if (this.searchTerm && this.filteredMessageTypes.length > 0) {
+      this.showDropdown = true;
+    }
   }
 
   get f() {
@@ -207,32 +191,6 @@ export class DeclarationComponent implements OnInit {
     }
   }
 
-  updateContentLengthWithoutSpaces(): void {
-    const content = this.f['content'].value || '';
-    this.contentWithoutSpacesLength = content.replace(/\s/g, '').length;
-  }
-
-  updateRationaleLengthWithoutSpaces(): void {
-    const rationale = this.f['Rationale'].value || '';
-    this.rationaleWithoutSpacesLength = rationale.replace(/\s/g, '').length;
-  }
-
-  getContentLengthWithoutSpaces(): number {
-    return this.contentWithoutSpacesLength;
-  }
-
-  getRationaleLengthWithoutSpaces(): number {
-    return this.rationaleWithoutSpacesLength;
-  }
-
-  onContentInput(): void {
-    this.updateContentLengthWithoutSpaces();
-  }
-
-  onRationaleInput(): void {
-    this.updateRationaleLengthWithoutSpaces();
-  }
-
   onCancel() {
     if (this.messageForm.dirty) {
       Swal.fire({
@@ -259,9 +217,10 @@ export class DeclarationComponent implements OnInit {
     this.submitting = false;
     this.successMsg = '';
     this.errorMsg = '';
-    this.contentWithoutSpacesLength = 0;
-    this.rationaleWithoutSpacesLength = 0;
     this.formSubmitted = false;
+    this.searchTerm = '';
+    this.filteredMessageTypes = [];
+    this.showDropdown = false;
   }
 
   onSubmit() {
@@ -345,5 +304,4 @@ export class DeclarationComponent implements OnInit {
       timer: 2000,
     });
   }
-  
 }

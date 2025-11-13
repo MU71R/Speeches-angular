@@ -3,7 +3,7 @@
   <div class="page-header mb-4">
     <div class="row align-items-center">
       <div class="col-md-8">
-        <h1 class="page-title">{{ form.value.title || 'تفاصيل القرار' }}</h1>
+        <h1 class="page-title">{{ form.value.title || 'تفاصيل الخطاب' }}</h1>
         <div class="page-meta d-flex flex-wrap gap-3 mt-2">
           <span class="meta-item">
             <i class="bi bi-hash me-1"></i>
@@ -29,13 +29,13 @@
           </button>
 
           <button *ngIf="canEdit() && !isEditing" class="btn btn-primary btn-edit" (click)="enableEdit()">
-            <i class="bi bi-pencil-square me-2"></i> تعديل القرار
+            <i class="bi bi-pencil-square me-2"></i> تعديل الخطاب
           </button>
 
           <div *ngIf="isEditing" class="edit-actions d-flex gap-2">
-            <button class="btn btn-success btn-save" (click)="saveChanges()" [disabled]="processing">
+            <button class="btn btn-success btn-save" (click)="saveChanges()" [disabled]="processing || !isFormValid()">
               <i class="bi bi-check-lg me-2"></i>
-              {{ processing ? 'جاري الحفظ...' : 'حفظ' }}
+              {{ processing ? 'جاري الحفظ...' : 'حفظ التغييرات' }}
             </button>
             <button class="btn btn-outline-secondary btn-cancel" (click)="cancelEdit()" [disabled]="processing">
               <i class="bi bi-x-lg me-2"></i> إلغاء
@@ -46,19 +46,32 @@
     </div>
   </div>
 
+  <!-- رسائل التنبيه -->
+  <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="bi bi-check-circle-fill me-2"></i>
+    {{ successMessage }}
+    <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    {{ errorMessage }}
+    <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+  </div>
+
   <!-- PDF Section -->
   <div class="card-section pdf-section mb-4" *ngIf="canShowPdf()">
     <div class="section-header">
       <h3 class="section-title">
         <i class="bi bi-file-pdf me-2"></i>
-        نسخة القرار النهائية
+        نسخة الخطاب النهائية
       </h3>
     </div>
     <div class="section-body">
       <div class="pdf-status-container">
         <!-- حالة البحث -->
         <div *ngIf="pdfSearching" class="alert alert-info d-flex align-items-center">
-          <i class="bi bi-search me-2"></i>
+          <div class="spinner-border spinner-border-sm me-2" role="status"></div>
           <span>جاري البحث عن ملف PDF...</span>
         </div>
 
@@ -79,7 +92,7 @@
         <div class="pdf-actions mt-3">
           <div class="action-buttons d-flex gap-2 flex-wrap">
             <!-- عرض PDF -->
-            <button class="btn btn-primary" (click)="openPdf()" [disabled]="!pdfUrl || pdfLoading || pdfGenerating">
+            <button class="btn btn-primary" (click)="openPdf()" [disabled]="!pdfUrl || pdfLoading">
               <i class="bi" [class]="getViewButtonIcon()"></i>
               {{ getViewButtonText() }}
             </button>
@@ -123,7 +136,7 @@
     <div class="section-header">
       <h3 class="section-title">
         <i class="bi bi-activity me-2"></i>
-        حالة القرار ومستوى التقدم
+        حالة الخطاب ومستوى التقدم
       </h3>
     </div>
     <div class="section-body">
@@ -137,6 +150,10 @@
               </span>
             </div>
             <div class="status-details">
+              <div class="detail-row">
+                <span class="detail-label">نوع الخطاب:</span>
+                <span class="detail-value">{{ original?.letterType || '---' }}</span>
+              </div>
               <div class="detail-row">
                 <span class="detail-label">نوع القرار:</span>
                 <span class="detail-value highlight">{{ original?.decision?.title || '---' }}</span>
@@ -227,15 +244,26 @@
           <div class="block-header">
             <h4 class="block-title">
               <i class="bi bi-file-text me-2"></i>
-              نص القرار
+              محتوى الخطاب
             </h4>
           </div>
           <div class="block-body">
             <div *ngIf="!isEditing" class="letter-content" [innerHTML]="previewHtml"></div>
             <div *ngIf="isEditing" [formGroup]="form">
               <textarea class="form-control content-textarea" rows="12" formControlName="description"
-                placeholder="اكتب نص القرار هنا..." (input)="onDescriptionChange()"></textarea>
-              <div class="form-text">يمكنك استخدام تنسيق HTML للنص</div>
+                placeholder="اكتب محتوى الخطاب هنا..." (input)="onDescriptionChange()"
+                [class.is-invalid]="showFieldError('description')"></textarea>
+
+              <div *ngIf="showFieldError('description')" class="invalid-feedback d-block">
+                <div *ngIf="f['description'].errors?.['required']">محتوى الخطاب مطلوب</div>
+                <div *ngIf="f['description'].errors?.['minlength']">
+                  المحتوى يجب أن يكون على الأقل {{ f['description'].errors?.['minlength'].requiredLength }} حرف
+                </div>
+              </div>
+
+              <div class="form-text text-end" [class.text-danger]="getDescriptionLengthWithoutSpaces() > 2000">
+                {{ getDescriptionLengthWithoutSpaces() }}/2000
+              </div>
             </div>
           </div>
         </div>
@@ -245,17 +273,28 @@
           <div class="block-header">
             <h4 class="block-title">
               <i class="bi bi-journal-text me-2"></i>
-              حيثيات القرار
+              الحيثيات
             </h4>
           </div>
           <div class="block-body">
             <div *ngIf="!isEditing" class="rationale-content">
-              {{ original?.Rationale || 'لا توجد حيثيات مضافة' }}
+              {{ original?.Rationale || 'لا توجد مبررات مضافة' }}
             </div>
             <div *ngIf="isEditing">
               <textarea class="form-control rationale-textarea" rows="6" formControlName="rationale"
-                placeholder="أدخل حيثيات القرار..."></textarea>
-              <div class="form-text">شرح الأسباب والمبررات لاتخاذ هذا القرار</div>
+                placeholder="أدخل المبررات المنطقية للخطاب..."
+                [class.is-invalid]="showFieldError('rationale')"></textarea>
+
+              <div *ngIf="showFieldError('rationale')" class="invalid-feedback d-block">
+                <div *ngIf="f['rationale'].errors?.['required']">الحيثيات مطلوبة</div>
+                <div *ngIf="f['rationale'].errors?.['minlength']">
+                  الحيثيات يجب أن تكون على الأقل {{ f['rationale'].errors?.['minlength'].requiredLength }} حرف
+                </div>
+              </div>
+
+              <div class="form-text text-end" [class.text-danger]="getRationaleLengthWithoutSpaces() > 500">
+                {{ getRationaleLengthWithoutSpaces() }}/500
+              </div>
             </div>
           </div>
         </div>
@@ -280,7 +319,7 @@
               <div class="timeline-item">
                 <div class="timeline-marker primary"></div>
                 <div class="timeline-content">
-                  <div class="timeline-label">تاريخ القرار</div>
+                  <div class="timeline-label">تاريخ الخطاب</div>
                   <div class="timeline-value">{{ original?.date | date: 'd MMMM y' }}</div>
                 </div>
               </div>
@@ -320,11 +359,15 @@
           <div class="block-body">
             <div *ngIf="showRejectionReason" class="rejection-section">
               <label class="form-label fw-semibold">سبب الرفض <span class="text-danger">*</span></label>
-              <textarea class="form-control" rows="3" [(ngModel)]="rejectionReason"
-                placeholder="أدخل سبب الرفض..."></textarea>
+              <textarea class="form-control" rows="3" [(ngModel)]="rejectionReason" placeholder="أدخل سبب الرفض..."
+                [class.is-invalid]="showRejectionError && !rejectionReason.trim()"></textarea>
+
+              <div *ngIf="showRejectionError && !rejectionReason.trim()" class="invalid-feedback d-block">
+                يرجى إدخال سبب الرفض
+              </div>
+
               <div class="action-buttons mt-3">
-                <button class="btn btn-danger btn-confirm" (click)="confirmRejection()"
-                  [disabled]="processing || !rejectionReason.trim()">
+                <button class="btn btn-danger btn-confirm" (click)="confirmRejection()" [disabled]="processing">
                   <i class="bi bi-check-circle me-2"></i> تأكيد الرفض
                 </button>
                 <button class="btn btn-outline-secondary" (click)="cancelRejection()">
@@ -339,7 +382,7 @@
                 <i class="bi bi-check-circle me-2"></i> موافقة وارسال للرئيس
               </button>
               <button class="btn btn-danger" (click)="showRejectionForm()" [disabled]="processing">
-                <i class="bi bi-x-circle me-2"></i> رفض القرار
+                <i class="bi bi-x-circle me-2"></i> رفض الخطاب
               </button>
             </div>
 
@@ -347,22 +390,25 @@
               *ngIf="currentUserRole === 'UniversityPresident' && original?.status === 'pending' && !showRejectionReason">
               <div *ngIf="!showPresidentOptions" class="action-buttons-grid">
                 <button class="btn btn-success" (click)="showPresidentOptions = true" [disabled]="processing">
-                  <i class="bi bi-check-circle me-2"></i> موافقة على القرار
+                  <i class="bi bi-check-circle me-2"></i> موافقة على الخطاب
                 </button>
                 <button class="btn btn-danger" (click)="showRejectionForm()" [disabled]="processing">
-                  <i class="bi bi-x-circle me-2"></i> رفض القرار
+                  <i class="bi bi-x-circle me-2"></i> رفض الخطاب
                 </button>
               </div>
 
               <div *ngIf="showPresidentOptions" class="approval-options">
-                <button class="btn btn-success" (click)="approveLetter('حقيقية')" [disabled]="processing">
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">اختر نوع التوقيع:</label>
+                </div>
+                <button class="btn btn-success w-100 mb-2" (click)="approveLetter('حقيقية')" [disabled]="processing">
                   <i class="bi bi-qr-code-scan me-2"></i> Real Scan
                 </button>
-                <button class="btn btn-outline-primary" (click)="approveLetter('الممسوحة ضوئيا')"
+                <button class="btn btn-outline-primary w-100 mb-2" (click)="approveLetter('الممسوحة ضوئيا')"
                   [disabled]="processing">
                   <i class="bi bi-pen-fill me-2"></i> توقيع إلكتروني
                 </button>
-                <button class="btn btn-outline-secondary" (click)="showPresidentOptions = false">
+                <button class="btn btn-outline-secondary w-100" (click)="showPresidentOptions = false">
                   <i class="bi bi-arrow-right me-2"></i> رجوع
                 </button>
               </div>
@@ -430,6 +476,6 @@
         <span class="visually-hidden">جاري التحميل...</span>
       </div>
     </div>
-    <p class="loading-text">جاري تحميل تفاصيل القرار...</p>
+    <p class="loading-text">جاري تحميل تفاصيل الخطاب...</p>
   </div>
 </ng-template>
