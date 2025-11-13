@@ -50,8 +50,8 @@
   <div class="card-section pdf-section mb-4" *ngIf="canShowPdf()">
     <div class="section-header">
       <h3 class="section-title">
-        <i class="bi bi-file-pdf me-2"></i>
-        نسخة الخطاب النهائية
+        <i class="fa fa-file-pdf me-2"></i>
+        نسخة القرار النهائية
       </h3>
     </div>
     <div class="section-body">
@@ -226,8 +226,8 @@
         <div class="content-block">
           <div class="block-header">
             <h4 class="block-title">
-              <i class="bi bi-file-text me-2"></i>
-              محتوى الخطاب
+              <i class="fa fa-file-text me-2"></i>
+              نص القرار
             </h4>
           </div>
           <div class="block-body">
@@ -244,8 +244,8 @@
         <div class="rationale-block">
           <div class="block-header">
             <h4 class="block-title">
-              <i class="bi bi-journal-text me-2"></i>
-              الحيثيات
+              <i class="fa fa-journal-text me-2"></i>
+              حيثيات القرار
             </h4>
           </div>
           <div class="block-body">
@@ -339,7 +339,7 @@
                 <i class="fa fa-check-circle me-2"></i> موافقة وارسال للرئيس
               </button>
               <button class="btn btn-danger" (click)="showRejectionForm()" [disabled]="processing">
-                <i class="bi bi-x-circle me-2"></i> رفض الخطاب
+                <i class="fa fa-x-circle me-2"></i> رفض القرار
               </button>
             </div>
 
@@ -347,10 +347,12 @@
               *ngIf="currentUserRole === 'UniversityPresident' && original?.status === 'pending' && !showRejectionReason">
               <div *ngIf="!showPresidentOptions" class="action-buttons-grid">
                 <button class="btn btn-success" (click)="showPresidentOptions = true" [disabled]="processing">
-                  <i class="bi bi-check-circle me-2"></i> موافقة على الخطاب
+                  <i class="fa fa-check-circle me-2"></i> موافقة على القرار
+                  <i class="fa fa-check-circle me-2"></i> موافقة على الخطاب
                 </button>
                 <button class="btn btn-danger" (click)="showRejectionForm()" [disabled]="processing">
-                  <i class="bi bi-x-circle me-2"></i> رفض الخطاب
+                  <i class="fa fa-x-circle me-2"></i> رفض القرار
+                  <i class="fa fa-x-circle me-2"></i> رفض الخطاب
                 </button>
               </div>
 
