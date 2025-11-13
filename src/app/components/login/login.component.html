@@ -26,29 +26,17 @@
 
       <div class="mb-3 text-end position-relative">
         <label class="form-label fw-semibold">كلمة المرور</label>
-        <input
-          [type]="showPassword ? 'text' : 'password'"
-          formControlName="password"
-          class="form-control text-end"
-          placeholder="أدخل كلمة المرور"
-          [ngClass]="{
+        <input [type]="showPassword ? 'text' : 'password'" formControlName="password" class="form-control text-end"
+          placeholder="أدخل كلمة المرور" [ngClass]="{
             'is-invalid': f['password'].touched && f['password'].invalid
-          }"
-        />
-        <i
-          class="fa password-toggle"
-          [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"
-          (click)="togglePassword()"
-          style="position: absolute; left: 10px; top: 41px; cursor: pointer;"
-        ></i>
+          }" />
+        <i class="fa password-toggle" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'" (click)="togglePassword()"
+          style="position: absolute; left: 10px; top: 41px; cursor: pointer;"></i>
 
         <div class="invalid-feedback text-end" *ngIf="f['password'].touched && f['password'].errors">
           <span *ngIf="f['password'].errors['required']">كلمة المرور مطلوبة</span>
-          <span *ngIf="f['password'].errors['minlength']">كلمة المرور يجب أن تكون 4 أحرف على الأقل</span>
-          <span *ngIf="f['password'].errors['maxlength']">كلمة المرور يجب ألا تتجاوز 20 حرفًا</span>
         </div>
       </div>
-
 
       <button type="submit" class="btn btn-primary w-100 mt-2 py-2 fw-semibold" [disabled]="isLoading">
         <span *ngIf="!isLoading">

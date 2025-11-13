@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { LoginService } from 'src/app/service/login.service';
 import { ToastrService } from 'ngx-toastr';
 
-
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -35,8 +34,6 @@ export class LoginComponent implements OnInit {
         '',
         [
           Validators.required,
-          Validators.minLength(4),
-          Validators.maxLength(20),
         ],
       ],
     });
@@ -101,42 +98,6 @@ export class LoginComponent implements OnInit {
         this.toastr.error(this.errorMessage, 'فشل تسجيل الدخول');
       },
     });
-  }
-
-  private isHttpError(
-    error: unknown
-  ): error is { status: number; error: Record<string, unknown> } {
-    return (
-      typeof error === 'object' &&
-      error !== null &&
-      'status' in error &&
-      'error' in error
-    );
-  }
-
-  private extractErrorMessage(error: {
-    status: number;
-    error: Record<string, unknown>;
-  }): string {
-    const status = error.status;
-
-    if (status === 401) {
-      return 'اسم المستخدم أو كلمة المرور غير صحيحة.';
-    }
-
-    if (status === 500) {
-      return 'حدث خطأ داخلي في الخادم. حاول لاحقًا.';
-    }
-
-    const message =
-      typeof error.error === 'object' &&
-      error.error !== null &&
-      'message' in error.error &&
-      typeof error.error['message'] === 'string'
-        ? (error.error['message'] as string)
-        : 'فشل تسجيل الدخول.';
-
-    return message;
   }
 
   togglePassword() {

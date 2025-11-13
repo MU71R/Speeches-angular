@@ -139,10 +139,6 @@ export class DepartmentComponent implements OnInit {
     }
   }
 
-  validatePassword(password: string): boolean {
-    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(password);
-  }
-
   changePassword(): void {
     const { newPassword, confirmPassword } = this.editPasswordData;
 
@@ -158,21 +154,6 @@ export class DepartmentComponent implements OnInit {
       Swal.fire({
         icon: 'warning',
         title: 'كلمة المرور الجديدة غير متطابقة',
-      });
-      return;
-    }
-
-    if (!this.validatePassword(newPassword)) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'كلمة المرور ضعيفة',
-        html: `<ul style="text-align:right;">
-                <li>8 أحرف على الأقل</li>
-                <li>حرف كبير واحد على الأقل</li>
-                <li>حرف صغير واحد على الأقل</li>
-                <li>رقم واحد على الأقل</li>
-                <li>رمز خاص واحد على الأقل</li>
-              </ul>`,
       });
       return;
     }
@@ -404,20 +385,6 @@ export class DepartmentComponent implements OnInit {
     }
     if (!password) {
       Swal.fire({ icon: 'warning', title: 'كلمة المرور مطلوبة' });
-      return;
-    }
-    if (!this.validatePassword(password)) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'كلمة المرور ضعيفة',
-        html: `<ul style="text-align:right;">
-                <li>8 أحرف على الأقل</li>
-                <li>حرف كبير واحد على الأقل</li>
-                <li>حرف صغير واحد على الأقل</li>
-                <li>رقم واحد على الأقل</li>
-                <li>رمز خاص واحد على الأقل</li>
-              </ul>`,
-      });
       return;
     }
     if (!role) {

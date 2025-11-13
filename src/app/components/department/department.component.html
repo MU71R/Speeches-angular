@@ -230,14 +230,12 @@
                   <div class="form-group">
                     <label class="form-label">كلمة المرور <span class="text-danger">*</span></label>
                     <div class="password-input-group">
-                      <input [type]="showPassword ? 'text' : 'password'"
-                        class="form-control form-control-custom password-field" [(ngModel)]="newDepartment.password"
-                        name="password" placeholder="كلمة المرور" required />
+                      <input [type]="showPassword ? 'text' : 'password'" class="form-control form-control-custom password-field"
+                        [(ngModel)]="newDepartment.password" name="password" placeholder="كلمة المرور" required />
                       <button type="button" class="password-toggle-btn" (click)="togglePassword('add')">
                         <i class="fa" [class.fa-eye]="!showPassword" [class.fa-eye-slash]="showPassword"></i>
                       </button>
                     </div>
-                    <div class="form-text">يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل</div>
                   </div>
                 </div>
               </div>
