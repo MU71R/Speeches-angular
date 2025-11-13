@@ -1,55 +1,17 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  AbstractControl,
-  ValidationErrors,
-} from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { ArchiveService } from 'src/app/service/archive.service';
 import { LoginService } from 'src/app/service/login.service';
 import { LetterService } from 'src/app/service/letter.service';
-import { Subscription } from 'rxjs';
-
-// دوال التحقق من الصحة
-export function contentLengthWithoutSpaces(min: number, max: number) {
-  return (control: AbstractControl): ValidationErrors | null => {
-    if (!control.value) {
-      return min > 0 ? { required: true } : null;
-    }
-
-    const contentWithoutSpaces = control.value.replace(/\s/g, '');
-    const length = contentWithoutSpaces.length;
-
-    if (min && length < min) {
-      return {
-        minlength: {
-          requiredLength: min,
-          actualLength: length,
-        },
-      };
-    }
-
-    if (max && length > max) {
-      return {
-        maxlength: {
-          requiredLength: max,
-          actualLength: length,
-        },
-      };
-    }
-
-    return null;
-  };
-}
+import { Letter } from 'src/app/model/Letter';
 
 @Component({
   selector: 'app-letter-detail',
   templateUrl: './letter-detail.component.html',
   styleUrls: ['./letter-detail.component.css'],
 })
-export class LetterDetailComponent implements OnInit, OnDestroy {
+export class LetterDetailComponent implements OnInit {
   form!: FormGroup;
   original: any = null;
   previewHtml = '';
@@ -65,17 +27,11 @@ export class LetterDetailComponent implements OnInit, OnDestroy {
   pdfFilename: string | null = null;
   pdfFile: any = null;
 
-  // الخصائص الجديدة
+  // إضافة الخصائص الجديدة
   pdfLoading = false;
   pdfGenerating = false;
   pdfSearching = false;
   pdfSearchAttempted = false;
-  successMessage = '';
-  errorMessage = '';
-  showRejectionError = false;
-  formSubmitted = false;
-
-  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private route: ActivatedRoute,
@@ -86,7 +42,11 @@ export class LetterDetailComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.initializeForm();
+    this.form = this.fb.group({
+      title: [''],
+      description: [''],
+      rationale: [''],
+    });
     const user = this.loginService.getUserFromLocalStorage();
     this.currentUserRole =
       user?.role === 'UniversityPresident'
@@ -96,84 +56,29 @@ export class LetterDetailComponent implements OnInit, OnDestroy {
     if (letterId) this.loadLetter(letterId);
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
-  }
-
-  private initializeForm(): void {
-    this.form = this.fb.group({
-      title: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(5),
-          Validators.maxLength(100),
-        ],
-      ],
-      description: [
-        '',
-        [Validators.required, contentLengthWithoutSpaces(20, 2000)],
-      ],
-      rationale: [
-        '',
-        [Validators.required, contentLengthWithoutSpaces(10, 500)],
-      ],
-    });
-  }
-
-  // دوال الوصول للحقول
-  get f() {
-    return this.form.controls;
-  }
-
-  showFieldError(fieldName: string): boolean {
-    const field = this.f[fieldName];
-    return (
-      (field.invalid && (field.dirty || field.touched)) ||
-      (this.formSubmitted && field.invalid)
-    );
-  }
-
-  isFormValid(): boolean {
-    return this.form.valid;
-  }
-
-  getDescriptionLengthWithoutSpaces(): number {
-    const description = this.f['description'].value || '';
-    return description.replace(/\s/g, '').length;
-  }
-
-  getRationaleLengthWithoutSpaces(): number {
-    const rationale = this.f['rationale'].value || '';
-    return rationale.replace(/\s/g, '').length;
-  }
-
   loadLetter(id: string) {
     this.loading = true;
-    this.subscriptions.add(
-      this.letterService.getLetter(id).subscribe(
-        (res: any) => {
-          this.original = res.data || res;
-          this.form.patchValue({
-            title: this.original?.title || '',
-            description: this.original?.description || '',
-            rationale: this.original?.Rationale || '',
-          });
-          this.previewHtml = this.original?.description || '';
+    this.letterService.getLetter(id).subscribe(
+      (res: any) => {
+        this.original = res.data || res;
+        this.form.patchValue({
+          title: this.original?.title || '',
+          description: this.original?.description || '',
+          rationale: this.original?.Rationale || '',
+        });
+        this.previewHtml = this.original?.description || '';
 
-          console.log('بيانات الخطاب:', this.original);
+        console.log('بيانات الخطاب:', this.original);
 
-          // البحث عن PDF باستخدام getPDFbyLetterId
-          this.loadPdfByLetterId(id);
+        // البحث عن PDF باستخدام getPDFbyLetterId
+        this.loadPdfByLetterId(id);
 
-          this.loading = false;
-        },
-        (err) => {
-          console.error(err);
-          this.errorMessage = 'حدث خطأ في تحميل بيانات الخطاب';
-          this.loading = false;
-        }
-      )
+        this.loading = false;
+      },
+      (err) => {
+        console.error(err);
+        this.loading = false;
+      }
     );
   }
 
@@ -182,33 +87,31 @@ export class LetterDetailComponent implements OnInit, OnDestroy {
     this.pdfSearching = true;
     this.pdfSearchAttempted = true;
 
-    this.subscriptions.add(
-      this.letterService.getPDFbyLetterId(letterId).subscribe({
-        next: (response) => {
-          this.pdfSearching = false;
-          if (response.success && response.pdfFile) {
-            this.pdfFile = response.pdfFile;
-            this.pdfUrl = response.pdfFile.pdfurl;
-            this.pdfFilename = this.extractFilenameFromUrl(
-              response.pdfFile.pdfurl
-            );
-            console.log(
-              'تم العثور على PDF باستخدام getPDFbyLetterId:',
-              this.pdfFile
-            );
-          } else {
-            // إذا لم يتم العثور على PDF، البحث بطرق أخرى
-            this.findAndSetPdfUrl();
-          }
-        },
-        error: (err) => {
-          this.pdfSearching = false;
-          console.error('خطأ في جلب PDF:', err);
-          // في حالة الخطأ، البحث بطرق أخرى
+    this.letterService.getPDFbyLetterId(letterId).subscribe({
+      next: (response) => {
+        this.pdfSearching = false;
+        if (response.success && response.pdfFile) {
+          this.pdfFile = response.pdfFile;
+          this.pdfUrl = response.pdfFile.pdfurl;
+          this.pdfFilename = this.extractFilenameFromUrl(
+            response.pdfFile.pdfurl
+          );
+          console.log(
+            'تم العثور على PDF باستخدام getPDFbyLetterId:',
+            this.pdfFile
+          );
+        } else {
+          // إذا لم يتم العثور على PDF، البحث بطرق أخرى
           this.findAndSetPdfUrl();
-        },
-      })
-    );
+        }
+      },
+      error: (err) => {
+        this.pdfSearching = false;
+        console.error('خطأ في جلب PDF:', err);
+        // في حالة الخطأ، البحث بطرق أخرى
+        this.findAndSetPdfUrl();
+      },
+    });
   }
 
   // البحث عن رابط PDF بطرق مختلفة (كبديل)
@@ -291,9 +194,9 @@ export class LetterDetailComponent implements OnInit, OnDestroy {
 
   getPdfButtonIcon(): string {
     if (this.pdfLoading || this.pdfGenerating || this.pdfSearching) {
-      return 'fa-refresh fa-spin';
+      return 'bi-arrow-clockwise spin';
     }
-    return this.pdfUrl ? 'fa-file-pdf' : 'fa-file-earmark-plus';
+    return this.pdfUrl ? 'bi-file-pdf' : 'bi-file-earmark-plus';
   }
 
   getPdfButtonText(): string {
@@ -304,7 +207,7 @@ export class LetterDetailComponent implements OnInit, OnDestroy {
   }
 
   getViewButtonIcon(): string {
-    return this.pdfLoading ? 'fa-refresh fa-spin' : 'fa-eye';
+    return this.pdfLoading ? 'bi-arrow-clockwise spin' : 'bi-eye';
   }
 
   getViewButtonText(): string {
@@ -315,60 +218,50 @@ export class LetterDetailComponent implements OnInit, OnDestroy {
     if (!this.original?._id) return;
 
     this.pdfGenerating = true;
-    this.subscriptions.add(
-      this.letterService
-        .generateOfficialLetterPDF(this.original._id)
-        .subscribe({
-          next: (result) => {
-            this.pdfGenerating = false;
-            if (result.pdfUrl) {
-              this.pdfUrl = result.pdfUrl;
-              this.pdfFilename = this.extractFilenameFromUrl(result.pdfUrl);
-              this.savePdfUrlToDatabase(result.pdfUrl);
-              console.log('تم إنشاء PDF جديد:', result.pdfUrl);
-              this.successMessage = 'تم إنشاء ملف PDF بنجاح';
+    this.letterService.generateOfficialLetterPDF(this.original._id).subscribe({
+      next: (result) => {
+        this.pdfGenerating = false;
+        if (result.pdfUrl) {
+          this.pdfUrl = result.pdfUrl;
+          this.pdfFilename = this.extractFilenameFromUrl(result.pdfUrl);
+          this.savePdfUrlToDatabase(result.pdfUrl);
+          console.log('تم إنشاء PDF جديد:', result.pdfUrl);
 
-              // إعادة تحميل معلومات PDF
-              this.loadPdfByLetterId(this.original._id);
-            }
-          },
-          error: (err) => {
-            this.pdfGenerating = false;
-            console.error('خطأ في إنشاء PDF:', err);
-            this.errorMessage = 'حدث خطأ أثناء إنشاء PDF';
-          },
-        })
-    );
+          // إعادة تحميل معلومات PDF
+          this.loadPdfByLetterId(this.original._id);
+        }
+      },
+      error: (err) => {
+        this.pdfGenerating = false;
+        console.error('خطأ في إنشاء PDF:', err);
+        alert('حدث خطأ أثناء إنشاء PDF');
+      },
+    });
   }
 
   regeneratePdf(): void {
     if (!this.original?._id) return;
 
     this.pdfGenerating = true;
-    this.subscriptions.add(
-      this.letterService
-        .generateOfficialLetterPDF(this.original._id)
-        .subscribe({
-          next: (result) => {
-            this.pdfGenerating = false;
-            if (result.pdfUrl) {
-              this.pdfUrl = result.pdfUrl;
-              this.pdfFilename = this.extractFilenameFromUrl(result.pdfUrl);
-              this.savePdfUrlToDatabase(result.pdfUrl);
-              console.log('تم إعادة إنشاء PDF:', result.pdfUrl);
-              this.successMessage = 'تم إعادة إنشاء ملف PDF بنجاح';
+    this.letterService.generateOfficialLetterPDF(this.original._id).subscribe({
+      next: (result) => {
+        this.pdfGenerating = false;
+        if (result.pdfUrl) {
+          this.pdfUrl = result.pdfUrl;
+          this.pdfFilename = this.extractFilenameFromUrl(result.pdfUrl);
+          this.savePdfUrlToDatabase(result.pdfUrl);
+          console.log('تم إعادة إنشاء PDF:', result.pdfUrl);
 
-              // إعادة تحميل معلومات PDF
-              this.loadPdfByLetterId(this.original._id);
-            }
-          },
-          error: (err) => {
-            this.pdfGenerating = false;
-            console.error('خطأ في إعادة إنشاء PDF:', err);
-            this.errorMessage = 'حدث خطأ أثناء إعادة إنشاء PDF';
-          },
-        })
-    );
+          // إعادة تحميل معلومات PDF
+          this.loadPdfByLetterId(this.original._id);
+        }
+      },
+      error: (err) => {
+        this.pdfGenerating = false;
+        console.error('خطأ في إعادة إنشاء PDF:', err);
+        alert('حدث خطأ أثناء إعادة إنشاء PDF');
+      },
+    });
   }
 
   // دالة لفتح PDF في نافذة جديدة
@@ -388,7 +281,7 @@ export class LetterDetailComponent implements OnInit, OnDestroy {
       this.pdfLoading = false;
     } else {
       this.pdfLoading = false;
-      this.errorMessage = 'لا يوجد ملف PDF متاح للعرض';
+      alert('لا يوجد ملف PDF متاح للعرض');
     }
   }
 
@@ -408,7 +301,7 @@ export class LetterDetailComponent implements OnInit, OnDestroy {
       link.click();
       document.body.removeChild(link);
     } else {
-      this.errorMessage = 'لا يوجد ملف PDF متاح للتنزيل';
+      alert('لا يوجد ملف PDF متاح للتنزيل');
     }
   }
 
@@ -433,12 +326,10 @@ export class LetterDetailComponent implements OnInit, OnDestroy {
 
   enableEdit() {
     this.isEditing = true;
-    this.formSubmitted = false;
   }
 
   cancelEdit() {
     this.isEditing = false;
-    this.formSubmitted = false;
     this.form.patchValue({
       title: this.original?.title,
       description: this.original?.description,
@@ -448,42 +339,27 @@ export class LetterDetailComponent implements OnInit, OnDestroy {
   }
 
   saveChanges() {
-    this.formSubmitted = true;
-
-    if (this.form.invalid) {
-      Object.keys(this.f).forEach((key) => {
-        this.f[key].markAsTouched();
-      });
-      this.errorMessage = 'يرجى تصحيح الأخطاء في النموذج قبل الحفظ';
-      return;
-    }
-
     this.processing = true;
     const updatedData = {
       ...this.form.value,
       Rationale: this.form.value.rationale,
     };
 
-    this.subscriptions.add(
-      this.letterService.updateLetter(this.original._id, updatedData).subscribe(
-        () => {
-          this.original = {
-            ...this.original,
-            ...this.form.value,
-            Rationale: this.form.value.rationale,
-          };
-          this.previewHtml = this.form.value.description;
-          this.isEditing = false;
-          this.processing = false;
-          this.successMessage = 'تم حفظ التغييرات بنجاح';
-          this.formSubmitted = false;
-        },
-        (err) => {
-          console.error(err);
-          this.processing = false;
-          this.errorMessage = 'حدث خطأ أثناء حفظ التغييرات';
-        }
-      )
+    this.letterService.updateLetter(this.original._id, updatedData).subscribe(
+      () => {
+        this.original = {
+          ...this.original,
+          ...this.form.value,
+          Rationale: this.form.value.rationale,
+        };
+        this.previewHtml = this.form.value.description;
+        this.isEditing = false;
+        this.processing = false;
+      },
+      (err) => {
+        console.error(err);
+        this.processing = false;
+      }
     );
   }
 
@@ -494,87 +370,95 @@ export class LetterDetailComponent implements OnInit, OnDestroy {
   showRejectionForm() {
     this.showRejectionReason = true;
     this.rejectionReason = '';
-    this.showRejectionError = false;
   }
 
   cancelRejection() {
     this.showRejectionReason = false;
     this.rejectionReason = '';
-    this.showRejectionError = false;
   }
 
-  confirmRejectionSupervisor() {
-    if (!this.rejectionReason.trim()) {
-      this.showRejectionError = true;
-      return;
-    }
-
-    this.processing = true;
-
-    this.subscriptions.add(
-      this.letterService
-        .updateStatusBySupervisor(
-          this.original._id,
-          'rejected',
-          this.rejectionReason
-        )
-        .subscribe(
-          (res: any) => {
-            this.original.status = 'rejected';
-            this.original.reasonForRejection = this.rejectionReason;
-            this.showRejectionReason = false;
-            this.rejectionReason = '';
-            this.processing = false;
-            this.successMessage = 'تم رفض الخطاب بنجاح';
-          },
-          (err) => {
-            console.error(err);
-            this.processing = false;
-            this.errorMessage = 'حدث خطأ أثناء رفض الخطاب';
-          }
-        )
-    );
-  }
-
-  confirmRejectionPresident() {
-    if (!this.rejectionReason.trim()) {
-      this.showRejectionError = true;
-      return;
-    }
-
-    this.processing = true;
-
-    this.subscriptions.add(
-      this.letterService
-        .updateStatusByUniversityPresident(
-          this.original._id,
-          'rejected',
-          this.rejectionReason
-        )
-        .subscribe(
-          (res: any) => {
-            this.original.status = 'rejected';
-            this.original.reasonForRejection = this.rejectionReason;
-            this.showRejectionReason = false;
-            this.rejectionReason = '';
-            this.processing = false;
-            this.successMessage = 'تم رفض الخطاب بنجاح';
-          },
-          (err) => {
-            console.error(err);
-            this.processing = false;
-            this.errorMessage = 'حدث خطأ أثناء رفض الخطاب';
-          }
-        )
-    );
-  }
-
+  // الدالة المحدثة - ترسل تحديثات الحيثيات للباك إند
   confirmRejection() {
-    if (this.currentUserRole === 'supervisor') {
-      this.confirmRejectionSupervisor();
-    } else {
-      this.confirmRejectionPresident();
+    if (!this.rejectionReason.trim()) {
+      alert('يرجى إدخال سبب الرفض');
+      return;
     }
+
+    this.processing = true;
+
+    // تجهيز البيانات المحدثة بما في ذلك الحيثيات إذا كان في وضع التعديل
+    const updateData: any = {
+      status: 'rejected',
+      reasonForRejection: this.rejectionReason,
+    };
+
+    // إذا كان في وضع التعديل، أضف البيانات المحدثة
+    if (this.isEditing) {
+      updateData.Rationale = this.form.value.rationale;
+      updateData.description = this.form.value.description;
+      updateData.title = this.form.value.title;
+    }
+
+    let rejectionObservable;
+
+    if (this.currentUserRole === 'supervisor') {
+      rejectionObservable = this.letterService.updateStatusBySupervisor(
+        this.original._id,
+        'rejected',
+        this.rejectionReason,
+        // إرسال البيانات الإضافية إذا كانت في وضع التعديل
+        this.isEditing
+          ? {
+              Rationale: this.form.value.rationale,
+              description: this.form.value.description,
+              title: this.form.value.title,
+            }
+          : undefined
+      );
+    } else {
+      rejectionObservable =
+        this.letterService.updateStatusByUniversityPresident(
+          this.original._id,
+          'rejected',
+          this.rejectionReason,
+          // إرسال البيانات الإضافية إذا كانت في وضع التعديل
+          this.isEditing
+            ? {
+                Rationale: this.form.value.rationale,
+                description: this.form.value.description,
+                title: this.form.value.title,
+              }
+            : undefined
+        );
+    }
+
+    rejectionObservable.subscribe(
+      (res: any) => {
+        // تحديث البيانات المحلية
+        this.original.status = 'rejected';
+        this.original.reasonForRejection = this.rejectionReason;
+
+        // إذا كنا في وضع التعديل، تحديث الحيثيات والبيانات الأخرى
+        if (this.isEditing) {
+          this.original.Rationale = this.form.value.rationale;
+          this.original.description = this.form.value.description;
+          this.original.title = this.form.value.title;
+          this.previewHtml = this.form.value.description;
+          this.isEditing = false; // الخروج من وضع التعديل
+        }
+
+        this.showRejectionReason = false;
+        this.rejectionReason = '';
+        this.processing = false;
+
+        console.log('تم رفض القرار وحفظ التعديلات بنجاح');
+      },
+      (err) => {
+        console.error('خطأ في رفض القرار:', err);
+        this.processing = false;
+        alert('حدث خطأ أثناء رفض القرار');
+      }
+    );
   }
 
   approveLetter(option?: 'حقيقية' | 'الممسوحة ضوئيا') {
@@ -583,137 +467,117 @@ export class LetterDetailComponent implements OnInit, OnDestroy {
     this.processing = true;
 
     if (this.currentUserRole === 'supervisor') {
-      this.subscriptions.add(
+      this.letterService
+        .updateStatusBySupervisor(this.original._id, 'pending')
+        .subscribe({
+          next: () => {
+            this.original.status = 'pending';
+            this.processing = false;
+          },
+          error: (err) => {
+            console.error(err);
+            this.processing = false;
+          },
+        });
+    } else if (this.currentUserRole === 'UniversityPresident') {
+      if (!option) {
         this.letterService
-          .updateStatusBySupervisor(this.original._id, 'pending')
+          .updateStatusByUniversityPresident(
+            this.original._id,
+            'approved',
+            'حقيقية'
+          )
           .subscribe({
             next: () => {
-              this.original.status = 'pending';
+              this.original.status = 'approved';
               this.processing = false;
-              this.successMessage = 'تم إرسال الخطاب لرئيس الجامعة للموافقة';
+              // بعد الموافقة، إنشاء PDF تلقائياً
+              this.generateAndSavePdf();
             },
             error: (err) => {
               console.error(err);
               this.processing = false;
-              this.errorMessage = 'حدث خطأ أثناء إرسال الخطاب';
             },
-          })
-      );
-    } else if (this.currentUserRole === 'UniversityPresident') {
-      if (!option) {
-        this.subscriptions.add(
-          this.letterService
-            .updateStatusByUniversityPresident(
-              this.original._id,
-              'approved',
-              'حقيقية'
-            )
-            .subscribe({
-              next: () => {
-                this.original.status = 'approved';
-                this.processing = false;
-                this.successMessage = 'تمت الموافقة على الخطاب بنجاح';
-                // بعد الموافقة، إنشاء PDF تلقائياً
-                this.generateAndSavePdf();
-              },
-              error: (err) => {
-                console.error(err);
-                this.processing = false;
-                this.errorMessage = 'حدث خطأ أثناء الموافقة على الخطاب';
-              },
-            })
-        );
+          });
       } else {
-        this.subscriptions.add(
-          this.letterService
-            .updateStatusByUniversityPresident(
-              this.original._id,
-              'approved',
-              option
-            )
-            .subscribe({
-              next: () => {
-                this.original.status = 'approved';
-                this.subscriptions.add(
-                  this.letterService
-                    .printLetterByType(this.original._id, option)
-                    .subscribe({
-                      next: (letter) => {
-                        this.processing = false;
-                        this.showPresidentOptions = false;
-                        this.successMessage = 'تمت الموافقة على الخطاب بنجاح';
+        this.letterService
+          .updateStatusByUniversityPresident(
+            this.original._id,
+            'approved',
+            option
+          )
+          .subscribe({
+            next: () => {
+              this.original.status = 'approved';
+              this.letterService
+                .printLetterByType(this.original._id, option)
+                .subscribe({
+                  next: (letter) => {
+                    this.processing = false;
+                    this.showPresidentOptions = false;
 
-                        if (letter.pdfUrl) {
-                          this.pdfUrl = letter.pdfUrl;
-                          this.pdfFilename = this.extractFilenameFromUrl(
-                            letter.pdfUrl
-                          );
-                          // حفظ PDF في قاعدة البيانات
-                          this.savePdfUrlToDatabase(letter.pdfUrl);
-                          console.log('تم إنشاء PDF جديد:', letter.pdfUrl);
-                        } else {
-                          this.errorMessage = 'لم يتم توليد ملف PDF بعد.';
-                        }
-                      },
-                      error: (err) => {
-                        console.error(err);
-                        this.processing = false;
-                        this.errorMessage = 'حدث خطأ أثناء توليد PDF.';
-                      },
-                    })
-                );
-              },
-              error: (err) => {
-                console.error(err);
-                this.processing = false;
-                this.errorMessage = 'حدث خطأ أثناء الموافقة على الخطاب';
-              },
-            })
-        );
+                    if (letter.pdfUrl) {
+                      this.pdfUrl = letter.pdfUrl;
+                      this.pdfFilename = this.extractFilenameFromUrl(
+                        letter.pdfUrl
+                      );
+                      // حفظ PDF في قاعدة البيانات
+                      this.savePdfUrlToDatabase(letter.pdfUrl);
+                      console.log('تم إنشاء PDF جديد:', letter.pdfUrl);
+                    } else {
+                      alert('لم يتم توليد ملف PDF بعد.');
+                    }
+                  },
+                  error: (err) => {
+                    console.error(err);
+                    this.processing = false;
+                    alert('حدث خطأ أثناء توليد PDF.');
+                  },
+                });
+            },
+            error: (err) => {
+              console.error(err);
+              this.processing = false;
+            },
+          });
       }
     }
   }
 
   // إنشاء وحفظ PDF تلقائياً عند الموافقة
   private generateAndSavePdf() {
-    this.subscriptions.add(
-      this.letterService
-        .generateOfficialLetterPDF(this.original._id)
-        .subscribe({
-          next: (result) => {
-            if (result.pdfUrl) {
-              this.pdfUrl = result.pdfUrl;
-              this.pdfFilename = this.extractFilenameFromUrl(result.pdfUrl);
-              // حفظ PDF في قاعدة البيانات
-              this.savePdfUrlToDatabase(result.pdfUrl);
-              console.log('تم إنشاء PDF تلقائياً:', result.pdfUrl);
+    this.letterService.generateOfficialLetterPDF(this.original._id).subscribe({
+      next: (result) => {
+        if (result.pdfUrl) {
+          this.pdfUrl = result.pdfUrl;
+          this.pdfFilename = this.extractFilenameFromUrl(result.pdfUrl);
+          // حفظ PDF في قاعدة البيانات
+          this.savePdfUrlToDatabase(result.pdfUrl);
+          console.log('تم إنشاء PDF تلقائياً:', result.pdfUrl);
 
-              // إعادة تحميل معلومات PDF
-              this.loadPdfByLetterId(this.original._id);
-            }
-          },
-          error: (err) => {
-            console.error('خطأ في إنشاء PDF تلقائي:', err);
-          },
-        })
-    );
+          // إعادة تحميل معلومات PDF
+          this.loadPdfByLetterId(this.original._id);
+        }
+      },
+      error: (err) => {
+        console.error('خطأ في إنشاء PDF تلقائي:', err);
+      },
+    });
   }
 
   // حفظ رابط PDF في قاعدة البيانات
   private savePdfUrlToDatabase(pdfUrl: string) {
     const updateData = { pdfUrl: pdfUrl };
-    this.subscriptions.add(
-      this.letterService.updateLetter(this.original._id, updateData).subscribe({
-        next: () => {
-          console.log('تم حفظ رابط PDF في قاعدة البيانات');
-          // تحديث البيانات المحلية
-          this.original.pdfUrl = pdfUrl;
-        },
-        error: (err) => {
-          console.error('خطأ في حفظ رابط PDF:', err);
-        },
-      })
-    );
+    this.letterService.updateLetter(this.original._id, updateData).subscribe({
+      next: () => {
+        console.log('تم حفظ رابط PDF في قاعدة البيانات');
+        // تحديث البيانات المحلية
+        this.original.pdfUrl = pdfUrl;
+      },
+      error: (err) => {
+        console.error('خطأ في حفظ رابط PDF:', err);
+      },
+    });
   }
 
   // التحقق من إمكانية عرض زر PDF

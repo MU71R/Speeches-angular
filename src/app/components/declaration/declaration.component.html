@@ -14,15 +14,12 @@
         <div class="mb-3">
           <label for="typeSearch" class="form-label">نوع القرار *</label>
 
-          <!-- حقل البحث بدلاً من الـ dropdown -->
           <div class="search-dropdown">
-            <!-- حقل الإدخال للبحث -->
             <input id="typeSearch" type="text" class="form-control" placeholder="ابحث عن نوع القرار..."
               [(ngModel)]="searchTerm" [ngModelOptions]="{standalone: true}" (input)="filterMessageTypes(searchTerm)"
               (focus)="onSearchFocus()" (blur)="onSearchBlur()" [class.is-invalid]="showFieldError('type')"
               autocomplete="off">
 
-            <!-- القائمة المنسدلة للنتائج -->
             <div class="dropdown-results" *ngIf="showDropdown && filteredMessageTypes.length > 0">
               <div *ngFor="let type of filteredMessageTypes" class="dropdown-item"
                 (click)="selectMessageType(type._id, type.title)">
@@ -30,27 +27,24 @@
               </div>
             </div>
 
-            <!-- رسالة عندما لا توجد نتائج -->
             <div *ngIf="showDropdown && filteredMessageTypes.length === 0 && searchTerm" class="dropdown-no-results">
               لا توجد نتائج للبحث عن "{{ searchTerm }}"
             </div>
           </div>
 
-          <!-- حقل مخفي لتخزين القيمة المختارة -->
           <input type="hidden" formControlName="type">
 
           <div *ngIf="showFieldError('type')" class="invalid-feedback d-block">
             <div *ngIf="f['type'].errors?.['required']">نوع القرار مطلوب</div>
+            <div *ngIf="f['type'].errors?.['invalidType']">يجب اختيار نوع قرار صالح من القائمة</div>
           </div>
 
-          <!-- عرض القيمة المختارة -->
-          <div *ngIf="f['type'].value && searchTerm" class="selected-value mt-2 p-2 bg-light rounded">
+          <div *ngIf="f['type'].value && selectedTypeTitle" class="selected-value mt-2 p-2 bg-light rounded">
             <small class="text-muted">القرار المختار:</small>
-            <div class="fw-bold">{{ searchTerm }}</div>
+            <div class="fw-bold">{{ selectedTypeTitle }}</div>
           </div>
         </div>
 
-        <!-- باقي النموذج يبقى كما هو -->
         <div class="mb-3">
           <label for="title" class="form-label">عنوان القرار *</label>
           <input id="title" type="text" formControlName="title" placeholder="ادخل عنوان القرار ..." class="form-control"

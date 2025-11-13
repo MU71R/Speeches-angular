@@ -55,14 +55,22 @@ export class LetterService {
       .pipe(map((res) => res.data));
   }
 
+  // التحديث: دعم إرسال البيانات الإضافية مع الرفض
   updateStatusBySupervisor(
     id: string,
     status: string,
-    reasonForRejection?: string
+    reasonForRejection?: string,
+    additionalData?: any
   ): Observable<LetterDetail> {
     const payload: any = { status };
+
     if (status === 'rejected' && reasonForRejection) {
       payload.reasonForRejection = reasonForRejection;
+    }
+
+    // دمج البيانات الإضافية إذا وجدت
+    if (additionalData) {
+      Object.assign(payload, additionalData);
     }
 
     return this.http
@@ -73,14 +81,22 @@ export class LetterService {
       .pipe(map((r) => r.data));
   }
 
+  // التحديث: دعم إرسال البيانات الإضافية مع الرفض
   updateStatusByUniversityPresident(
     id: string,
     status: string,
-    reasonForRejection?: string
+    reasonForRejection?: string,
+    additionalData?: any
   ): Observable<LetterDetail> {
     const payload: any = { status };
+
     if (status === 'rejected' && reasonForRejection) {
       payload.reasonForRejection = reasonForRejection;
+    }
+
+    // دمج البيانات الإضافية إذا وجدت
+    if (additionalData) {
+      Object.assign(payload, additionalData);
     }
 
     return this.http

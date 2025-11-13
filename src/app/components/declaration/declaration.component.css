@@ -4,7 +4,6 @@
   direction: rtl;
 }
 
-/* في ملف declaration.component.css */
 .search-dropdown {
   position: relative;
 }
@@ -53,7 +52,6 @@
   border-right: 3px solid #007bff;
 }
 
-/* تحسين مظهر حقل البحث عند وجود خطأ */
 .form-control.is-invalid {
   border-color: #dc3545;
 }

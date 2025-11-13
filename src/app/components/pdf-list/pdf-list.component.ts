@@ -59,7 +59,7 @@ export class PdfListComponent implements OnInit {
         (pdf.userId?.name || '').toLowerCase().includes(term) ||
         this.getUserRoleArabic(pdf.userId?.role).toLowerCase().includes(term);
 
-        const dateMatch =
+      const dateMatch =
         !searchDate || this.isSameDate(pdf.createdAt, searchDate);
 
       return textMatch && dateMatch;
@@ -117,14 +117,21 @@ export class PdfListComponent implements OnInit {
     }
   }
 
+  // الدالة المحسنة لتحويل الدور إلى العربي
   getUserRoleArabic(role: string | undefined): string {
     const roleMap: { [key: string]: string } = {
       admin: 'مدير النظام',
       supervisor: 'مراجع',
       UniversityPresident: 'رئيس الجامعة',
       user: 'مستخدم',
+      // يمكنك إضافة المزيد من الأدوار هنا إذا لزم الأمر
     };
     return roleMap[role || 'user'] || role || 'مستخدم';
+  }
+
+  // دالة جديدة للحصول على الدور بالعربي للعرض في القوائم
+  getDisplayRole(role: string | undefined): string {
+    return this.getUserRoleArabic(role);
   }
 
   formatDate(dateString: string): string {

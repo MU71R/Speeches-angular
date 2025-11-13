@@ -64,6 +64,25 @@ export function endDateAfterStartValidator(
   };
 }
 
+export function validMessageTypeValidator(
+  messageTypes: { _id: string; title: string }[]
+): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    if (!control.value) {
+      return { required: true };
+    }
+
+    const selectedTypeId = control.value;
+    const isValidType = messageTypes.some(type => type._id === selectedTypeId);
+
+    if (!isValidType) {
+      return { invalidType: true };
+    }
+
+    return null;
+  };
+}
+
 @Component({
   selector: 'app-declaration',
   templateUrl: './declaration.component.html',
@@ -79,6 +98,7 @@ export class DeclarationComponent implements OnInit {
   formSubmitted = false;
   searchTerm = '';
   showDropdown = false;
+  selectedTypeTitle = '';
 
   constructor(
     private fb: FormBuilder,
@@ -118,6 +138,8 @@ export class DeclarationComponent implements OnInit {
           title: t.title || '',
         }));
         this.filteredMessageTypes = [];
+        
+        this.updateTypeValidator();
       },
       error: (err) => {
         console.error('Error loading message types:', err);
@@ -126,38 +148,70 @@ export class DeclarationComponent implements OnInit {
     });
   }
 
-  // دالة البحث في أنواع القرارات
+  private updateTypeValidator(): void {
+    const typeControl = this.messageForm.get('type');
+    if (typeControl) {
+      typeControl.setValidators([
+        Validators.required,
+        validMessageTypeValidator(this.messageTypes)
+      ]);
+      typeControl.updateValueAndValidity();
+    }
+  }
+
   filterMessageTypes(searchTerm: string): void {
     this.searchTerm = searchTerm;
 
     if (!searchTerm || searchTerm.trim() === '') {
       this.filteredMessageTypes = [];
       this.showDropdown = false;
+      this.clearTypeSelection();
     } else {
       const filtered = this.messageTypes.filter((type) =>
         type.title.toLowerCase().includes(searchTerm.toLowerCase())
       );
       this.filteredMessageTypes = filtered;
       this.showDropdown = filtered.length > 0;
+      
+      const exactMatch = this.messageTypes.find(type => 
+        type.title === searchTerm
+      );
+      if (!exactMatch) {
+        this.clearTypeSelection();
+      }
     }
   }
 
-  // دالة لاختيار نوع القرار
   selectMessageType(typeId: string, typeTitle: string): void {
     this.f['type'].setValue(typeId);
     this.searchTerm = typeTitle;
+    this.selectedTypeTitle = typeTitle;
     this.filteredMessageTypes = [];
     this.showDropdown = false;
+    
+    this.f['type'].setErrors(null);
+    this.f['type'].markAsTouched();
   }
 
-  // دالة لتفريغ البحث عند فقدان التركيز
+  private clearTypeSelection(): void {
+    this.f['type'].setValue('');
+    this.selectedTypeTitle = '';
+    this.f['type'].markAsTouched();
+  }
+
+  validateSearchInput(): void {
+    if (this.searchTerm && !this.f['type'].value) {
+      this.f['type'].setErrors({ invalidType: true });
+    }
+  }
+
   onSearchBlur(): void {
     setTimeout(() => {
       this.showDropdown = false;
+      this.validateSearchInput();
     }, 200);
   }
 
-  // دالة لإظهار القائمة عند التركيز على حقل البحث
   onSearchFocus(): void {
     if (this.searchTerm && this.filteredMessageTypes.length > 0) {
       this.showDropdown = true;
@@ -213,18 +267,27 @@ export class DeclarationComponent implements OnInit {
   }
 
   private resetForm(): void {
-    this.messageForm.reset();
+    this.messageForm.reset({
+      date: new Date().toISOString().split('T')[0]
+    });
     this.submitting = false;
     this.successMsg = '';
     this.errorMsg = '';
     this.formSubmitted = false;
     this.searchTerm = '';
+    this.selectedTypeTitle = '';
     this.filteredMessageTypes = [];
     this.showDropdown = false;
+    
+    Object.keys(this.f).forEach((key) => {
+      this.f[key].markAsUntouched();
+    });
   }
 
   onSubmit() {
     this.formSubmitted = true;
+    this.validateSearchInput();
+    
     if (this.messageForm.invalid) {
       Object.keys(this.f).forEach((key) => {
         this.f[key].markAsTouched();
@@ -239,14 +302,14 @@ export class DeclarationComponent implements OnInit {
     this.errorMsg = '';
 
     const cleanContent = this.f['content'].value
-      .replace(/<[^>]*>/g, '')
-      .replace(/\s+/g, ' ')
-      .trim();
+      ?.replace(/<[^>]*>/g, '')
+      ?.replace(/\s+/g, ' ')
+      ?.trim() || '';
 
     const cleanRationale = this.f['Rationale'].value
-      .replace(/<[^>]*>/g, '')
-      .replace(/\s+/g, ' ')
-      .trim();
+      ?.replace(/<[^>]*>/g, '')
+      ?.replace(/\s+/g, ' ')
+      ?.trim() || '';
 
     const payload = {
       title: this.f['title'].value,
@@ -266,9 +329,6 @@ export class DeclarationComponent implements OnInit {
       next: (res) => {
         this.showSuccess('تم حفظ الخطاب بنجاح ');
         this.resetForm();
-        Object.keys(this.f).forEach((key) => {
-          this.f[key].markAsUntouched();
-        });
       },
       error: (err) => {
         console.error('Error saving letter:', err);

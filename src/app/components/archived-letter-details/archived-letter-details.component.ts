@@ -4,7 +4,7 @@ import { ArchiveService } from 'src/app/service/archive.service';
 import { LetterService } from 'src/app/service/letter.service';
 
 @Component({
-  selector: 'app-letter-detail',
+  selector: 'app-letter-details',
   templateUrl: './archived-letter-details.component.html',
   styleUrls: ['./archived-letter-details.component.css'],
 })

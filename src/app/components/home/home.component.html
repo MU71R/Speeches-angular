@@ -74,53 +74,7 @@
         </div>
     </div>
 
-    <!-- Content Grid -->
-    <div class="content-grid">
-        <!-- System Overview -->
-        <div class="overview-section">
-            <div class="overview-card">
-                <h3 class="card-title">نظرة عامة على النظام</h3>
-                <div class="overview-list">
-                    <div class="overview-item">
-                        <div class="overview-icon success">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div class="overview-content">
-                            <h4>النظام يعمل بكفاءة</h4>
-                            <p>جميع الخدمات تعمل بشكل طبيعي</p>
-                        </div>
-                    </div>
-                    <div class="overview-item">
-                        <div class="overview-icon primary">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="overview-content">
-                            <h4>إدارة المستخدمين</h4>
-                            <p>{{ stats.totalUsers }} مستخدم مسجل في النظام</p>
-                        </div>
-                    </div>
-                    <div class="overview-item">
-                        <div class="overview-icon warning">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="overview-content">
-                            <h4>خطابات قيد المراجعة</h4>
-                            <p>{{ stats.pendingLetters }} خطاب يحتاج إلى مراجعة</p>
-                        </div>
-                    </div>
-                    <div class="overview-item">
-                        <div class="overview-icon info">
-                            <i class="fas fa-chart-bar"></i>
-                        </div>
-                        <div class="overview-content">
-                            <h4>إحصائيات الأداء</h4>
-                            <p>معدل إنجاز {{ calculateEfficiency() }}% لهذا الشهر</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+    
         <!-- Recent Activities -->
         <div class="activities-section">
             <div class="activities-card">
@@ -152,8 +106,8 @@
             </div>
         </div>
     </div>
-</div>
 
+    
 <ng-template #loadingTemplate>
     <div class="loading-container">
         <div class="spinner-border text-primary" role="status">
