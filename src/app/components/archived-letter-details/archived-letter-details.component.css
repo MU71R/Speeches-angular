@@ -740,12 +740,23 @@
     animation: fa-spin 1s infinite linear;
 }
 
-@keyframes fa-spin {
-    0% {
-        transform: rotate(0deg);
-    }
 
-    100% {
-        transform: rotate(360deg);
-    }
+
+.custom-modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right:0; bottom:0;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+}
+.custom-modal.show {
+  display: flex;
+}
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
 }

@@ -14,21 +14,6 @@
 
     <!-- Statistics Cards -->
     <div class="stats-grid">
-        <!-- Users Card -->
-        <div class="stat-card users-card">
-            <div class="stat-icon">
-                <i class="fas fa-users"></i>
-            </div>
-            <div class="stat-content">
-                <h3 class="stat-value">{{ stats.totalUsers }}</h3>
-                <p class="stat-label">إجمالي المستخدمين</p>
-                <div class="stat-details">
-                    <span class="detail-item active">{{ stats.activeUsers }} نشط</span>
-                    <span class="detail-item inactive">{{ stats.inactiveUsers }} غير نشط</span>
-                </div>
-            </div>
-        </div>
-
         <!-- Letters Card -->
         <div class="stat-card letters-card">
             <div class="stat-icon">
@@ -43,33 +28,15 @@
                 </div>
             </div>
         </div>
-
-        <!-- Decisions Card -->
-        <div class="stat-card decisions-card">
-            <div class="stat-icon">
-                <i class="fas fa-file-contract"></i>
-            </div>
-            <div class="stat-content">
-                <h3 class="stat-value">{{ stats.totalDecisions }}</h3>
-                <p class="stat-label">إجمالي القرارات</p>
-                <div class="stat-details">
-                    <span class="detail-item">جميع القرارات المسجلة</span>
-                </div>
-            </div>
-        </div>
-
         <!-- Status Summary Card -->
         <div class="stat-card status-card">
             <div class="stat-icon">
                 <i class="fas fa-chart-pie"></i>
             </div>
             <div class="stat-content">
-                <h3 class="stat-value">{{ stats.approvedLetters }}</h3>
+                <h3 class="stat-value">{{ stats.inProgressLetters }}</h3>
                 <p class="stat-label">الخطابات المعتمدة</p>
-                <div class="stat-details">
-                    <span class="detail-item rejected">{{ stats.rejectedLetters }} مرفوض</span>
-                    <span class="detail-item in-progress">{{ stats.inProgressLetters }} قيد المعالجة</span>
-                </div>
+                
             </div>
         </div>
     </div>

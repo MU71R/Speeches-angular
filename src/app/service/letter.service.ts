@@ -47,6 +47,9 @@ export class LetterService {
     return this.http.get<Letter[]>(`${this.baseUrl}/all-letters`);
   }
 
+  getLetterSupervisor() {
+    return this.http.get<Letter[]>(`${this.baseUrl}/get-supervisor-letters`);
+  }
   getLetter(id: string): Observable<LetterDetail | null> {
     return this.http
       .get<{ success: boolean; data: LetterDetail }>(

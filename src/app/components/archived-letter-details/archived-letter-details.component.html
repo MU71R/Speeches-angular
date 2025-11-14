@@ -136,6 +136,14 @@
                         </div>
                     </div>
                 </div>
+                            <!-- زر رفع ملف جديد -->
+           <button *ngIf="pdfFile !== undefined" 
+        class="btn btn-warning"
+        (click)="openUploadModal()">
+  <i class="fa fa-upload me-2"></i>
+  {{ pdfFile ? 'استبدال الملف' : 'رفع ملف جديد' }}
+</button>
+
             </div>
 
             <div class="content-section" *ngIf="letter.StartDate || letter.EndDate" id="timeline">
@@ -225,4 +233,21 @@
             </div>
         </div>
     </div>
+</div>
+<!-- Upload Modal -->
+<div 
+  class="custom-modal" 
+  [class.show]="showUploadModal"
+  id="uploadModal"
+>
+  <div class="modal-content">
+    <h4 class="mb-3">رفع ملف جديد</h4>
+
+    <input type="file" (change)="selectNewFile($event)" class="form-control" />
+
+    <div class="text-end mt-3">
+      <button class="btn btn-secondary me-2" (click)="closeUploadModal()">إلغاء</button>
+      <button class="btn btn-primary" (click)="uploadNewFile()">رفع</button>
+    </div>
+  </div>
 </div>

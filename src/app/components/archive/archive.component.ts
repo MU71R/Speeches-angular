@@ -14,7 +14,7 @@ export class ArchiveComponent {
   constructor(private router: Router, private archiveService: ArchiveService, private authService: AuthService) {}
 
   user = this.authService.currentUserValue;
-
+  // fullname = this.user?.fullname;
   getArchivedLettersByType(type: string) {
     this.loading = true;
     this.router

@@ -16,6 +16,7 @@ interface UserPersonalStats {
   rejectedLetters: number;
   createdThisMonth: number;
   pendingReview?: number;
+  totalinProgressLetters?: number;
   reviewedThisWeek?: number;
   pendingApproval?: number;
   approvedThisMonth?: number;
@@ -46,30 +47,23 @@ interface MiniStat {
 })
 export class HomeComponent implements OnInit {
   stats: DashboardStats = {
-    totalUsers: 0,
-    activeUsers: 0,
-    inactiveUsers: 0,
     totalLetters: 0,
     pendingLetters: 0,
     approvedLetters: 0,
+    inProgressLetters: 0,      
+    totalinProgressLetters: 0, 
+    totalUsers: 0,
+    activeUsers: 0,
+    inactiveUsers: 0,
     rejectedLetters: 0,
-    inProgressLetters: 0,
     totalDecisions: 0,
   };
-
-  userPersonalStats: UserPersonalStats = {
-    createdLetters: 0,
-    approvedLetters: 0,
-    pendingLetters: 0,
-    rejectedLetters: 0,
-    createdThisMonth: 0,
-    pendingReview: 0,
-    reviewedThisWeek: 0,
-    pendingApproval: 0,
-    approvedThisMonth: 0,
-    avgResponseTime: 0,
-    sectorLetters: 0,
-  };
+  totalUsers: number = 0;
+  activeUsers: number = 0;
+  inactiveUsers: number = 0;
+  rejectedLetters: number = 0;
+  totalDecisions: number = 0;
+  totalinProgressLetters: number = 0;
 
   recentActivities: RecentActivity[] = [];
   filteredActivities: RecentActivity[] = [];
@@ -81,18 +75,41 @@ export class HomeComponent implements OnInit {
   quickStats: any[] = [];
   quickActions: QuickAction[] = [];
   miniStats: MiniStat[] = [];
-
+  
   constructor(
     private dashboardService: DashboardService,
     private loginService: LoginService,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
     this.loadCurrentUserInfo();
     this.loadDashboardData();
   }
+
+  getUserPersonalStats() {
+    this.dashboardService.getDashboardStats().subscribe({
+  next: (res) => {
+    if (res.success) {
+      this.stats = {
+        ...this.stats,
+        totalLetters: res.data.totalLetters,
+        approvedLetters: res.data.approvedLetters,
+        pendingLetters: res.data.pendingLetters,
+        totalinProgressLetters: res.data.totalinProgressLetters,
+      };
+      this.updateQuickStats();
+      this.updateMiniStats();
+    }
+  },
+  error: (err) => {
+    console.error('حدث خطأ عند جلب البيانات:', err);
+  }
+});
+}
+
+
 
   user = this.authService.currentUserValue;
 
@@ -110,8 +127,7 @@ export class HomeComponent implements OnInit {
     this.dashboardService.getDashboardStats().subscribe({
       next: (stats) => {
         console.log('Stats loaded successfully:', stats);
-        this.stats = stats;
-        this.loadUserPersonalStats();
+        this.stats = stats.data;
         this.updateQuickStats();
         this.updateQuickActions();
         this.updateMiniStats();
@@ -119,7 +135,6 @@ export class HomeComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading dashboard:', error);
-        this.useDefaultData();
         this.loading = false;
       },
     });
@@ -137,68 +152,7 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  loadUserPersonalStats(): void {
-    switch (this.currentUserRole) {
-      case 'preparer':
-        this.userPersonalStats = {
-          createdLetters: 15,
-          approvedLetters: 10,
-          pendingLetters: 3,
-          rejectedLetters: 2,
-          createdThisMonth: 4,
-          sectorLetters: this.getSectorLettersCount(),
-        };
-        break;
-
-      case 'supervisor':
-        this.userPersonalStats = {
-          createdLetters: 0,
-          approvedLetters: 0,
-          pendingLetters: 0,
-          rejectedLetters: 0,
-          createdThisMonth: 0,
-          pendingReview: this.stats.pendingLetters,
-          reviewedThisWeek: 8,
-          avgResponseTime: 24,
-          sectorLetters: this.getSectorLettersCount(),
-        };
-        break;
-
-      case 'UniversityPresident':
-        this.userPersonalStats = {
-          createdLetters: 0,
-          approvedLetters: 0,
-          pendingLetters: 0,
-          rejectedLetters: 0,
-          createdThisMonth: 0,
-          pendingApproval: this.stats.inProgressLetters,
-          approvedThisMonth: 12,
-          sectorLetters: this.stats.totalLetters,
-        };
-        break;
-
-      case 'admin':
-        this.userPersonalStats = {
-          createdLetters: 0,
-          approvedLetters: 0,
-          pendingLetters: 0,
-          rejectedLetters: 0,
-          createdThisMonth: 0,
-          sectorLetters: 0,
-        };
-        break;
-
-      default:
-        this.userPersonalStats = {
-          createdLetters: 0,
-          approvedLetters: 0,
-          pendingLetters: 0,
-          rejectedLetters: 0,
-          createdThisMonth: 0,
-          sectorLetters: 0,
-        };
-    }
-  }
+ 
 
   getSectorLettersCount(): number {
     const sectorMultipliers: { [key: string]: number } = {
@@ -310,9 +264,9 @@ export class HomeComponent implements OnInit {
 
   getGrowthValue(): string {
     const values: { [key: string]: string } = {
-      preparer: `+${this.userPersonalStats.createdThisMonth}`,
-      supervisor: `+${this.userPersonalStats.reviewedThisWeek}`,
-      UniversityPresident: `+${this.userPersonalStats.approvedThisMonth}`,
+      preparer: `+${this.stats.pendingLetters}`,
+      supervisor: `+${this.stats.approvedLetters}`,
+      UniversityPresident: `+${this.stats.inProgressLetters}`,
       admin: '+12%',
     };
     return values[this.currentUserRole] || '+8%';
@@ -413,14 +367,14 @@ export class HomeComponent implements OnInit {
     this.miniStats = [
       {
         label: this.getMiniStatLabel('users'),
-        value: this.getMiniStatValue('users'),
+        value: this.stats.totalUsers,
         icon: 'fas fa-user-check',
         color: 'success',
         trend: '+5%',
       },
       {
         label: this.getMiniStatLabel('letters'),
-        value: this.getMiniStatValue('letters'),
+        value: this.stats.totalLetters,
         icon: 'fas fa-envelope-open',
         color: 'primary',
         trend: '+12%',
@@ -475,24 +429,6 @@ export class HomeComponent implements OnInit {
     );
   }
 
-  getMiniStatValue(type: string): string {
-    const values: { [key: string]: { [key: string]: number | string } } = {
-      users: {
-        preparer: this.userPersonalStats.createdLetters,
-        supervisor: this.userPersonalStats.pendingReview || 0,
-        UniversityPresident: this.userPersonalStats.pendingApproval || 0,
-        admin: this.stats.activeUsers,
-      },
-      letters: {
-        preparer: this.userPersonalStats.createdThisMonth,
-        supervisor: this.userPersonalStats.reviewedThisWeek || 0,
-        UniversityPresident: this.userPersonalStats.approvedThisMonth || 0,
-        admin: this.stats.totalLetters,
-      },
-    };
-
-    return values[type]?.[this.currentUserRole]?.toString() || '0';
-  }
 
   getWelcomeMessage(): string {
     const messages: { [key: string]: string } = {
@@ -579,23 +515,22 @@ export class HomeComponent implements OnInit {
     return icons[type] || 'fas fa-circle';
   }
 
-  useDefaultData(): void {
-    this.stats = {
-      totalUsers: 5,
-      activeUsers: 5,
-      inactiveUsers: 0,
-      totalLetters: 35,
-      pendingLetters: 8,
-      approvedLetters: 20,
-      rejectedLetters: 5,
-      inProgressLetters: 2,
-      totalDecisions: 6,
-    };
-    this.loadUserPersonalStats();
-    this.updateQuickStats();
-    this.updateQuickActions();
-    this.updateMiniStats();
-  }
+  // useDefaultData(): void {
+  //   this.stats = {
+  //     totalUsers: 5,
+  //     activeUsers: 5,
+  //     inactiveUsers: 0,
+  //     totalLetters: 35,
+  //     pendingLetters: 8,
+  //     approvedLetters: 20,
+  //     rejectedLetters: 5,
+  //     inProgressLetters: 2,
+  //     totalDecisions: 6,
+  //   };
+  //   this.updateQuickStats();
+  //   this.updateQuickActions();
+  //   this.updateMiniStats();
+  // }
 
   useDefaultActivities(): void {
     this.recentActivities = [

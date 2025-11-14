@@ -124,7 +124,7 @@ export class PdfListComponent implements OnInit {
       admin: 'مدير النظام',
       supervisor: 'مراجع',
       UniversityPresident: 'رئيس الجامعة',
-      user: 'مستخدم',
+       preparer: 'مستخدم',
     };
     return roleMap[role || 'user'] || role || 'مستخدم';
   }

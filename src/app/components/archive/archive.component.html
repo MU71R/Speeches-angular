@@ -8,7 +8,7 @@
 
   <div class="row g-4 justify-content-center">
 
-    <div *ngIf="user?.role === 'UniversityPresident'" class="col-lg-4 col-md-6">
+    <div *ngIf="user?.role === 'UniversityPresident' || user?.fullname === 'مكتب رئيس الجامعة'"  class="col-lg-4 col-md-6">
       <div class="archive-card h-100" (click)="getArchivedLettersByType('رئاسة الجمهورية')">
         <div class="card-icon bg-danger bg-opacity-10 text-danger">
           <i class="fa-solid fa-crown"></i>
@@ -22,7 +22,7 @@
       </div>
     </div>
 
-    <div *ngIf="user?.role === 'UniversityPresident'" class="col-lg-4 col-md-6">
+    <div *ngIf="user?.role === 'UniversityPresident' || user?.fullname === 'مكتب رئيس الجامعة'" class="col-lg-4 col-md-6">
       <div class="archive-card h-100" (click)="getArchivedLettersByType('رئاسة الوزراء')">
         <div class="card-icon bg-warning bg-opacity-10 text-warning">
           <i class="fa-solid fa-landmark"></i>
@@ -36,7 +36,7 @@
       </div>
     </div>
 
-    <div *ngIf="user?.role === 'UniversityPresident'" class="col-lg-4 col-md-6">
+    <div *ngIf="user?.role === 'UniversityPresident' || user?.fullname === 'مكتب رئيس الجامعة'" class="col-lg-4 col-md-6">
       <div class="archive-card h-100" (click)="getArchivedLettersByType('وزارة التعليم العالي')">
         <div class="card-icon bg-success bg-opacity-10 text-success">
           <i class="fa-solid fa-graduation-cap"></i>

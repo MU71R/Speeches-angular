@@ -33,10 +33,6 @@
           <i class="bi bi-check-circle text-success"></i>
           تمت الموافقة
         </button>
-        <button class="dropdown-item-custom d-flex align-items-center gap-2 py-2" (click)="filterByStatus('rejected')">
-          <i class="bi bi-x-circle text-danger"></i>
-          مرفوض
-        </button>
       </div>
     </div>
   </div>
@@ -80,20 +76,18 @@
               'bg-primary text-white': item.status === 'in_progress',
               'bg-warning text-dark': item.status === 'pending',
               'bg-success text-white': item.status === 'approved',
-              'bg-danger text-white': item.status === 'rejected'
             }">
               <i class="bi me-1" [ngClass]="{
                 'bi-clock-history': item.status === 'in_progress',
                 'bi-hourglass-split': item.status === 'pending',
                 'bi-check-circle': item.status === 'approved',
-                'bi-x-circle': item.status === 'rejected'
               }"></i>
               <span>
                 {{
                 item.status === 'in_progress' ? 'قيد المراجعة' :
                 item.status === 'pending' ? 'معلق' :
                 item.status === 'approved' ? 'تمت الموافقة' :
-                item.status === 'rejected' ? 'مرفوض' : 'غير معروف'
+                'غير معروف'
                 }}
               </span>
             </span>

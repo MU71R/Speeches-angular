@@ -10,7 +10,7 @@
         </div>
       </div>
       <div class="col-12 col-md-4 col-lg-3">
-        <button class="btn btn-light btn-add" *ngIf="user?.role === 'UniversityPresident'" (click)="openUploadModal()" [disabled]="loading">
+        <button class="btn btn-light btn-add" *ngIf="user?.role === 'UniversityPresident' || user?.fullname === 'مكتب رئيس الجامعة'" (click)="openUploadModal()" [disabled]="loading">
           <i class="fa fa-plus-circle me-2"></i>
           <span class="d-none d-sm-inline">إضافة مستند جديد</span>
           <span class="d-inline d-sm-none">إضافة</span>
@@ -19,6 +19,7 @@
     </div>
   </div>
 
+  <!-- ======= Filters Section ======= -->
   <div *ngIf="!loading && letters.length > 0" class="filters-section mb-4">
     <div class="card border-0 shadow-sm">
       <div class="card-body">
@@ -51,6 +52,16 @@
           </div>
 
           <div class="col-12 col-sm-6 col-md-2">
+            <label class="form-label fw-semibold">تاريخ بدء القرار</label>
+            <input type="date" class="form-control" [(ngModel)]="dateRange.startDate" (change)="applyFilters()" />
+          </div>
+
+          <div class="col-12 col-sm-6 col-md-2">
+            <label class="form-label fw-semibold">تاريخ انتهاء القرار</label>
+            <input type="date" class="form-control" [(ngModel)]="dateRange.endDate" (change)="applyFilters()" />
+          </div>
+
+          <div class="col-12 col-sm-6 col-md-2">
             <div class="d-flex gap-2">
               <button class="btn btn-outline-secondary w-100" (click)="resetFilters()" title="إعادة تعيين الفلاتر">
                 <i class="fa fa-refresh"></i>
@@ -78,6 +89,7 @@
     </div>
   </div>
 
+  <!-- ======== Loading ======== -->
   <div *ngIf="loading" class="loading-state">
     <div class="spinner-container">
       <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
@@ -90,6 +102,7 @@
     </div>
   </div>
 
+  <!-- ======== Empty State ======== -->
   <div *ngIf="!loading && filteredLetters.length === 0" class="empty-state">
     <div class="empty-icon">
       <i class="fa" [class.fa-inbox]="letters.length === 0" [class.fa-search]="letters.length > 0"></i>
@@ -112,18 +125,19 @@
     </button>
   </div>
 
+  <!-- ======== Letters Table ======== -->
   <div *ngIf="!loading && filteredLetters.length > 0" class="letters-table-container">
     <div class="table-responsive">
       <table class="table table-hover table-striped letters-table">
         <thead class="table-primary">
           <tr>
             <th scope="col" width="5%">#</th>
-            <th scope="col" width="25%">
+            <th scope="col" width="20%">
               <div class="d-flex align-items-center cursor-pointer" (click)="sortBy('title')">
                 عنوان الخطاب
               </div>
             </th>
-            <th scope="col" width="20%">
+            <th scope="col" width="15%">
               <div class="d-flex align-items-center cursor-pointer" (click)="sortBy('user.fullname')">
                 الجهه
               </div>
@@ -136,6 +150,8 @@
                   [class.fa-sort-down]="sortField === 'createdAt' && sortDirection === 'desc'"></i>
               </div>
             </th>
+            <th scope="col" width="10%">تاريخ بدء القرار</th>
+            <th scope="col" width="10%">تاريخ انتهاء القرار</th>
             <th scope="col" width="10%">الإجراءات</th>
           </tr>
         </thead>
@@ -170,6 +186,18 @@
                 <span>{{ letter.createdAt | date: 'dd/MM/yyyy' }}</span>
               </div>
             </td>
+            <td data-label="تاريخ بدء القرار">
+              <div class="created-at-cell">
+                <i class="fa fa-clock text-info me-2"></i>
+                <span>{{ letter.StartDate ? (letter.StartDate | date: 'dd/MM/yyyy') : 'غير محدد' }}</span>
+              </div>
+            </td>
+            <td data-label="تاريخ انتهاء القرار">
+              <div class="created-at-cell">
+                <i class="fa fa-clock text-info me-2"></i>
+                <span>{{ letter.EndDate ? (letter.EndDate | date: 'dd/MM/yyyy') : 'غير محدد' }}</span>
+              </div>
+            </td>
             <td data-label="الإجراءات">
               <div class="actions-cell">
                 <button class="btn btn-primary btn-sm btn-action" (click)="viewLetterDetails(letter._id)"
@@ -183,8 +211,9 @@
         </tbody>
       </table>
     </div>
+  </div>
 
-<div *ngIf="showUploadModal" class="modal-overlay" (click)="closeUploadModal()" dir="rtl">
+<div *ngIf="showUploadModal && (user?.fullname === 'مكتب رئيس الجامعة' || user?.role === 'UniversityPresident')"  class="modal-overlay" (click)="closeUploadModal()" dir="rtl">
   <div class="modal-container" (click)="$event.stopPropagation()">
     <div class="modal-content">
       <div class="modal-header">

@@ -50,7 +50,7 @@ export class PendingReviewsComponent implements OnInit {
   }
 
   getPendingLetters() {
-    this.letterService.getLetterTypes().subscribe({
+    this.letterService.getLetterSupervisor().subscribe({
       next: (res: any) => {
         this.pendingList = res.data ? res.data : res;
         this.filteredList = [...this.pendingList];

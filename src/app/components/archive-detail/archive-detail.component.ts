@@ -16,7 +16,6 @@ export class ArchiveDetailComponent implements OnInit {
   loading = true;
   showUploadModal = false;
   uploading = false;
-
   searchTerm = '';
   filters = {
     fromDate: '',
@@ -24,6 +23,10 @@ export class ArchiveDetailComponent implements OnInit {
     sender: '',
   };
 
+  dateRange = {
+    startDate: '',
+    endDate: '',
+  };
   currentPage = 1;
   pageSize = 10;
   totalPages = 1;
@@ -132,44 +135,66 @@ export class ArchiveDetailComponent implements OnInit {
     this.uniqueSenders = [...new Set(senders)].sort();
   }
 
-  applyFilters(): void {
-    let filtered = [...this.letters];
+    applyFilters(): void {
+      let filtered = [...this.letters];
 
-    if (this.searchTerm) {
-      const term = this.searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (letter) =>
-          letter.title?.toLowerCase().includes(term) ||
-          letter.user?.fullname?.toLowerCase().includes(term) ||
-          letter.breeif?.toLowerCase().includes(term)
-      );
+      // فلتر البحث بالكلمة المفتاحية
+      if (this.searchTerm) {
+        const term = this.searchTerm.toLowerCase();
+        filtered = filtered.filter(
+          (letter) =>
+            letter.title?.toLowerCase().includes(term) ||
+            letter.user?.fullname?.toLowerCase().includes(term) ||
+            letter.breeif?.toLowerCase().includes(term)
+        );
+      }
+
+      // فلتر "من تاريخ" و "إلى تاريخ" على createdAt
+      if (this.filters.fromDate) {
+        filtered = filtered.filter(
+          (letter) => new Date(letter.createdAt) >= new Date(this.filters.fromDate)
+        );
+      }
+
+      if (this.filters.toDate) {
+        filtered = filtered.filter(
+          (letter) => new Date(letter.createdAt) <= new Date(this.filters.toDate)
+        );
+      }
+
+      // فلتر "تاريخ بدء القرار" و "تاريخ انتهاء القرار"
+      if (this.dateRange.startDate) {
+        filtered = filtered.filter(
+          (letter) =>
+            letter.StartDate &&
+            new Date(letter.StartDate) >= new Date(this.dateRange.startDate)
+        );
+      }
+
+      if (this.dateRange.endDate) {
+        filtered = filtered.filter(
+          (letter) =>
+            letter.EndDate &&
+            new Date(letter.EndDate) <= new Date(this.dateRange.endDate)
+        );
+      }
+
+      // فلتر الجهة
+      if (this.filters.sender) {
+        filtered = filtered.filter(
+          (letter) => letter.user?.fullname === this.filters.sender
+        );
+      }
+
+      // الترتيب
+      filtered = this.sortLetters(filtered);
+
+      this.filteredLetters = filtered;
+      this.currentPage = 1;
+      this.calculateTotalPages();
     }
 
-    if (this.filters.fromDate) {
-      filtered = filtered.filter(
-        (letter) =>
-          new Date(letter.createdAt) >= new Date(this.filters.fromDate)
-      );
-    }
 
-    if (this.filters.toDate) {
-      filtered = filtered.filter(
-        (letter) => new Date(letter.createdAt) <= new Date(this.filters.toDate)
-      );
-    }
-
-    if (this.filters.sender) {
-      filtered = filtered.filter(
-        (letter) => letter.user?.fullname === this.filters.sender
-      );
-    }
-
-    filtered = this.sortLetters(filtered);
-
-    this.filteredLetters = filtered;
-    this.currentPage = 1;
-    this.calculateTotalPages();
-  }
 
   sortLetters(letters: any[]): any[] {
     return letters.sort((a, b) => {
@@ -219,6 +244,10 @@ export class ArchiveDetailComponent implements OnInit {
       fromDate: '',
       toDate: '',
       sender: '',
+    };
+    this.dateRange = {
+      startDate: '',
+      endDate: '',
     };
     this.sortField = 'createdAt';
     this.sortDirection = 'desc';

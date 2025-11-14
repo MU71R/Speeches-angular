@@ -16,6 +16,7 @@ export class LetterDetailComponent implements OnInit {
   original: any = null;
   previewHtml = '';
   reviewNotes = '';
+  previewText: string = '';
   loading = true;
   processing = false;
   isEditing = false;
@@ -46,6 +47,8 @@ export class LetterDetailComponent implements OnInit {
       title: [''],
       description: [''],
       rationale: [''],
+      startDate: [''],
+      endDate: [''],
     });
     const user = this.loginService.getUserFromLocalStorage();
     this.currentUserRole =
@@ -54,6 +57,14 @@ export class LetterDetailComponent implements OnInit {
         : 'supervisor';
     const letterId = this.route.snapshot.paramMap.get('id');
     if (letterId) this.loadLetter(letterId);
+  }
+
+  formatDateForInput(date: string | Date): string {
+    if (!date) return '';
+    const d = new Date(date);
+    const month = ('0' + (d.getMonth() + 1)).slice(-2);
+    const day = ('0' + d.getDate()).slice(-2);
+    return `${d.getFullYear()}-${month}-${day}`;
   }
 
   loadLetter(id: string) {
@@ -65,6 +76,8 @@ export class LetterDetailComponent implements OnInit {
           title: this.original?.title || '',
           description: this.original?.description || '',
           rationale: this.original?.Rationale || '',
+          startDate: this.formatDateForInput(this.original?.StartDate),
+          endDate: this.formatDateForInput(this.original?.EndDate),
         });
         this.previewHtml = this.original?.description || '';
 
@@ -324,9 +337,15 @@ export class LetterDetailComponent implements OnInit {
     return roleMap[role] || role;
   }
 
-  enableEdit() {
-    this.isEditing = true;
-  }
+ enableEdit() {
+  this.isEditing = true;
+  this.form.patchValue({
+    rationale: this.original?.Rationale || '',
+    title: this.original?.title || '',
+    description: this.original?.description || ''
+  });
+}
+
 
   cancelEdit() {
     this.isEditing = false;
@@ -338,35 +357,52 @@ export class LetterDetailComponent implements OnInit {
     this.previewHtml = this.original?.description;
   }
 
-  saveChanges() {
-    this.processing = true;
-    const updatedData = {
-      ...this.form.value,
-      Rationale: this.form.value.rationale,
-    };
 
-    this.letterService.updateLetter(this.original._id, updatedData).subscribe(
-      () => {
-        this.original = {
-          ...this.original,
-          ...this.form.value,
-          Rationale: this.form.value.rationale,
-        };
-        this.previewHtml = this.form.value.description;
-        this.isEditing = false;
-        this.processing = false;
-      },
-      (err) => {
-        console.error(err);
-        this.processing = false;
-      }
-    );
-  }
 
-  onDescriptionChange() {
-    this.previewHtml = this.form.value.description;
-  }
 
+  stripHtml(html: string): string {
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = html;
+  return tempDiv.textContent || tempDiv.innerText || '';
+}
+ saveChanges() {
+  const payload = {
+    ...this.original,
+    StartDate: this.form.value.startDate
+      ? new Date(this.form.value.startDate).toISOString()
+      : null,
+    EndDate: this.form.value.endDate
+      ? new Date(this.form.value.endDate).toISOString()
+      : null,
+    description: this.stripHtml(this.form.value.description || '').trim(),
+    Rationale: this.stripHtml(this.form.value.rationale || '').trim()
+  };
+
+  console.log('Payload to update:', payload);
+
+  this.processing = true;
+  this.letterService.updateLetter(this.original._id, payload).subscribe({
+    next: (res) => {
+      this.original = { ...this.original, ...payload }; // تحديث البيانات محليًا
+      this.previewHtml = payload.description;
+      this.isEditing = false;
+      this.processing = false;
+      console.log('Update successful:', this.original);
+    },
+    error: (err) => {
+      console.error(err);
+      this.processing = false;
+    }
+  });
+}
+
+
+ onDescriptionChange() {
+  this.previewHtml = this.stripHtml(this.form.value.description || '');
+}
+onRationaleChange() {
+  this.form.controls['rationale'].setValue(this.stripHtml(this.form.value.rationale || ''), { emitEvent: false });
+}
   showRejectionForm() {
     this.showRejectionReason = true;
     this.rejectionReason = '';

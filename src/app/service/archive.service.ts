@@ -33,4 +33,8 @@ export class ArchiveService {
   getLetterById(id: string): Observable<any> {
     return this.http.get(`${this.url}/get-letter/${id}`);
   }
+
+  updateLetterAttachment(id: string, formData: FormData): Observable<any> {
+    return this.http.put(`${this.url}/update-real-scan-pdf/${id}`, formData);
+  }
 }

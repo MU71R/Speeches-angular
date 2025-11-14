@@ -3,6 +3,8 @@ import { Observable, forkJoin, map } from 'rxjs';
 import { AdministrationService } from './user.service';
 import { LetterService } from './letter.service';
 import { DecisionService } from './decision.service';
+import { Letter } from '../model/Letter';
+import { HttpClient } from '@angular/common/http';
 
 export interface DashboardStats {
   totalUsers: number;
@@ -14,8 +16,13 @@ export interface DashboardStats {
   rejectedLetters: number;
   inProgressLetters: number;
   totalDecisions: number;
+  totalinProgressLetters: number;
 }
 
+export interface DashboardStatsResponse {
+  success: boolean;
+  data: DashboardStats;
+}
 export interface RecentActivity {
   id: string;
   title: string;
@@ -33,79 +40,13 @@ export class DashboardService {
   constructor(
     private adminService: AdministrationService,
     private letterService: LetterService,
-    private decisionService: DecisionService
+    private decisionService: DecisionService,
+    private http: HttpClient
   ) {}
-
-  getDashboardStats(): Observable<DashboardStats> {
-    return forkJoin({
-      users: this.adminService.getStats(),
-      letters: this.letterService.getLetterTypes(),
-      decisions: this.decisionService.getDecisionTypes(),
-    }).pipe(
-      map(({ users, letters, decisions }) => {
-        console.log('Raw Users Data:', users);
-        console.log('Raw Letters Data:', letters);
-        console.log('Raw Decisions Data:', decisions);
-        const userStats = users.data || users;
-
-        let lettersData = letters;
-        if (letters && (letters as any).data) {
-          lettersData = (letters as any).data;
-        }
-
-        const totalLetters = Array.isArray(lettersData)
-          ? lettersData.length
-          : 0;
-
-        let pendingLetters = 0;
-        let approvedLetters = 0;
-        let rejectedLetters = 0;
-        let inProgressLetters = 0;
-
-        if (Array.isArray(lettersData)) {
-          lettersData.forEach((letter: any) => {
-            switch (letter.status) {
-              case 'pending':
-                pendingLetters++;
-                break;
-              case 'approved':
-                approvedLetters++;
-                break;
-              case 'rejected':
-                rejectedLetters++;
-                break;
-              case 'in_progress':
-                inProgressLetters++;
-                break;
-            }
-          });
-        }
-
-        let decisionsData = decisions;
-        if (decisions && (decisions as any).data) {
-          decisionsData = (decisions as any).data;
-        }
-        const totalDecisions = Array.isArray(decisionsData)
-          ? decisionsData.length
-          : 0;
-
-        const stats = {
-          totalUsers: userStats?.totalUsers || 0,
-          activeUsers: userStats?.activeUsers || 0,
-          inactiveUsers: userStats?.inactiveUsers || 0,
-          totalLetters: totalLetters,
-          pendingLetters: pendingLetters,
-          approvedLetters: approvedLetters,
-          rejectedLetters: rejectedLetters,
-          inProgressLetters: inProgressLetters,
-          totalDecisions: totalDecisions,
-        };
-
-        console.log('Processed Stats:', stats);
-        return stats;
-      })
-    );
-  }
+      private baseUrl = 'http://localhost:3000/letters';
+    getDashboardStats(){
+            return this.http.get<DashboardStatsResponse>(`${this.baseUrl}/stats`);
+    }
 
   getRecentActivities(): Observable<RecentActivity[]> {
     return this.letterService.getLetterTypes().pipe(
