@@ -22,22 +22,22 @@ const routes: Routes = [
   {
     path: '',
     component: LayoutComponent,
-    canActivate: [AuthGuard],
-    children: [
-      { path: '', component: HomeComponent },
-      { path: 'home', component: HomeComponent },
-      { path: 'department', component: DepartmentComponent },
-      { path: 'add-decision', component: AddadecisionComponent },
-      { path: 'declaration', component: DeclarationComponent },
-      { path: 'pending-reviews', component: PendingReviewsComponent },
-      { path: 'letter-details/:id', component: LetterDetailComponent },
-      { path: 'archive', component: ArchiveComponent },
-      { path: 'archive-detail', component: ArchiveDetailComponent },
-      { path: 'pdf-list', component: PdfListComponent },
-      { path: '', redirectTo: 'home', pathMatch: 'full' },
-    ],
+  children: [
+    { path: '', component: HomeComponent, canActivate: [AuthGuard] },
+    { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
+    { path: 'department', component: DepartmentComponent, canActivate: [AuthGuard] },
+    { path: 'add-decision', component: AddadecisionComponent, canActivate: [AuthGuard] },
+    { path: 'declaration', component: DeclarationComponent, canActivate: [AuthGuard] },
+    { path: 'pending-reviews', component: PendingReviewsComponent, canActivate: [AuthGuard] },
+    { path: 'letter-details/:id', component: LetterDetailComponent, canActivate: [AuthGuard] },
+    { path: 'archive', component: ArchiveComponent, canActivate: [AuthGuard] },
+    { path: 'archive-detail', component: ArchiveDetailComponent, canActivate: [AuthGuard] },
+    { path: 'pdf-list', component: PdfListComponent, canActivate: [AuthGuard] },
+
+    // صفحة بدون AuthGuard
+    { path: 'letter-detail/:id', component: LetterDetailsComponent },
+  ],
   },
-  { path: 'letter-detail/:id', component: LetterDetailsComponent },
   { path: '**', redirectTo: '' },
 ];
 

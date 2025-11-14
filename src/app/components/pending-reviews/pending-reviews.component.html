@@ -2,8 +2,8 @@
   <div
     class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
     <div class="text-center text-md-start">
-      <h5 class="fw-bold mb-1 text-dark">الخطابات المعلقة</h5>
-      <p class="text-muted small mb-0">خطابات تحتاج إلى مراجعتك وموافقتك</p>
+      <h5 class="fw-bold mb-1 text-dark">القرارت المعلقة</h5>
+      <p class="text-muted small mb-0">قرارات تحتاج إلى مراجعتك وموافقتك</p>
     </div>
 
     <div class="dropdown position-relative">
@@ -17,7 +17,7 @@
       <div class="dropdown-menu-custom shadow border-0 rounded-3" [class.show]="isDropdownOpen" dir="rtl">
         <button class="dropdown-item-custom d-flex align-items-center gap-2 py-2" (click)="filterByStatus('all')">
           <i class="bi bi-list-ul text-muted"></i>
-          جميع الخطابات
+          جميع القرارت
         </button>
         <div class="dropdown-divider-custom"></div>
         <button class="dropdown-item-custom d-flex align-items-center gap-2 py-2"
@@ -104,12 +104,12 @@
           <td colspan="6" class="text-center py-5" dir="rtl">
             <div class="d-flex flex-column align-items-center justify-content-center text-muted">
               <i class="bi bi-inbox display-4 mb-3 opacity-50"></i>
-              <p class="mb-2 fw-medium">لا توجد خطابات لعرضها</p>
+              <p class="mb-2 fw-medium">لا توجد قرارات لعرضها</p>
               <small class="text-muted" *ngIf="selectedStatus !== 'all'">
-                لا توجد خطابات بحالة "{{ getStatusText(selectedStatus) }}"
+                لا توجد قرارات بحالة "{{ getStatusText(selectedStatus) }}"
               </small>
               <small class="text-muted" *ngIf="selectedStatus === 'all'">
-                لا توجد خطابات لعرضها حالياً
+                لا توجد قرارات لعرضها حالياً
               </small>
             </div>
           </td>

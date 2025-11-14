@@ -156,7 +156,7 @@ export class DeclarationComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading message types:', err);
-        this.showError('حدث خطأ في تحميل أنواع الخطابات');
+        this.showError('حدث خطأ في تحميل أنواع القرارت');
       },
     });
   }
@@ -324,12 +324,12 @@ export class DeclarationComponent implements OnInit {
 
     this.letterService.addLetterType(payload).subscribe({
       next: (res) => {
-        this.showSuccess('تم حفظ الخطاب بنجاح ');
+        this.showSuccess('تم حفظ القرار بنجاح ');
         this.resetForm();
       },
       error: (err) => {
         console.error('Error saving letter:', err);
-        this.showError('حدث خطأ أثناء حفظ الخطاب');
+        this.showError('حدث خطأ أثناء حفظ القرار');
         this.submitting = false;
       },
     });

@@ -40,6 +40,7 @@ export class ArchiveDetailComponent implements OnInit {
     title: '',
     description: '',
     date: '',
+    transactionNumber: '',
     letterType: 'رئاسة الجمهورية',
     file: null as File | null,
   };
@@ -309,7 +310,7 @@ export class ArchiveDetailComponent implements OnInit {
 
   getArchiveSubtitle(): string {
     const subtitles: { [key: string]: string } = {
-      شخصي: 'الخطابات والقرارات التي أرسلتها أو استلمتها',
+      شخصي: 'القرارت والقرارات التي أرسلتها أو استلمتها',
       مراجع: 'القرارات التي وافق عليها المراجع الخاص بك',
       'رئاسة الجمهورية': 'مراسيم وقرارات رئاسية',
       'وزارة التعليم العالي': 'قرارات ووثائق وزارة التعليم العالي',
@@ -317,7 +318,7 @@ export class ArchiveDetailComponent implements OnInit {
       عامة: 'قرارات ووثائق الجامعة الرسمية',
     };
     return (
-      subtitles[this.type] || 'قائمة الخطابات والأوامر المعتمدة ضمن هذا التصنيف'
+      subtitles[this.type] || 'قائمة القرارت والأوامر المعتمدة ضمن هذا التصنيف'
     );
   }
   
@@ -373,6 +374,7 @@ export class ArchiveDetailComponent implements OnInit {
     const formData = new FormData();
     formData.append('title', this.newArchive.title);
     formData.append('breeif', this.newArchive.description || '');
+    formData.append('transactionNumber', this.newArchive.transactionNumber || '');
     formData.append('date', this.newArchive.date);
     formData.append('letterType', this.newArchive.letterType);
     if (this.newArchive.file) {
@@ -410,6 +412,7 @@ export class ArchiveDetailComponent implements OnInit {
       title: '',
       description: '',
       date: '',
+      transactionNumber: '',
       letterType: 'رئاسة الجمهورية',
       file: null,
     };

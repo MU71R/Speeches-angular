@@ -145,7 +145,7 @@
 }
 
 .editor-area:empty:before {
-  content: "ابدأ بكتابة محتوى الخطاب هنا...";
+  content: "ابدأ بكتابة محتوى القرار هنا...";
   color: #6c757d;
   font-style: italic;
 }

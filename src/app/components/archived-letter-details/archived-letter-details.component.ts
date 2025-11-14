@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ArchiveService } from 'src/app/service/archive.service';
+import { AuthService } from 'src/app/service/auth.service';
 import { LetterService } from 'src/app/service/letter.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-letter-details',
@@ -25,9 +27,10 @@ export class LetterDetailsComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private archiveService: ArchiveService,
-    private letterService: LetterService
+    private letterService: LetterService,
+    private authService: AuthService
   ) {}
-
+  user = this.authService.currentUserValue;
   ngOnInit(): void {
     this.letterId = this.route.snapshot.paramMap.get('id') || '';
     if (this.letterId) {
@@ -50,7 +53,7 @@ export class LetterDetailsComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        console.error('خطأ أثناء جلب تفاصيل الخطاب:', err);
+        console.error('خطأ أثناء جلب تفاصيل القرار:', err);
         this.loading = false;
       },
     });
@@ -68,9 +71,6 @@ export class LetterDetailsComponent implements OnInit {
           this.pdfFilename = this.extractFilenameFromUrl(
             response.pdfFile.pdfurl
           );
-          console.log('تم العثور على PDF:', this.pdfFile);
-        } else {
-          console.log('لم يتم العثور على PDF للخطاب');
         }
       },
       error: (err) => {
@@ -89,11 +89,11 @@ export class LetterDetailsComponent implements OnInit {
   private generateDownloadName(): string {
     const title = this.letter?.title
       ? this.letter.title.replace(/[^\w\u0600-\u06FF]/g, '_')
-      : 'خطاب';
+      : 'قرار';
     const date = this.letter?.date
       ? new Date(this.letter.date).toISOString().split('T')[0]
       : '';
-    return `خطاب_${title}_${date}.pdf`;
+    return `قرار_${title}_${date}.pdf`;
   }
 
   openPdf(): void {
@@ -110,7 +110,11 @@ export class LetterDetailsComponent implements OnInit {
       this.pdfLoading = false;
     } else {
       this.pdfLoading = false;
-      alert('لا يوجد ملف PDF متاح للعرض');
+      Swal.fire({
+        icon: 'error',
+        title: 'خطأ',
+        text: 'لا يوجد ملف PDF متاح للتنزيل',
+      });
     }
   }
 
@@ -128,7 +132,11 @@ export class LetterDetailsComponent implements OnInit {
       link.click();
       document.body.removeChild(link);
     } else {
-      alert('لا يوجد ملف PDF متاح للتنزيل');
+      Swal.fire({
+        icon: 'error',
+        title: 'خطأ',
+        text: 'لا يوجد ملف PDF متاح للتنزيل',
+      });
     }
   }
 
@@ -350,7 +358,11 @@ export class LetterDetailsComponent implements OnInit {
 
   uploadNewFile() {
     if (!this.selectedFile) {
-      alert('يرجى اختيار ملف أولاً');
+      Swal.fire({
+        icon: 'error',
+        title: 'خطأ',
+        text: 'يرجى اختيار ملف أولاً',
+      });
       return;
     }
 
@@ -364,11 +376,18 @@ export class LetterDetailsComponent implements OnInit {
           this.letter.attachment = res.attachment;
           this.selectedFile = null;
           this.closeUploadModal();
-          alert('✔ تم رفع الملف الجديد بنجاح');
+          Swal.fire({
+            icon: 'success',
+            title: 'تم رفع الملف الجديد بنجاح',
+          });
         },
         error: (err) => {
           console.error('خطأ في رفع الملف:', err);
-          alert('❌ حدث خطأ أثناء رفع الملف');
+          Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء رفع الملف',
+          });
         },
       });
   }

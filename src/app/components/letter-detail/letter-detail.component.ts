@@ -81,7 +81,7 @@ export class LetterDetailComponent implements OnInit {
         });
         this.previewHtml = this.original?.description || '';
 
-        console.log('بيانات الخطاب:', this.original);
+        console.log('بيانات القرار:', this.original);
 
         // البحث عن PDF باستخدام getPDFbyLetterId
         this.loadPdfByLetterId(id);
@@ -151,7 +151,7 @@ export class LetterDetailComponent implements OnInit {
       }
     }
 
-    // الطريقة 3: إذا كان الخطاب معتمداً، نبحث عن PDF في الخادم
+    // الطريقة 3: إذا كان القرار معتمداً، نبحث عن PDF في الخادم
     if (this.original?.status === 'approved') {
       this.checkForPdfInServer();
     }
@@ -159,14 +159,14 @@ export class LetterDetailComponent implements OnInit {
     console.log('لم يتم العثور على PDF');
   }
 
-  // توليد اسم ملف PDF من بيانات الخطاب
+  // توليد اسم ملف PDF من بيانات القرار
   private generatePdfFilenameFromLetterData() {
     if (!this.original) return;
 
     const letterId = this.original._id;
     const title = this.original.title
       ? this.original.title.replace(/[^\w\u0600-\u06FF]/g, '_')
-      : 'خطاب';
+      : 'قرار';
 
     this.pdfFilename = `letter_${letterId}_${title}.pdf`;
     console.log('تم توليد اسم PDF:', this.pdfFilename);
@@ -189,11 +189,11 @@ export class LetterDetailComponent implements OnInit {
   private generateDownloadName(): string {
     const title = this.original?.title
       ? this.original.title.replace(/[^\w\u0600-\u06FF]/g, '_')
-      : 'خطاب';
+      : 'قرار';
     const date = this.original?.date
       ? new Date(this.original.date).toISOString().split('T')[0]
       : '';
-    return `خطاب_${title}_${date}.pdf`;
+    return `قرار_${title}_${date}.pdf`;
   }
 
   // الدوال الجديدة للتعامل مع PDF

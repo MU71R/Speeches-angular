@@ -105,7 +105,7 @@
             </div>
 
             <!-- قسم المرفقات مع زر الرفع -->
-            <div class="content-section" id="attachments">
+            <div class="content-section" *ngIf="user?.role === 'UniversityPresident' || user?.fullname === 'مكتب رئيس الجامعة'" id="attachments">
                 <h3 class="section-title">
                     <i class="fa fa-paperclip me-2"></i>المرفقات
                 </h3>
@@ -136,15 +136,9 @@
                             </a>
                         </div>
                     </div>
-
-                    <!-- إذا لم يكن هناك مرفق -->
-                    <div *ngIf="!letter.attachment" class="empty-attachment text-center py-4">
-                        <i class="fa fa-file-upload text-muted mb-3" style="font-size: 3rem;"></i>
-                        <p class="text-muted">لا توجد مرفقات لهذا القرار</p>
-                    </div>
-
                     <!-- زر رفع ملف جديد - ظاهر دائماً -->
-                    <button class="btn btn-warning mt-3" (click)="openUploadModal()">
+                    <button *ngIf="(user?.role === 'UniversityPresident' || user?.fullname === 'مكتب رئيس الجامعة') && !letter?.attachment"  class="btn btn-warning mt-3"
+                        (click)="openUploadModal()">
                         <i class="fa fa-upload me-2"></i>
                         {{ letter.attachment ? 'استبدال الملف' : 'رفع ملف جديد' }}
                     </button>

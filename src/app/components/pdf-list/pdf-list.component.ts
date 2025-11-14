@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LetterService, PDFFile } from '../../service/letter.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-pdf-list',
@@ -13,8 +14,13 @@ export class PdfListComponent implements OnInit {
   error: string = '';
   searchTerm: string = '';
   searchDate: string = '';
+  pdfUrl: string | null = null;
+  pdfFilename: string | null = null;
+  pdfFile: any = null;
+  pdfLoading: boolean = false;
 
-  constructor(private letterService: LetterService) {}
+
+  constructor(private letterService: LetterService ) {}
 
   ngOnInit() {
     this.loadAllPDFs();
@@ -83,9 +89,28 @@ export class PdfListComponent implements OnInit {
     return url.split('/').pop() || 'ملف غير معروف';
   }
 
-  openPDF(pdf: PDFFile) {
-    window.open(pdf.pdfurl, '_blank');
+  
+ openPdf(pdf: PDFFile): void {
+  if (!pdf || !pdf.pdfurl) {
+    Swal.fire({
+      icon: 'error',
+      title: 'خطأ',
+      text: 'لا يوجد ملف PDF متاح للفتح',
+    });
+    return;
   }
+
+  let finalUrl = pdf.pdfurl;
+
+  // لو الرابط مش كامل
+  if (!finalUrl.startsWith('http')) {
+    finalUrl = 'http://localhost:3000' + finalUrl;
+  }
+
+  window.open(finalUrl, '_blank');
+}
+
+
 
   downloadPDF(pdf: PDFFile) {
     const filename = this.getFileName(pdf.pdfurl);

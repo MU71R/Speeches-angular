@@ -15,9 +15,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
     this.checkScreenSize();
   }
 
-  ngOnDestroy(): void {
-  
-  }
+  ngOnDestroy(): void {}
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
@@ -32,11 +30,17 @@ export class LayoutComponent implements OnInit, OnDestroy {
     this.isSidebarOpen = isOpen;
   }
 
-  isUserLoggedIn(): boolean {
-    return this.authService.isLoggedIn();
-  }
+ isUserLoggedIn(): boolean {
+  const loggedIn = this.authService.isLoggedIn();
+  console.log('isUserLoggedIn:', loggedIn);
+  return loggedIn;
+}
+
 
   getLayoutClass(): string {
+    if (!this.isUserLoggedIn()) {
+      return 'no-sidebar'; // class جديدة لو مش مسجّل دخول
+    }
     return this.isSidebarOpen ? 'sidebar-open' : 'sidebar-closed';
   }
 }

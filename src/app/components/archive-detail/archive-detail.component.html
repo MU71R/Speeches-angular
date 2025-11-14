@@ -25,7 +25,7 @@
       <div class="card-body">
         <div class="row g-3 align-items-end">
           <div class="col-12 col-md-4">
-            <label class="form-label fw-semibold">بحث في الخطابات</label>
+            <label class="form-label fw-semibold">بحث في القرارات</label>
             <div class="search-input-group">
               <input type="text" class="form-control" placeholder="ابحث في العناوين، الجهات ..."
                 [(ngModel)]="searchTerm" (input)="applyFilters()" />
@@ -108,20 +108,20 @@
       <i class="fa" [class.fa-inbox]="letters.length === 0" [class.fa-search]="letters.length > 0"></i>
     </div>
     <h3 class="empty-title">
-      {{ letters.length === 0 ? 'لا توجد خطابات' : 'لم يتم العثور على نتائج' }}
+      {{ letters.length === 0 ? 'لا توجد قرارات' : 'لم يتم العثور على نتائج' }}
     </h3>
     <p class="empty-text">
-      {{ letters.length === 0 ? 'لم يتم العثور على أي خطابات في هذا الأرشيف.' : 'لمطابقة معايير البحث المحددة.' }}
+      {{ letters.length === 0 ? 'لم يتم العثور على أي قرارات في هذا الأرشيف.' : 'لمطابقة معايير البحث المحددة.' }}
     </p>
     <button
       *ngIf="isSpecialArchive() || letters.length === 0"
       class="btn btn-primary"
       (click)="openUploadModal()"
     >
-      <i class="fa fa-plus me-2"></i>إضافة أول خطاب
+      <i class="fa fa-plus me-2"></i>إضافة أول قرار
     </button>
     <button *ngIf="letters.length > 0" class="btn btn-outline-primary" (click)="resetFilters()">
-      <i class="fa fa-refresh me-2"></i>عرض جميع الخطابات
+      <i class="fa fa-refresh me-2"></i>عرض جميع القرارت
     </button>
   </div>
 
@@ -134,7 +134,7 @@
             <th scope="col" width="5%">#</th>
             <th scope="col" width="20%">
               <div class="d-flex align-items-center cursor-pointer" (click)="sortBy('title')">
-                عنوان الخطاب
+                عنوان القرار
               </div>
             </th>
             <th scope="col" width="15%">
@@ -160,7 +160,7 @@
             <td data-label="#">
               <span class="badge bg-primary">{{ (currentPage - 1) * pageSize + i + 1 }}</span>
             </td>
-            <td data-label="عنوان الخطاب">
+            <td data-label="عنوان القرار">
               <div class="letter-title-cell">
                 <i class="fa fa-envelope text-primary me-2"></i>
                 <div class="letter-content">
@@ -236,7 +236,18 @@
             <input type="text" class="form-control form-control-lg" [(ngModel)]="newArchive.title" name="title"
               placeholder="مثال: قرار رقم ٢٤٥ لسنة ٢٠٢٣" required />
           </div>
+          <div class="form-group mb-3">
 
+          <label class="form-label fw-semibold">رقم القرار <span class="text-danger">*</span></label>
+          <input 
+            type="text" 
+            class="form-control form-control-lg" 
+            [(ngModel)]="newArchive.transactionNumber" 
+            name="transactionNumber"
+            placeholder="مثال: 245/2023" 
+            required
+          />
+        </div>
           <div class="form-group mb-3">
             <label class="form-label fw-semibold">الوصف</label>
             <textarea class="form-control" rows="3" [(ngModel)]="newArchive.description" name="description"

@@ -1,5 +1,7 @@
 <div class="layout" [class]="getLayoutClass()">
-  <app-sidebar (sidebarToggled)="onSidebarToggle($event)">
+
+  <!-- Sidebar يظهر فقط لو المستخدم مسجّل دخول -->
+  <app-sidebar *ngIf="isUserLoggedIn()" (sidebarToggled)="onSidebarToggle($event)">
   </app-sidebar>
 
   <div class="content-area">

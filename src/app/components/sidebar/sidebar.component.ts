@@ -83,7 +83,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       admin: 'مدير النظام',
       supervisor: 'مراجع',
       UniversityPresident: 'رئيس الجامعة',
-      preparer: 'معد الخطابات',
+      preparer: 'معد القرارت',
     };
 
     return roleNames[this.user.role] || 'مستخدم';

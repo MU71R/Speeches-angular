@@ -84,7 +84,7 @@
 
         <div class="row mb-3">
           <div class="col-md-6">
-            <label for="startDate" class="form-label">تاريخ البداية (اخياري)</label>
+            <label for="startDate" class="form-label">تاريخ البداية القرار (اختياري)</label>
             <input id="startDate" type="date" formControlName="startDate" class="form-control rtl-date"
               [class.is-invalid]="showFieldError('startDate')" (blur)="markFieldAsTouched('startDate')" />
             <div *ngIf="showFieldError('startDate')" class="invalid-feedback">
@@ -93,7 +93,7 @@
           </div>
 
           <div class="col-md-6">
-            <label for="endDate" class="form-label">تاريخ النهاية (اخياري)</label>
+            <label for="endDate" class="form-label">تاريخ النهاية القرار (اختياري)</label>
             <input id="endDate" type="date" formControlName="endDate" class="form-control rtl-date"
               [class.is-invalid]="showFieldError('endDate')" (blur)="markFieldAsTouched('endDate')" />
             <div *ngIf="showFieldError('endDate')" class="invalid-feedback">

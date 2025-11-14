@@ -223,11 +223,11 @@ export class HomeComponent implements OnInit {
         default: 'مستوى النشاط',
       },
       approval: {
-        preparer: 'نسبة قبول خطاباتك',
+        preparer: 'نسبة قبول قراراتك',
         supervisor: 'نسبة القبول بعد المراجعة',
         UniversityPresident: 'نسبة الاعتماد النهائي',
         admin: 'معدل القبول العام',
-        default: 'الخطابات المقبولة',
+        default: 'القرارت المقبولة',
       },
       efficiency: {
         preparer: 'كفاءة إنجازك',
@@ -279,32 +279,32 @@ export class HomeComponent implements OnInit {
         icon: 'fas fa-archive',
         link: '/archive',
         color: 'secondary',
-        description: 'الوصول إلى الخطابات المؤرشفة',
+        description: 'الوصول إلى القرارت المؤرشفة',
       },
       {
         title: 'البحث المتقدم',
         icon: 'fas fa-search',
         link: '/search',
         color: 'info',
-        description: 'بحث في الخطابات والقرارات',
+        description: 'بحث في القرارت والقرارات',
       },
     ];
 
     const roleActions: { [key: string]: QuickAction[] } = {
       preparer: [
         {
-          title: 'إنشاء خطاب',
+          title: 'إنشاء قرار',
           icon: 'fas fa-plus',
           link: '/letters/add',
           color: 'primary',
-          description: 'بدء إنشاء خطاب جديد',
+          description: 'بدء إنشاء قرار جديد',
         },
         {
-          title: 'خطاباتي',
+          title: 'قراراتي',
           icon: 'fas fa-list',
           link: '/letters/my-letters',
           color: 'success',
-          description: 'عرض جميع خطاباتك',
+          description: 'عرض جميع قراراتك',
         },
       ],
       supervisor: [
@@ -313,7 +313,7 @@ export class HomeComponent implements OnInit {
           icon: 'fas fa-clipboard-check',
           link: '/letters/supervisor',
           color: 'warning',
-          description: 'مراجعة الخطابات المعلقة',
+          description: 'مراجعة القرارت المعلقة',
         },
         {
           title: 'تقارير المراجعة',
@@ -329,7 +329,7 @@ export class HomeComponent implements OnInit {
           icon: 'fas fa-stamp',
           link: '/letters/president',
           color: 'success',
-          description: 'اعتماد الخطابات النهائية',
+          description: 'اعتماد القرارت النهائية',
         },
         {
           title: 'التقارير',
@@ -399,7 +399,7 @@ export class HomeComponent implements OnInit {
   getMiniStatLabel(type: string): string {
     const labels: { [key: string]: { [key: string]: string } } = {
       users: {
-        preparer: 'خطاباتي',
+        preparer: 'قراراتي',
         supervisor: 'قيد المراجعة',
         UniversityPresident: 'قيد الاعتماد',
         admin: 'المستخدمين النشطين',
@@ -408,7 +408,7 @@ export class HomeComponent implements OnInit {
         preparer: 'هذا الشهر',
         supervisor: 'هذا الأسبوع',
         UniversityPresident: 'هذا الشهر',
-        admin: 'خطابات الشهر',
+        admin: 'قرارات الشهر',
       },
       approval: {
         preparer: 'معدل القبول',
@@ -442,7 +442,7 @@ export class HomeComponent implements OnInit {
 
   getRoleDisplayName(): string {
     const roles: { [key: string]: string } = {
-      preparer: 'منشئ الخطابات',
+      preparer: 'منشئ القرارت',
       supervisor: 'مراجع',
       UniversityPresident: 'رئيس الجامعة',
       admin: 'مدير النظام',
@@ -536,7 +536,7 @@ export class HomeComponent implements OnInit {
     this.recentActivities = [
       {
         id: '690f7d118928be33f22f866b',
-        title: 'خطاب اعتماد ميزانية',
+        title: 'قرار اعتماد ميزانية',
         type: 'letter',
         action: 'تمت الموافقة',
         user: 'إدارة الوحدات ذات الطابع الخاص',

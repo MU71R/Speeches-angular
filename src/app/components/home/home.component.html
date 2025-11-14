@@ -21,10 +21,10 @@
             </div>
             <div class="stat-content">
                 <h3 class="stat-value">{{ stats.totalLetters }}</h3>
-                <p class="stat-label">إجمالي الخطابات</p>
+                <p class="stat-label">إجمالي القرارات</p>
                 <div class="stat-details">
                     <span class="detail-item pending">{{ stats.pendingLetters }} قيد الانتظار</span>
-                    <span class="detail-item approved">{{ stats.approvedLetters }} مقبول</span>
+                    <span class="detail-item approved">{{ stats.approvedLetters }} تم اعتمادها</span>
                 </div>
             </div>
         </div>
@@ -35,8 +35,7 @@
             </div>
             <div class="stat-content">
                 <h3 class="stat-value">{{ stats.inProgressLetters }}</h3>
-                <p class="stat-label">الخطابات المعتمدة</p>
-                
+                <p class="stat-label">قرارات قيد المراجعة</p>
             </div>
         </div>
     </div>
@@ -46,7 +45,7 @@
         <div class="activities-section">
             <div class="activities-card">
                 <div class="card-header">
-                    <h3 class="card-title">النشاطات الحديثة</h3>
+                    <h3 class="card-title"> اخر القرارات</h3>
                     <button class="btn btn-sm btn-outline-primary" routerLink="/letters">
                         عرض الكل
                     </button>
