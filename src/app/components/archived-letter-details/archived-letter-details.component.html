@@ -96,21 +96,22 @@
                             </div>
                             <div class="info-content">
                                 <span class="info-label">الجهه المراجعه:</span>
-                                <span class="info-value">{{ getSupervisorName(letter.decision.supervisor.fullname) }}</span>
+                                <span class="info-value">{{ getSupervisorName(letter.decision.supervisor.fullname)
+                                    }}</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            
-
-            <div class="content-section" *ngIf="letter.attachment" id="attachments">
+            <!-- قسم المرفقات مع زر الرفع -->
+            <div class="content-section" id="attachments">
                 <h3 class="section-title">
                     <i class="fa fa-paperclip me-2"></i>المرفقات
                 </h3>
                 <div class="section-content">
-                    <div class="attachment-card">
+                    <!-- إذا كان هناك مرفق -->
+                    <div *ngIf="letter.attachment" class="attachment-card">
                         <div class="attachment-info">
                             <div class="attachment-icon">
                                 <i class="fa" [ngClass]="getFileIcon(letter.attachment)"></i>
@@ -135,15 +136,19 @@
                             </a>
                         </div>
                     </div>
-                </div>
-                            <!-- زر رفع ملف جديد -->
-           <button *ngIf="pdfFile !== undefined" 
-        class="btn btn-warning"
-        (click)="openUploadModal()">
-  <i class="fa fa-upload me-2"></i>
-  {{ pdfFile ? 'استبدال الملف' : 'رفع ملف جديد' }}
-</button>
 
+                    <!-- إذا لم يكن هناك مرفق -->
+                    <div *ngIf="!letter.attachment" class="empty-attachment text-center py-4">
+                        <i class="fa fa-file-upload text-muted mb-3" style="font-size: 3rem;"></i>
+                        <p class="text-muted">لا توجد مرفقات لهذا القرار</p>
+                    </div>
+
+                    <!-- زر رفع ملف جديد - ظاهر دائماً -->
+                    <button class="btn btn-warning mt-3" (click)="openUploadModal()">
+                        <i class="fa fa-upload me-2"></i>
+                        {{ letter.attachment ? 'استبدال الملف' : 'رفع ملف جديد' }}
+                    </button>
+                </div>
             </div>
 
             <div class="content-section" *ngIf="letter.StartDate || letter.EndDate" id="timeline">
@@ -195,7 +200,7 @@
 
             <div class="content-section" *ngIf="letter.approvals && letter.approvals.length > 0" id="approvals">
                 <h3 class="section-title">
-                    <i class="fa fa-check-circle me-2"></i>مسار القرار 
+                    <i class="fa fa-check-circle me-2"></i>مسار القرار
                     <span class="approvals-count">{{ letter.approvals.length }}</span>
                 </h3>
                 <div class="section-content">
@@ -215,8 +220,10 @@
                                     <span class="approval-date">{{ approval.date | date: 'dd/MM/yyyy - hh:mm a'
                                         }}</span>
                                 </div>
-                                <div class="approval-status" [ngClass]="approval.approved ? 'status-approved' : 'status-rejected'">
-                                    <i class="fa me-1" [ngClass]="approval.approved ? 'fa-check-circle' : 'fa-times-circle'"></i>
+                                <div class="approval-status"
+                                    [ngClass]="approval.approved ? 'status-approved' : 'status-rejected'">
+                                    <i class="fa me-1"
+                                        [ngClass]="approval.approved ? 'fa-check-circle' : 'fa-times-circle'"></i>
                                     {{ approval.approved ? 'تمت الموافقة' : 'تم الرفض' }}
                                 </div>
                                 <div class="approval-user" *ngIf="approval.userId">
@@ -234,20 +241,17 @@
         </div>
     </div>
 </div>
+
 <!-- Upload Modal -->
-<div 
-  class="custom-modal" 
-  [class.show]="showUploadModal"
-  id="uploadModal"
->
-  <div class="modal-content">
-    <h4 class="mb-3">رفع ملف جديد</h4>
+<div class="custom-modal" [class.show]="showUploadModal" id="uploadModal">
+    <div class="modal-content">
+        <h4 class="mb-3">رفع ملف جديد</h4>
 
-    <input type="file" (change)="selectNewFile($event)" class="form-control" />
+        <input type="file" (change)="selectNewFile($event)" class="form-control" />
 
-    <div class="text-end mt-3">
-      <button class="btn btn-secondary me-2" (click)="closeUploadModal()">إلغاء</button>
-      <button class="btn btn-primary" (click)="uploadNewFile()">رفع</button>
+        <div class="text-end mt-3">
+            <button class="btn btn-secondary me-2" (click)="closeUploadModal()">إلغاء</button>
+            <button class="btn btn-primary" (click)="uploadNewFile()">رفع</button>
+        </div>
     </div>
-  </div>
 </div>

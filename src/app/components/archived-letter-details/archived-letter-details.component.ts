@@ -16,7 +16,7 @@ export class LetterDetailsComponent implements OnInit {
   pdfUrl: string | null = null;
   pdfFilename: string | null = null;
   pdfFile: any = null;
-  showUploadModal = true;
+  showUploadModal = false; // تم التعديل هنا من true إلى false
   selectedFile: File | null = null;
   private sectorsMap: Map<string, string> = new Map();
   private usersMap: Map<string, any> = new Map();
@@ -335,41 +335,41 @@ export class LetterDetailsComponent implements OnInit {
     });
   }
 
+  openUploadModal() {
+    this.showUploadModal = true;
+  }
 
+  closeUploadModal() {
+    this.showUploadModal = false;
+    this.selectedFile = null; // إعادة تعيين الملف المختار عند الإغلاق
+  }
 
-openUploadModal() {
-  this.showUploadModal = true;
-}
+  selectNewFile(event: any) {
+    this.selectedFile = event.target.files[0];
+  }
 
-closeUploadModal() {
-  this.showUploadModal = false;
-}
-
-selectNewFile(event: any) {
-  this.selectedFile = event.target.files[0];
-}
-
-uploadNewFile() {
-  if (!this.selectedFile) return;
-
-  const formData = new FormData();
-  formData.append('pdf', this.selectedFile);
-
-  this.archiveService.updateLetterAttachment(this.letter.id, formData).subscribe({
-    next: (res) => {
-      this.letter.attachment = res.attachment;
-
-      this.selectedFile = null;
-      this.closeUploadModal();  // إغلاق المودال
-
-      alert("✔ تم رفع الملف الجديد بنجاح");
-    },
-    error: () => {
-      alert("❌ حدث خطأ أثناء رفع الملف");
+  uploadNewFile() {
+    if (!this.selectedFile) {
+      alert('يرجى اختيار ملف أولاً');
+      return;
     }
-  });
-}
 
+    const formData = new FormData();
+    formData.append('pdf', this.selectedFile);
 
-
+    this.archiveService
+      .updateLetterAttachment(this.letter.id, formData)
+      .subscribe({
+        next: (res) => {
+          this.letter.attachment = res.attachment;
+          this.selectedFile = null;
+          this.closeUploadModal();
+          alert('✔ تم رفع الملف الجديد بنجاح');
+        },
+        error: (err) => {
+          console.error('خطأ في رفع الملف:', err);
+          alert('❌ حدث خطأ أثناء رفع الملف');
+        },
+      });
+  }
 }
